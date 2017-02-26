@@ -1,0 +1,28 @@
+package troll;
+
+// Represents a 2D sprite in the game and its frames in terms of bounding box.
+message Sprite {
+  // Sprite unique id.
+  optional string id = 1;
+
+  // Resource name of the sprite.
+  optional string resource = 2;
+  
+  // Colour key for the sprite.
+  optional string colour_key = 3;
+
+  // Key frame id to bounding box mapping.
+  repeated BoundingBox film = 4;
+}
+
+// A bounding box representation in 3D space.
+message BoundingBox {
+  optional double left = 1;
+  optional double top = 2;
+
+  optional double right = 3;
+  optional double bottom = 4;
+
+  optional double front = 5;
+  optional double back = 6;
+}
