@@ -5,7 +5,7 @@
 #include <memory>
 #include <string>
 
-#include "../build/sprite.pb.h"
+#include "sprite.pb.h"
 #include "property-owner.h"
 
 namespace troll {
@@ -14,7 +14,7 @@ namespace troll {
 // class.
 class WorldElement : public PropertyOwner {
  public:
-  WorldElement(const std::string& id) : id_(id) {}
+  explicit WorldElement(const std::string& id) : id_(id) {}
   virtual ~WorldElement() = default;
 
   const std::string& id() const { return id_; }
@@ -26,7 +26,9 @@ class WorldElement : public PropertyOwner {
 // An object prototype of the game world.
 class Object : public WorldElement {
  public:
-  Object(const std::string& id) : WorldElement(id) {}
+  explicit Object(const std::string& id) : WorldElement(id) {}
+  Object(const std::string& id, const Sprite& sprite)
+      : WorldElement(id), sprite_(sprite) {}
   ~Object() override = default;
 
  private:

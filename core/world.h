@@ -40,6 +40,8 @@ class World {
   World() = default;
   ~World() = default;
 
+  void LoadSprites();
+
   Characters characters_;
   Objects objects_;
   Scenes scenes_;

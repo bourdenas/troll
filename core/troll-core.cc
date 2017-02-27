@@ -1,10 +1,14 @@
 #include "troll-core.h"
 
+#include "world.h"
+
 namespace troll {
 
 Core::FpsCounter Core::fps_counter_;
 
-void Core::Init() {}
+void Core::Init() {
+  World::Instance().Init();
+}
 
 void Core::CleanUp() {}
 

@@ -6,7 +6,7 @@
 int main() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  printf("hello there\n");
+  printf("Troll climbing the bridge...\n");
 
   troll::Core::Init();
   troll::Core::Run();
