@@ -1,0 +1,17 @@
+id: 'main'
+scene_manager: 'BitmapSceneManager'
+
+viewport: {
+  left: 0
+  top: 0
+  width: 640
+  height: 480
+}
+
+bitmap_config: {
+  bitmap: ''
+  background_colour: '0x000000'
+
+  width: 640
+  height: 480
+}

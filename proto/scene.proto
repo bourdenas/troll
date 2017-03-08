@@ -1,0 +1,25 @@
+package troll;
+
+message ScenePb {
+  optional string id = 1;
+  optional string scene_manager = 2;
+  optional Rectangle viewport = 3;
+
+  optional BitmapSceneManagerConfig bitmap_config = 4;
+}
+
+message BitmapSceneManagerConfig {
+  optional string bitmap = 1;
+  optional string background_colour = 2;
+
+  optional int32 width = 3;
+  optional int32 height = 4;
+}
+
+message Rectangle {
+  optional int32 left = 1;
+  optional int32 top = 2;
+
+  optional int32 width = 3;
+  optional int32 height = 4;
+}

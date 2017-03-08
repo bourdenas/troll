@@ -27,11 +27,10 @@ class World {
 
   using Characters = std::map<std::string, std::unique_ptr<Character>>;
   using Objects = std::map<std::string, std::unique_ptr<Object>>;
-  using Scenes = std::map<std::string, std::unique_ptr<Scene>>;
 
   Characters& characters() { return characters_; }
   Objects& objects() { return objects_; }
-  Scenes& scenes() { return scenes_; }
+  Scene& scene() { return *scene_; }
 
   World(const World&) = delete;
   World& operator=(const World&) = delete;
@@ -44,7 +43,7 @@ class World {
 
   Characters characters_;
   Objects objects_;
-  Scenes scenes_;
+  std::unique_ptr<Scene> scene_;
 
   std::unique_ptr<SceneManager> scene_manager_;
 };
