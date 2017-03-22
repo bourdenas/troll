@@ -1,6 +1,6 @@
 #include <cstdio>
 
-#include "../build/sprite.pb.h"
+#include "sprite.pb.h"
 #include "troll-core.h"
 
 int main() {

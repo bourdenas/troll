@@ -5,6 +5,7 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <iostream>
+#include <range/v3/all.hpp>
 
 #include "scene.pb.h"
 #include "sprite.pb.h"
@@ -26,11 +27,10 @@ Resource LoadResource(const std::string& uri) {
 
 template <class Resource>
 std::vector<Resource> LoadResources(const std::string& path) {
-  std::vector<Resource> resources;
   const boost::filesystem::path sprite_path(path);
-  for (auto it = boost::filesystem::directory_iterator(sprite_path);
-       it != boost::filesystem::directory_iterator(); ++it) {
-    resources.push_back(LoadResource<Resource>(it->path().string()));
+  std::vector<Resource> resources;
+  for (const auto& p : boost::filesystem::directory_iterator(sprite_path)) {
+    resources.push_back(LoadResource<Resource>(p.path().string()));
   }
   return resources;
 }
@@ -56,12 +56,12 @@ void World::UnloadScene() {
 
 void World::LoadSprites() {
   const auto& sprites = LoadResources<Sprite>("../data/sprites/");
-  std::transform(
-      sprites.begin(), sprites.end(), std::inserter(objects_, objects_.end()),
-      [](const Sprite& sprite) {
-        return std::make_pair(sprite.id(), std::unique_ptr<Object>(new Object(
-                                               sprite.id(), sprite)));
-      });
+
+  objects_ = sprites | ranges::view::transform([](const Sprite& sprite) {
+               return std::make_pair(
+                   sprite.id(),
+                   std::unique_ptr<Object>(new Object(sprite.id(), sprite)));
+             });
   std::cout << "sprites loaded" << std::endl;
 }
 
