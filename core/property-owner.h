@@ -1,8 +1,8 @@
 #ifndef TROLL_CORE_WORLD_PROPERTY_OWNER_H_
 #define TROLL_CORE_WORLD_PROPERTY_OWNER_H_
 
-#include <map>
 #include <string>
+#include <unordered_map>
 
 namespace troll {
 
@@ -12,7 +12,7 @@ class PropertyOwner {
   virtual ~PropertyOwner() = default;
 
  protected:
-  std::map<std::string, std::string> properties_;
+  std::unordered_map<std::string, std::string> properties_;
 };
 
 }  // namespace troll

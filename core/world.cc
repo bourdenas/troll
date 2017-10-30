@@ -13,38 +13,40 @@
 namespace troll {
 
 namespace {
-template <class Resource>
-Resource LoadResource(const std::string& uri) {
-  std::cout << "Loading resource file '" << uri << "'..." << std::endl;
+// Load a proto message from text file.
+template <class Message>
+Message LoadTextProto(const std::string& uri) {
+  std::cout << "Loading proto text file '" << uri << "'..." << std::endl;
   std::fstream istream(uri, std::ios::in);
   google::protobuf::io::IstreamInputStream pbstream(&istream);
 
-  Resource resource;
-  google::protobuf::TextFormat::Parse(&pbstream, &resource);
-  std::cout << "Resource '" << resource.id() << "' loaded." << std::endl;
-  return resource;
+  Message message;
+  google::protobuf::TextFormat::Parse(&pbstream, &message);
+  std::cout << "Proto message '" << message.id() << "' loaded." << std::endl;
+  return message;
 }
 
-template <class Resource>
-std::vector<Resource> LoadResources(const std::string& path) {
-  const boost::filesystem::path sprite_path(path);
-  std::vector<Resource> resources;
-  for (const auto& p : boost::filesystem::directory_iterator(sprite_path)) {
-    resources.push_back(LoadResource<Resource>(p.path().string()));
+// Load proto message from all text files under a path.
+template <class Message>
+std::vector<Message> LoadTextProtoFromPath(const std::string& path) {
+  const boost::filesystem::path resource_path(path);
+  std::vector<Message> messages;
+  for (const auto& p : boost::filesystem::directory_iterator(resource_path)) {
+    messages.push_back(LoadTextProto<Message>(p.path().string()));
   }
-  return resources;
+  return messages;
 }
 }  // namespace
 
 void World::Init() {
-  LoadScene("main.scene");	
+  LoadScene("main.scene");
   LoadSprites();
 }
 
 void World::Run() {}
 
 void World::LoadScene(const std::string& scene) {
-  const auto scene_pb = LoadResource<ScenePb>("../data/scenes/" + scene);
+  const auto scene_pb = LoadTextProto<ScenePb>("../data/scenes/" + scene);
   scene_.reset(new Scene(scene_pb.id()));
 }
 
@@ -55,7 +57,7 @@ void World::UnloadScene() {
 }
 
 void World::LoadSprites() {
-  const auto& sprites = LoadResources<Sprite>("../data/sprites/");
+  const auto& sprites = LoadTextProtoFromPath<Sprite>("../data/sprites/");
 
   objects_ = sprites | ranges::view::transform([](const Sprite& sprite) {
                return std::make_pair(

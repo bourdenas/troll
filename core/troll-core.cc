@@ -6,11 +6,9 @@ namespace troll {
 
 Core::FpsCounter Core::fps_counter_;
 
-void Core::Init() {
-  World::Instance().Init();
-}
+void Core::Init() { World::Instance().Init(); }
 
-void Core::CleanUp() {}
+void Core::CleanUp() { World::Instance().UnloadScene(); }
 
 void Core::Run() {
   // World::Instance().LoadScene("main");
