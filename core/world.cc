@@ -5,10 +5,10 @@
 #include <boost/filesystem.hpp>
 #include <fstream>
 #include <iostream>
-#include <range/v3/all.hpp>
+#include <range/v3/view/transform.hpp>
 
-#include "scene.pb.h"
-#include "sprite.pb.h"
+#include "proto/scene.pb.h"
+#include "proto/sprite.pb.h"
 
 namespace troll {
 
@@ -37,7 +37,7 @@ std::vector<Resource> LoadResources(const std::string& path) {
 }  // namespace
 
 void World::Init() {
-  LoadScene("main.scene");
+  LoadScene("main.scene");	
   LoadSprites();
 }
 

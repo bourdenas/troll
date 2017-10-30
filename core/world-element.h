@@ -5,8 +5,8 @@
 #include <memory>
 #include <string>
 
-#include "sprite.pb.h"
 #include "property-owner.h"
+#include "proto/sprite.pb.h"
 
 namespace troll {
 

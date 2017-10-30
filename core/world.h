@@ -1,9 +1,9 @@
 #ifndef TROLL_CORE_WORLD_H_
 #define TROLL_CORE_WORLD_H_
 
-#include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "scene-manager.h"
 #include "scene.h"
@@ -25,8 +25,9 @@ class World {
   void LoadScene(const std::string& scene);
   void UnloadScene();
 
-  using Characters = std::map<std::string, std::unique_ptr<Character>>;
-  using Objects = std::map<std::string, std::unique_ptr<Object>>;
+  using Characters =
+      std::unordered_map<std::string, std::unique_ptr<Character>>;
+  using Objects = std::unordered_map<std::string, std::unique_ptr<Object>>;
 
   Characters& characters() { return characters_; }
   Objects& objects() { return objects_; }
