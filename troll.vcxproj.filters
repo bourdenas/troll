@@ -1,0 +1,84 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{738f5e50-2543-4628-9477-aed15e44fc63}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="proto">
+      <UniqueIdentifier>{eadc5ed9-aefd-405c-8cee-ac897b44be8c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="core\action.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\event.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\property-owner.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\scene-manager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\troll-core.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\world.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\world-element.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\scene.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\sprite.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="core\bitmap.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\primitives.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\renderer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="core\main.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\troll-core.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\world.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\scene.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\sprite.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene-manager.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="proto\scene.proto">
+      <Filter>proto</Filter>
+    </None>
+    <None Include="proto\sprite.proto">
+      <Filter>proto</Filter>
+    </None>
+  </ItemGroup>
+</Project>
