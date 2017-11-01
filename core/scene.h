@@ -38,22 +38,25 @@ class SceneNode : public WorldElement, public SceneNodeContainer {
   ~SceneNode() override = default;
 
   bool IsInside(const Point& point) const;
-  bool CollidesWith(SceneNode* node) const;
-  void OnCollision(SceneNode* node);
+  bool CollidesWith(const SceneNode& other) const;
 
   void Position(const Point& vec);
   void Move(const Point& vec);
   void Rotate(const Point& vec);
   void Scale(const Point& vec);
 
+  void Display(void) const;
+
+  const std::string& sprite_id() const { return sprite_id_; }
+  void set_frame(int index) { frame_index_ = index; }
   const Box& bounding_box() const;
-  const std::string& object_id() const { return object_id_; }
 
   bool visible() const { return visible_; }
   void set_visible(bool flag) { visible_ = flag; }
 
  private:
-  const std::string object_id_;
+  const std::string sprite_id_;
+  int frame_index_;
   bool visible_;
 };
 
