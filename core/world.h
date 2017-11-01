@@ -5,9 +5,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "scene-manager.h"
-#include "scene.h"
-#include "world-element.h"
+#include "core/scene-manager.h"
+#include "core/scene.h"
+#include "core/world-element.h"
 
 namespace troll {
 
@@ -20,6 +20,7 @@ class World {
   }
 
   void Init();
+  void CleanUp();
   void Run();
 
   void LoadScene(const std::string& scene);
@@ -31,7 +32,6 @@ class World {
 
   Characters& characters() { return characters_; }
   Objects& objects() { return objects_; }
-  Scene& scene() { return *scene_; }
 
   World(const World&) = delete;
   World& operator=(const World&) = delete;
@@ -44,7 +44,6 @@ class World {
 
   Characters characters_;
   Objects objects_;
-  std::unique_ptr<Scene> scene_;
 
   std::unique_ptr<SceneManager> scene_manager_;
 };

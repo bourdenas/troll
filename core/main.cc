@@ -1,7 +1,7 @@
 #include <iostream>
 
+#include "core/troll-core.h"
 #include "proto/sprite.pb.h"
-#include "troll-core.h"
 
 int main() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;

@@ -1,7 +1,7 @@
 #ifndef TROLL_CORE_ACTION_H_
 #define TROLL_CORE_ACTION_H_
 
-#include "world-element.h"
+#include "core/world-element.h"
 
 namespace troll {
 

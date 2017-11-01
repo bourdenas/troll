@@ -4,8 +4,8 @@
 #include <map>
 #include <string>
 
-#include "action.h"
-#include "world-element.h"
+#include "core/action.h"
+#include "core/world-element.h"
 
 namespace troll {
 

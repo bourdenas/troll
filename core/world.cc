@@ -1,10 +1,11 @@
-#include "world.h"
+#include "core/world.h"
+
+#include <fstream>
+#include <iostream>
 
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
 #include <boost/filesystem.hpp>
-#include <fstream>
-#include <iostream>
 #include <range/v3/view/transform.hpp>
 
 #include "proto/scene.pb.h"
@@ -43,18 +44,22 @@ void World::Init() {
   LoadSprites();
 }
 
-void World::Run() {}
-
-void World::LoadScene(const std::string& scene) {
-  const auto scene_pb = LoadTextProto<ScenePb>("../data/scenes/" + scene);
-  scene_.reset(new Scene(scene_pb.id()));
-}
-
-void World::UnloadScene() {
-  scene_.reset(nullptr);
+void World::CleanUp() {
   objects_.clear();
   characters_.clear();
 }
+
+void World::Run() {}
+
+void World::LoadScene(const std::string& scene_id) {
+  const auto scene_pb = LoadTextProto<ScenePb>("../data/scenes/" + scene_id);
+  auto scene = std::make_unique<Scene>(scene_pb.id());
+
+  scene_manager_ = std::make_unique<SceneManager>();
+  scene_manager_->SetupScene(std::move(scene));
+}
+
+void World::UnloadScene() { scene_manager_->UnloadScene(); }
 
 void World::LoadSprites() {
   const auto& sprites = LoadTextProtoFromPath<Sprite>("../data/sprites/");

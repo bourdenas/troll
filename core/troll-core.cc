@@ -1,6 +1,6 @@
-#include "troll-core.h"
+#include "core/troll-core.h"
 
-#include "world.h"
+#include "core/world.h"
 
 namespace troll {
 
