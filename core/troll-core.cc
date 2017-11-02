@@ -1,19 +1,26 @@
 #include "core/troll-core.h"
 
 #include "core/world.h"
+#include "sdl/renderer.h"
 
 namespace troll {
 
 Core::FpsCounter Core::fps_counter_;
+std::unique_ptr<Renderer> Core::renderer_;
 
-void Core::Init() { World::Instance().Init(); }
+void Core::Init() {
+  World::Instance().Init();
+  renderer_ = std::make_unique<Renderer>();
+  renderer_->Init();
+}
 
-void Core::CleanUp() { World::Instance().UnloadScene(); }
+void Core::CleanUp() {
+  renderer_->CleanUp();
+  World::Instance().UnloadScene();
+}
 
 void Core::Run() {
-  // World::Instance().LoadScene("main");
-
-  int curr_time = 0;  // TODO: GetTime()
+  int curr_time = 0;  // SDL_GetTicks();
   int prev_time = curr_time;
 
   while (InputHandling()) {

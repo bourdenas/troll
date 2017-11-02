@@ -16,10 +16,25 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="proto\scene.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\sprite.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="sdl\renderer.h">
+      <Filter>sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="sdl\texture.h">
+      <Filter>sdl</Filter>
+    </ClInclude>
     <ClInclude Include="core\action.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="core\event.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\primitives.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="core\property-owner.h">
@@ -40,27 +55,21 @@
     <ClInclude Include="core\world-element.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="proto\scene.pb.h">
-      <Filter>proto</Filter>
-    </ClInclude>
-    <ClInclude Include="proto\sprite.pb.h">
-      <Filter>proto</Filter>
-    </ClInclude>
-    <ClInclude Include="core\primitives.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="core\renderer.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="sdl\sdl-renderer.h">
-      <Filter>sdl</Filter>
-    </ClInclude>
-    <ClInclude Include="core\texture.h">
-      <Filter>core</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="proto\scene.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\sprite.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="sdl\renderer.cc">
+      <Filter>sdl</Filter>
+    </ClCompile>
     <ClCompile Include="core\main.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene-manager.cc">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\troll-core.cc">
@@ -68,18 +77,6 @@
     </ClCompile>
     <ClCompile Include="core\world.cc">
       <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="proto\scene.pb.cc">
-      <Filter>proto</Filter>
-    </ClCompile>
-    <ClCompile Include="proto\sprite.pb.cc">
-      <Filter>proto</Filter>
-    </ClCompile>
-    <ClCompile Include="core\scene-manager.cc">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="sdl\sdl-renderer.cc">
-      <Filter>sdl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,7 +3,7 @@
 #include "core/troll-core.h"
 #include "proto/sprite.pb.h"
 
-int main() {
+int main(int argc, char *args[]) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   std::cout << "Troll climbing the bridge...\n";

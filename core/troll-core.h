@@ -1,6 +1,10 @@
 #ifndef TROLL_CORE_TROLL_CORE_H_
 #define TROLL_CORE_TROLL_CORE_H_
 
+#include <memory>
+
+#include "sdl/renderer.h"
+
 namespace troll {
 
 class Core {
@@ -27,6 +31,8 @@ class Core {
     int fp_count = 0;
   };
   static FpsCounter fps_counter_;
+
+  static std::unique_ptr<Renderer> renderer_;
 };
 
 }  // namespace troll
