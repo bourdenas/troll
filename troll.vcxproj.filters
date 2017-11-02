@@ -11,6 +11,9 @@
     <Filter Include="proto">
       <UniqueIdentifier>{eadc5ed9-aefd-405c-8cee-ac897b44be8c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="sdl">
+      <UniqueIdentifier>{7a1d44a1-5292-451e-bb1d-73b8945edd9c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="core\action.h">
@@ -43,13 +46,16 @@
     <ClInclude Include="proto\sprite.pb.h">
       <Filter>proto</Filter>
     </ClInclude>
-    <ClInclude Include="core\bitmap.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="core\primitives.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="core\renderer.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="sdl\sdl-renderer.h">
+      <Filter>sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="core\texture.h">
       <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
@@ -71,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="core\scene-manager.cc">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="sdl\sdl-renderer.cc">
+      <Filter>sdl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

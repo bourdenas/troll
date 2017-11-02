@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 
-#include "core/bitmap.h"
 #include "core/primitives.h"
+#include "core/texture.h"
 
 namespace troll {
 
@@ -14,12 +14,11 @@ class Renderer {
   virtual void Init() = 0;
   virtual void CleanUp() = 0;
 
-  // Bitmap API
-  virtual Bitmap* CreateBitmap(int width, int height, const RGBa& colour) = 0;
-  virtual Bitmap* LoadBitmap(const std::string& filename) = 0;
+  virtual Texture* CreateTexture(int width, int height, const RGBa& colour) = 0;
+  virtual Texture* LoadTexture(const std::string& filename) = 0;
 
-  virtual void BlitBitmap(const Box& src_box, const Box& dst_box,
-                          const Bitmap& src, Bitmap* dst) = 0;
+  virtual void BlitTexture(const Box& src_box, const Box& dst_box,
+                           const Texture& src, Texture* dst) = 0;
 
   virtual void ShowCursor(bool show) = 0;
   virtual Box CreateText(const std::string& id, const std::string& text,
@@ -31,11 +30,11 @@ class Renderer {
   virtual void Flip() = 0;
   virtual void ClearScreen() = 0;
 
-  const Bitmap& bitmap() const { return bitmap_; }
+  const Texture& texture() const { return *texture_; }
 
  protected:
   ///--- class Renderer protected members
-  std::unique_ptr<Bitmap> bitmap_;
+  std::unique_ptr<Texture> texture_;
 };
 
 }  // namespace troll

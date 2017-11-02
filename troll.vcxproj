@@ -102,18 +102,19 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="core\action.h" />
-    <ClInclude Include="core\bitmap.h" />
     <ClInclude Include="core\event.h" />
     <ClInclude Include="core\primitives.h" />
     <ClInclude Include="core\property-owner.h" />
     <ClInclude Include="core\renderer.h" />
     <ClInclude Include="core\scene-manager.h" />
     <ClInclude Include="core\scene.h" />
+    <ClInclude Include="core\texture.h" />
     <ClInclude Include="core\troll-core.h" />
     <ClInclude Include="core\world-element.h" />
     <ClInclude Include="core\world.h" />
     <ClInclude Include="proto\scene.pb.h" />
     <ClInclude Include="proto\sprite.pb.h" />
+    <ClInclude Include="sdl\sdl-renderer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="core\main.cc" />
@@ -122,6 +123,7 @@
     <ClCompile Include="core\world.cc" />
     <ClCompile Include="proto\scene.pb.cc" />
     <ClCompile Include="proto\sprite.pb.cc" />
+    <ClCompile Include="sdl\sdl-renderer.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\scene.proto" />

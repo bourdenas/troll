@@ -4,7 +4,6 @@
 #include <memory>
 #include <string>
 
-#include "core/bitmap.h"
 #include "core/primitives.h"
 #include "core/scene.h"
 
@@ -27,8 +26,7 @@ class SceneManager {
   void SetViewport(const Box& view);
   void ScrollViewport(const Point& by);
 
-  // Renders the scene on a bitmap.
-  void Render(Bitmap* dst);
+  void Render();
 
   // Marks a region inside the viewport dirty and queue it for rendering.
   void Invalidate(const Box& region);
