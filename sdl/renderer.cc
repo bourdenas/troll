@@ -27,15 +27,6 @@ void Renderer::Init() {
     std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
     return;
   }
-
-  auto texture = LoadTexture("../data/resources/hello.bmp");
-  for (int i = 0; i < 3; ++i) {
-    ClearScreen();
-    BlitTexture(*texture, Box(), Box());
-    Flip();
-
-    SDL_Delay(1000);
-  }
 }
 
 void Renderer::CleanUp() {

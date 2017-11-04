@@ -23,6 +23,15 @@ void Core::Run() {
   int curr_time = 0;  // SDL_GetTicks();
   int prev_time = curr_time;
 
+  auto texture = renderer_->LoadTexture("../data/resources/hello.bmp");
+  for (int i = 0; i < 3; ++i) {
+    renderer_->ClearScreen();
+    renderer_->BlitTexture(*texture, Box(), Box());
+    renderer_->Flip();
+
+    SDL_Delay(1000);
+  }
+
   while (InputHandling()) {
     // curr_time = SDL_GetTicks();
 
