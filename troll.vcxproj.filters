@@ -14,6 +14,9 @@
     <Filter Include="sdl">
       <UniqueIdentifier>{7a1d44a1-5292-451e-bb1d-73b8945edd9c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="animation">
+      <UniqueIdentifier>{a82bd5ff-7764-453b-bdaf-f426631ba707}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="proto\scene.pb.h">
@@ -55,6 +58,18 @@
     <ClInclude Include="core\world-element.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="animation\animator.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\animation.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="animation\executor.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="animation\animator-manager.h">
+      <Filter>animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -78,12 +93,30 @@
     <ClCompile Include="core\world.cc">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="proto\animation.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="animation\animator.cc">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="animation\executor.cc">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="animation\animator-manager.cc">
+      <Filter>animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\scene.proto">
       <Filter>proto</Filter>
     </None>
     <None Include="proto\sprite.proto">
+      <Filter>proto</Filter>
+    </None>
+    <None Include="proto\animation.proto">
       <Filter>proto</Filter>
     </None>
   </ItemGroup>

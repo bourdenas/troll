@@ -41,7 +41,7 @@ class SceneNode : public WorldElement, public SceneNodeContainer {
   bool CollidesWith(const SceneNode& other) const;
 
   void Position(const Point& vec);
-  void Move(const Point& vec);
+  void Translate(const Point& vec);
   void Rotate(const Point& vec);
   void Scale(const Point& vec);
 

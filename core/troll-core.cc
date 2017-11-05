@@ -23,33 +23,40 @@ void Core::Run() {
   int curr_time = 0;  // SDL_GetTicks();
   int prev_time = curr_time;
 
-  auto texture = renderer_->LoadTexture("../data/resources/hello.bmp");
-  for (int i = 0; i < 3; ++i) {
-    renderer_->ClearScreen();
-    renderer_->BlitTexture(*texture, Box(), Box());
-    renderer_->Flip();
-
-    SDL_Delay(1000);
-  }
-
   while (InputHandling()) {
     // curr_time = SDL_GetTicks();
 
     FrameStarted(curr_time - prev_time);
     RenderFrame();
     FrameEnded(curr_time - prev_time);
+    SDL_Delay(1000);
 
     prev_time = curr_time;
   }
 }
 
-bool Core::InputHandling() { return false; }
+bool Core::InputHandling() {
+  static int i = 0;
+  return i++ < 3;
+}
 
-void Core::RenderFrame() {}
+void Core::RenderFrame() {
+  auto texture = renderer_->LoadTexture("../data/resources/hello.bmp");
+  renderer_->ClearScreen();
+  renderer_->BlitTexture(*texture, Box(), Box());
+  renderer_->Flip();
+}
 
-void Core::FrameStarted(int time_since_last_frame) {}
+void Core::FrameStarted(int time_since_last_frame) {
+  // AnimatorManager::Instance().Progress(timeSinceLastFrame);
+  // Physics::Instance().Progress(timeSinceLastFrame);
+  // CollisionChecker::Instance().PerformCollisions();
+}
 
 void Core::FrameEnded(int time_since_last_frame) {
+  //-- Destroy LatelyDestroyable objects
+  // DestructionManager::Commit();
+
   ++fps_counter_.fp_count;
   fps_counter_.elapsed_time += time_since_last_frame;
 
