@@ -20,28 +20,35 @@ void Core::CleanUp() {
 }
 
 void Core::Run() {
-  int curr_time = 0;  // SDL_GetTicks();
+  int curr_time = SDL_GetTicks();
   int prev_time = curr_time;
 
   while (InputHandling()) {
-    // curr_time = SDL_GetTicks();
+    curr_time = SDL_GetTicks();
 
     FrameStarted(curr_time - prev_time);
     RenderFrame();
     FrameEnded(curr_time - prev_time);
-    SDL_Delay(1000);
 
     prev_time = curr_time;
   }
 }
 
 bool Core::InputHandling() {
-  static int i = 0;
-  return i++ < 3;
+  SDL_Event event;
+  while (SDL_PollEvent(&event)) {
+    if (event.type == SDL_QUIT) {
+      return false;
+    }
+    if (event.type == SDL_KEYDOWN) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void Core::RenderFrame() {
-  auto texture = renderer_->LoadTexture("../data/resources/hello.bmp");
+  auto texture = renderer_->LoadTexture("../data/resources/circles.png");
   renderer_->ClearScreen();
   renderer_->BlitTexture(*texture, Box(), Box());
   renderer_->Flip();

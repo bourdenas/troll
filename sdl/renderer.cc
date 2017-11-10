@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 #include "sdl/texture.h"
 
@@ -36,14 +37,7 @@ void Renderer::CleanUp() {
 }
 
 std::unique_ptr<Texture> Renderer::LoadTexture(const std::string& filename) {
-  SDL_Surface* image = SDL_LoadBMP(filename.c_str());
-  if (image == nullptr) {
-    std::cout << SDL_GetError() << std::endl;
-    return nullptr;
-  }
-
-  SDL_Texture* texture = SDL_CreateTextureFromSurface(sdl_renderer_, image);
-  SDL_FreeSurface(image);
+  SDL_Texture* texture = IMG_LoadTexture(sdl_renderer_, filename.c_str());
   if (texture == nullptr) {
     std::cout << SDL_GetError() << std::endl;
   }
