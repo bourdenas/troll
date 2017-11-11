@@ -58,6 +58,9 @@ void Core::Run() {
   int curr_time = SDL_GetTicks();
   int prev_time = curr_time;
 
+  renderer_->ClearScreen();
+  renderer_->BlitTexture(*textures_.begin()->second, Box(), Box());
+
   while (InputHandling()) {
     curr_time = SDL_GetTicks();
 
@@ -88,14 +91,7 @@ void Core::FrameStarted(int time_since_last_frame) {
   // CollisionChecker::Instance().PerformCollisions();
 }
 
-void Core::RenderFrame() {
-  std::cout << "RenderFrame()" << std::endl;
-  const auto texture = renderer_->LoadTexture("dkarcade.png");
-  renderer_->ClearScreen();
-  renderer_->BlitTexture(*texture, Box(), Box());
-  std::cout << "BlitTexture()" << std::endl;
-  renderer_->Flip();
-}
+void Core::RenderFrame() { renderer_->Flip(); }
 
 void Core::FrameEnded(int time_since_last_frame) {
   //-- Destroy LatelyDestroyable objects
