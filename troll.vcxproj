@@ -112,7 +112,6 @@
     <ClInclude Include="core\scene.h" />
     <ClInclude Include="core\troll-core.h" />
     <ClInclude Include="core\world-element.h" />
-    <ClInclude Include="core\world.h" />
     <ClInclude Include="proto\animation.pb.h" />
     <ClInclude Include="proto\scene.pb.h" />
     <ClInclude Include="proto\sprite.pb.h" />
@@ -127,7 +126,6 @@
     <ClCompile Include="core\scene-manager.cc" />
     <ClCompile Include="core\scene.cc" />
     <ClCompile Include="core\troll-core.cc" />
-    <ClCompile Include="core\world.cc" />
     <ClCompile Include="proto\animation.pb.cc" />
     <ClCompile Include="proto\scene.pb.cc" />
     <ClCompile Include="proto\sprite.pb.cc" />

@@ -8,6 +8,7 @@
 #include "core/event.h"
 #include "core/primitives.h"
 #include "core/world-element.h"
+#include "proto/scene.pb.h"
 
 namespace troll {
 
@@ -34,7 +35,7 @@ class SceneNodeContainer {
 // a bounding box.
 class SceneNode : public WorldElement, public SceneNodeContainer {
  public:
-  SceneNode(const std::string& id) : WorldElement(id) {}
+  explicit SceneNode(const std::string& id) : WorldElement(id) {}
   ~SceneNode() override = default;
 
   bool IsInside(const Point& point) const;
@@ -74,8 +75,12 @@ class Scene : public WorldElement,
               public SceneNodeContainer,
               public EventHandler {
  public:
-  Scene(const std::string& id) : WorldElement(id) {}
+  Scene(const std::string& id, const ScenePb& scene_pb)
+      : WorldElement(id), scene_pb_(scene_pb) {}
   ~Scene() override = default;
+
+ private:
+  const ScenePb scene_pb_;
 };
 
 }  // namespace troll

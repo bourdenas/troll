@@ -52,9 +52,6 @@
     <ClInclude Include="core\troll-core.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="core\world.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="core\world-element.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -88,9 +85,6 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\troll-core.cc">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="core\world.cc">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="proto\animation.pb.cc">

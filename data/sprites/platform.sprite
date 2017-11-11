@@ -1,0 +1,10 @@
+id: 'platform'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film: {
+  left: 648
+  top: 500
+  right: 680
+  bottom: 516
+}
