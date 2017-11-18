@@ -50,28 +50,28 @@ class ExecutorBase : public Executor {
   int wait_time_ = 0;
 };
 
-class TranslationExecutor : public ExecutorBase<TranslationAnimation> {
+class TranslationExecutor : public ExecutorBase<VectorAnimation> {
  public:
-  TranslationExecutor(const TranslationAnimation& animation)
-      : ExecutorBase<TranslationAnimation>(animation) {}
+  TranslationExecutor(const VectorAnimation& animation)
+      : ExecutorBase<VectorAnimation>(animation) {}
 
  protected:
   bool Execute(SceneNode* scene_node) override;
 };
 
-class RotationExecutor : public ExecutorBase<RotationAnimation> {
+class RotationExecutor : public ExecutorBase<VectorAnimation> {
  public:
-  RotationExecutor(const RotationAnimation& animation)
-      : ExecutorBase<RotationAnimation>(animation) {}
+  RotationExecutor(const VectorAnimation& animation)
+      : ExecutorBase<VectorAnimation>(animation) {}
 
  protected:
   bool Execute(SceneNode* scene_node) override;
 };
 
-class ScalingExecutor : public ExecutorBase<ScalingAnimation> {
+class ScalingExecutor : public ExecutorBase<VectorAnimation> {
  public:
-  ScalingExecutor(const ScalingAnimation& animation)
-      : ExecutorBase<ScalingAnimation>(animation) {}
+  ScalingExecutor(const VectorAnimation& animation)
+      : ExecutorBase<VectorAnimation>(animation) {}
 
  protected:
   bool Execute(SceneNode* scene_node) override;

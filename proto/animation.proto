@@ -2,8 +2,13 @@ syntax = "proto2";
 
 package troll;
 
+message AnimationScripts {
+  repeated AnimationScript script = 1;
+}
+
 message AnimationScript {
-  repeated Animation animation = 1;
+  optional string id = 1;
+  repeated Animation animation = 2;
 }
 
 message Animation {
@@ -12,14 +17,12 @@ message Animation {
     ALL = 1;
   }
   optional TerminationCondition termination = 1;
-
   optional int32 repeat = 2;
-
   repeated string event = 3;
 
-  optional TranslationAnimation translation = 4;
-  optional RotationAnimation rotation = 5;
-  optional ScalingAnimation scaling = 6;
+  optional VectorAnimation translation = 4;
+  optional VectorAnimation rotation = 5;
+  optional VectorAnimation scaling = 6;
   optional FrameRangeAnimation frame_range = 7;
   optional FrameListAnimation frame_list = 8;
   optional GotoAnimation goto = 9;
@@ -27,17 +30,7 @@ message Animation {
   optional TimerAnimation timer = 11;
 }
 
-message TranslationAnimation {
-  optional Vector vec = 1;
-  optional int32 delay = 2;
-}
-
-message RotationAnimation {
-  optional Vector vec = 1;
-  optional int32 delay = 2;
-}
-
-message ScalingAnimation {
+message VectorAnimation {
   optional Vector vec = 1;
   optional int32 delay = 2;
 }
