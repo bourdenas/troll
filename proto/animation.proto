@@ -1,5 +1,7 @@
 syntax = "proto2";
 
+import "primitives.proto";
+
 package troll;
 
 message AnimationScripts {
@@ -76,10 +78,4 @@ message FlashAnimation {
 
 message TimerAnimation {
   optional int32 delay = 1;
-}
-
-message Vector {
-  optional float x = 1;
-  optional float y = 2;
-  optional float z = 3;
 }

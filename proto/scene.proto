@@ -1,13 +1,17 @@
 syntax = "proto2";
 
+import "primitives.proto";
+
 package troll;
 
-message ScenePb {
+message Scene {
   optional string id = 1;
   optional string scene_manager = 2;
-  optional Rectangle viewport = 3;
+  optional Box viewport = 3;
 
   optional BitmapSceneManagerConfig bitmap_config = 4;
+
+  repeated Node scene_node = 5;
 }
 
 message BitmapSceneManagerConfig {
@@ -18,10 +22,10 @@ message BitmapSceneManagerConfig {
   optional int32 height = 4;
 }
 
-message Rectangle {
-  optional int32 left = 1;
-  optional int32 top = 2;
+message Node {
+  optional string id = 1;
+  optional string sprite = 2;
+  optional int32 frame_index = 3;
 
-  optional int32 width = 3;
-  optional int32 height = 4;
+  optional Vector position = 4;
 }

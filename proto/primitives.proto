@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package troll;
+
+message Vector {
+  optional int32 x = 1;
+  optional int32 y = 2;
+  optional int32 z = 3;
+}
+
+message Box {
+  optional int32 left = 1;
+  optional int32 top = 2;
+
+  optional int32 right = 3;
+  optional int32 bottom = 4;
+}
+
+message RGBa {
+  optional int32 red = 1;
+  optional int32 green = 2;
+  optional int32 blue = 3;
+  optional int32 alpha = 4;
+}

@@ -67,6 +67,9 @@
     <ClInclude Include="animation\animator-manager.h">
       <Filter>animation</Filter>
     </ClInclude>
+    <ClInclude Include="proto\primitives.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -102,6 +105,9 @@
     <ClCompile Include="animation\animator-manager.cc">
       <Filter>animation</Filter>
     </ClCompile>
+    <ClCompile Include="proto\primitives.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\scene.proto">
@@ -111,6 +117,9 @@
       <Filter>proto</Filter>
     </None>
     <None Include="proto\animation.proto">
+      <Filter>proto</Filter>
+    </None>
+    <None Include="proto\primitives.proto">
       <Filter>proto</Filter>
     </None>
   </ItemGroup>

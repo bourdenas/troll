@@ -113,6 +113,7 @@
     <ClInclude Include="core\troll-core.h" />
     <ClInclude Include="core\world-element.h" />
     <ClInclude Include="proto\animation.pb.h" />
+    <ClInclude Include="proto\primitives.pb.h" />
     <ClInclude Include="proto\scene.pb.h" />
     <ClInclude Include="proto\sprite.pb.h" />
     <ClInclude Include="sdl\renderer.h" />
@@ -127,12 +128,14 @@
     <ClCompile Include="core\scene.cc" />
     <ClCompile Include="core\troll-core.cc" />
     <ClCompile Include="proto\animation.pb.cc" />
+    <ClCompile Include="proto\primitives.pb.cc" />
     <ClCompile Include="proto\scene.pb.cc" />
     <ClCompile Include="proto\sprite.pb.cc" />
     <ClCompile Include="sdl\renderer.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\animation.proto" />
+    <None Include="proto\primitives.proto" />
     <None Include="proto\scene.proto" />
     <None Include="proto\sprite.proto" />
   </ItemGroup>
