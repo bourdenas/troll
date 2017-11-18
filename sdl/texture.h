@@ -6,7 +6,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "core/primitives.h"
+#include "proto/primitives.pb.h"
 
 namespace troll {
 
@@ -16,8 +16,8 @@ class Texture {
   Texture(const Texture&) = delete;
   ~Texture() { SDL_DestroyTexture(texture_); }
 
-  int GetPixel(const Point& at) { return 0; }
-  void SetPixel(const Point& at, int pixel) {}
+  int GetPixel(const Vector& at) { return 0; }
+  void SetPixel(const Vector& at, int pixel) {}
 
   Box GetBounds() const { return Box(); }
   void SetColourKey(const std::string& key) {}

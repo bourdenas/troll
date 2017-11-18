@@ -6,8 +6,8 @@
 #include <unordered_map>
 
 #include "core/event.h"
-#include "core/primitives.h"
 #include "core/world-element.h"
+#include "proto/primitives.pb.h"
 #include "proto/scene.pb.h"
 
 namespace troll {
@@ -38,13 +38,13 @@ class SceneNode : public WorldElement, public SceneNodeContainer {
   explicit SceneNode(const std::string& id) : WorldElement(id) {}
   ~SceneNode() override = default;
 
-  bool IsInside(const Point& point) const;
+  bool IsInside(const Vector& point) const;
   bool CollidesWith(const SceneNode& other) const;
 
-  void Position(const Point& vec);
-  void Translate(const Point& vec);
-  void Rotate(const Point& vec);
-  void Scale(const Point& vec);
+  void Position(const Vector& vec);
+  void Translate(const Vector& vec);
+  void Rotate(const Vector& vec);
+  void Scale(const Vector& vec);
 
   void Display(void) const;
 
@@ -67,20 +67,6 @@ class Character : public SceneNode {
  public:
   explicit Character(const std::string& id) : SceneNode(id) {}
   ~Character() override = default;
-};
-
-// A scene of the world. It contains SceneNodes that together compose the
-// player environment.
-class Scene : public WorldElement,
-              public SceneNodeContainer,
-              public EventHandler {
- public:
-  Scene(const std::string& id, const ScenePb& scene_pb)
-      : WorldElement(id), scene_pb_(scene_pb) {}
-  ~Scene() override = default;
-
- private:
-  const ScenePb scene_pb_;
 };
 
 }  // namespace troll

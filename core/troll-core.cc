@@ -53,7 +53,6 @@ void Core::Init() {
   renderer_->Init(800, 600);
 
   LoadScene("main.scene");
-  LoadSprites();
 }
 
 void Core::CleanUp() {
@@ -66,14 +65,11 @@ void Core::Run() {
   int curr_time = SDL_GetTicks();
   int prev_time = curr_time;
 
-  renderer_->ClearScreen();
-  renderer_->BlitTexture(*textures_["dkarcade.png"], Box(), Box());
-
   while (InputHandling()) {
     curr_time = SDL_GetTicks();
 
     FrameStarted(curr_time - prev_time);
-    RenderFrame();
+    scene_manager_->Render();
     FrameEnded(curr_time - prev_time);
 
     prev_time = curr_time;
@@ -99,12 +95,7 @@ void Core::FrameStarted(int time_since_last_frame) {
   // CollisionChecker::Instance().PerformCollisions();
 }
 
-void Core::RenderFrame() { renderer_->Flip(); }
-
 void Core::FrameEnded(int time_since_last_frame) {
-  //-- Destroy LatelyDestroyable objects
-  // DestructionManager::Commit();
-
   ++fps_counter_.fp_count;
   fps_counter_.elapsed_time += time_since_last_frame;
 
@@ -116,15 +107,13 @@ void Core::FrameEnded(int time_since_last_frame) {
 }
 
 void Core::LoadScene(const std::string& scene_id) {
-  const auto scene_pb = LoadTextProto<ScenePb>("../data/scenes/" + scene_id);
-
-  scene_manager_ = std::make_unique<SceneManager>();
-  scene_manager_->SetupScene(std::make_unique<Scene>(scene_pb.id(), scene_pb));
+  LoadSprites();
+  scene_manager_ = std::make_unique<SceneManager>(
+      LoadTextProto<Scene>("../data/scenes/" + scene_id), *renderer_);
+  scene_manager_->SetupScene();
 }
 
 void Core::UnloadScene() {
-  scene_manager_->UnloadScene();
-
   textures_.clear();
   characters_.clear();
   objects_.clear();
@@ -148,7 +137,6 @@ void Core::LoadSprites() {
                return std::make_pair(
                    sprite.id(), std::make_unique<Object>(sprite.id(), sprite));
              });
-  std::cout << "sprites loaded" << std::endl;
 }
 
 }  // namespace troll

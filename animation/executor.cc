@@ -3,20 +3,17 @@
 namespace troll {
 
 bool TranslationExecutor::Execute(SceneNode* scene_node) {
-  const auto& vec = animation_.vec();
-  scene_node->Translate({vec.x(), vec.y(), vec.z()});
+  scene_node->Translate(animation_.vec());
   return true;
 }
 
 bool RotationExecutor::Execute(SceneNode* scene_node) {
-  const auto& vec = animation_.vec();
-  scene_node->Rotate({vec.x(), vec.y(), vec.z()});
+  scene_node->Rotate(animation_.vec());
   return true;
 }
 
 bool ScalingExecutor::Execute(SceneNode* scene_node) {
-  const auto& vec = animation_.vec();
-  scene_node->Scale({vec.x(), vec.y(), vec.z()});
+  scene_node->Scale(animation_.vec());
   return true;
 }
 
@@ -35,14 +32,10 @@ bool FrameListExecutor::Execute(SceneNode* scene_node) {
 bool GotoExecutor::Execute(SceneNode* scene_node) {
   if (distance_ > 0 && distance_ > animation_.step()) {
     // TODO: Figure out primitives that overload basic operators.
-    // scene_node->Translate({direction_.x(), direction_.y(), direction_.z()} *
-    //                       animation_.step());
+    // scene_node->Translate(direction_ * animation_.step());
     distance_ -= animation_.step();
   } else {
-    scene_node->Position({
-        animation_.destination().x(), animation_.destination().y(),
-        animation_.destination().z(),
-    });
+    scene_node->Position(animation_.destination());
     return true;
   }
   return false;

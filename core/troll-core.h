@@ -33,7 +33,6 @@ class Core {
   bool InputHandling();
 
   void FrameStarted(int time_since_last_frame);
-  void RenderFrame();
   void FrameEnded(int time_since_last_frame);
 
   void LoadScene(const std::string& scene);
@@ -44,6 +43,7 @@ class Core {
   std::unordered_map<std::string, std::unique_ptr<Object>> objects_;
   std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
 
+  std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<SceneManager> scene_manager_;
 
   struct FpsCounter {
@@ -53,7 +53,7 @@ class Core {
   };
   FpsCounter fps_counter_;
 
-  std::unique_ptr<Renderer> renderer_;
+  friend class SceneManager;
 };
 
 }  // namespace troll

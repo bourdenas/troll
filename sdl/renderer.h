@@ -6,7 +6,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "core/primitives.h"
+#include "proto/primitives.pb.h"
 #include "sdl/texture.h"
 
 namespace troll {
@@ -36,7 +36,7 @@ class Renderer {
                  bool italics) {
     return Box();
   }
-  void PrintText(const std::string& text, const Point& at) {}
+  void PrintText(const std::string& text, const Vector& at) {}
   void ClearScreen() const;
 
  private:
