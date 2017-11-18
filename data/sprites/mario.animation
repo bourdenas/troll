@@ -1,0 +1,106 @@
+script: {
+  id: 'walk_left'
+  animation: {
+    termination: ANY
+    frame_range: {
+      start_frame: 0
+      end_frame: 2
+      delay: 90
+      vertical_align: BOTTOM
+    }
+    translation: {
+      vec: {
+        x: -3
+      }
+      delay: 30
+    }
+  }
+}
+
+script: {
+  id: 'walk_right'
+  animation: {
+    termination: ANY
+    frame_range: {
+      start_frame: 15
+      end_frame: 17
+      delay: 90
+      horizontal_align: RIGHT
+      vertical_align: BOTTOM
+    }
+    translation: {
+      vec: {
+        x: 3
+      }
+      delay: 30
+    }
+  }
+}
+
+script: {
+  id: 'jump'
+  animation: {
+    repeat: 11
+    translation: {
+      vec: {
+        y: -3
+      }
+      delay: 30
+    }
+  }
+  animation: {
+    repeat: 11
+    translation: {
+      vec: {
+        y: 3
+      }
+      delay: 30
+    }
+  }
+}
+
+script: {
+  id: 'mario_hit'
+  animation: {
+    repeat: 1
+    frame_list: {
+      frame: 8
+      delay: 90
+      vertical_align: BOTTOM
+    }
+  }
+}
+
+script: {
+  id: 'climb_up'
+  animation: {
+    termination: ANY
+    translation: {
+      vec: {
+        y: -2
+      }
+      delay: 30
+    }
+    frame_list: {
+      frame: [3, 7]
+      delay: 200
+    }
+  }
+}
+
+script: {
+  id: 'climb_down'
+  animation: {
+    termination: ANY
+    translation: {
+      vec: {
+        y: 2
+      }
+      delay: 30
+    }
+    frame_list: {
+      frame: [7, 3]
+      delay: 200
+    }
+  }
+}
