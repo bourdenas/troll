@@ -31,3 +31,5 @@ build/
 release/
 debug/
 data/resources/
+*.sublime-workspace
+*.sublime-project
