@@ -6,9 +6,13 @@
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
 #include <boost/filesystem.hpp>
+#include <range/v3/action/sort.hpp>
+#include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
+#include <range/v3/view/unique.hpp>
 #include "sdl/renderer.h"
 
+#include "proto/animation.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
 
@@ -24,18 +28,22 @@ Message LoadTextProto(const std::string& uri) {
 
   Message message;
   google::protobuf::TextFormat::Parse(&pbstream, &message);
-  std::cout << "Proto message '" << message.id() << "' loaded." << std::endl;
   return message;
 }
 
 // Load proto message from all text files under a path.
 template <class Message>
-std::vector<Message> LoadTextProtoFromPath(const std::string& path) {
+std::vector<Message> LoadTextProtoFromPath(const std::string& path,
+                                           const std::string& extension) {
   const boost::filesystem::path resource_path(path);
-  std::vector<Message> messages;
-  for (const auto& p : boost::filesystem::directory_iterator(resource_path)) {
-    messages.push_back(LoadTextProto<Message>(p.path().string()));
-  }
+  const std::vector<Message> messages =
+      boost::filesystem::directory_iterator(resource_path) |
+      ranges::view::remove_if([&extension](const auto& p) {
+        return p.path().extension() != extension;
+      }) |
+      ranges::view::transform([](const auto& p) {
+        return LoadTextProto<Message>(p.path().string());
+      });
   return messages;
 }
 }  // namespace
@@ -59,7 +67,7 @@ void Core::Run() {
   int prev_time = curr_time;
 
   renderer_->ClearScreen();
-  renderer_->BlitTexture(*textures_.begin()->second, Box(), Box());
+  renderer_->BlitTexture(*textures_["dkarcade.png"], Box(), Box());
 
   while (InputHandling()) {
     curr_time = SDL_GetTicks();
@@ -123,12 +131,17 @@ void Core::UnloadScene() {
 }
 
 void Core::LoadSprites() {
-  const auto& sprites = LoadTextProtoFromPath<Sprite>("../data/sprites/");
+  const auto sprites =
+      LoadTextProtoFromPath<Sprite>("../data/sprites/", ".sprite");
+  const auto animations =
+      LoadTextProtoFromPath<AnimationScripts>("../data/sprites/", ".animation");
 
   textures_ =
-      sprites | ranges::view::transform([this](const Sprite& sprite) {
-        return std::make_pair(sprite.resource(),
-                              renderer_->LoadTexture(sprite.resource()));
+      sprites | ranges::view::transform(
+                    [](const Sprite& sprite) { return sprite.resource(); }) |
+      ranges::action::sort | ranges::view::unique |
+      ranges::view::transform([this](const std::string& resource) {
+        return std::make_pair(resource, renderer_->LoadTexture(resource));
       });
 
   objects_ = sprites | ranges::view::transform([](const Sprite& sprite) {
