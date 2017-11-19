@@ -10,11 +10,11 @@
 #include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/unique.hpp>
-#include "sdl/renderer.h"
 
 #include "proto/animation.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
+#include "sdl/renderer.h"
 
 namespace troll {
 
@@ -115,8 +115,7 @@ void Core::LoadScene(const std::string& scene_id) {
 
 void Core::UnloadScene() {
   textures_.clear();
-  characters_.clear();
-  objects_.clear();
+  sprites_.clear();
 }
 
 void Core::LoadSprites() {
@@ -133,9 +132,8 @@ void Core::LoadSprites() {
         return std::make_pair(resource, renderer_->LoadTexture(resource));
       });
 
-  objects_ = sprites | ranges::view::transform([](const Sprite& sprite) {
-               return std::make_pair(
-                   sprite.id(), std::make_unique<Object>(sprite.id(), sprite));
+  sprites_ = sprites | ranges::view::transform([](const Sprite& sprite) {
+               return std::make_pair(sprite.id(), sprite);
              });
 }
 

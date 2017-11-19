@@ -2,8 +2,6 @@
 
 #include "core/troll-core.h"
 
-#include <iostream>
-
 namespace troll {
 
 void SceneManager::SetupScene() {
@@ -15,20 +13,24 @@ void SceneManager::SetupScene() {
   }
 }
 
+void SceneManager::AddSceneNode(SceneNode* node) {}
+
+void SceneManager::RemoveSceneNode(const std::string& id) {}
+
 void SceneManager::SetViewport(const Box& view) {
   viewport_ = view;
-  Invalidate(viewport_);
+  // TODO: Render everything.
 }
 
 void SceneManager::ScrollViewport(const Vector& by) {
   // TODO: translate(viewport, by)
-  Invalidate(viewport_);
+  // TODO: Render everything.
 }
 
 void SceneManager::Render() { renderer_.Flip(); }
 
-void SceneManager::Invalidate(const Box& region) {
-  dirty_boxes_.push_back(region);
+void SceneManager::Dirty(const SceneNode* scene_node) {
+  dirty_nodes_.push_back(scene_node);
 }
 
 }  // namespace troll

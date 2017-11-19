@@ -3,6 +3,9 @@
 #include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/view/transform.hpp>
 
+#include "core/scene-manager.h"
+#include "core/troll-core.h"
+
 namespace troll {
 
 void Animator::Start() {
@@ -25,6 +28,12 @@ void Animator::Start() {
   if (animation_.has_frame_list()) {
     executors_.push_back(
         std::make_unique<FrameListExecutor>(animation_.frame_list()));
+  }
+  if (animation_.has_go_to()) {
+    executors_.push_back(std::make_unique<GotoExecutor>(animation_.go_to()));
+  }
+  if (animation_.has_flash()) {
+    executors_.push_back(std::make_unique<FlashExecutor>(animation_.flash()));
   }
 }
 
@@ -56,6 +65,7 @@ void ScriptAnimator::Resume() { state_ = State::RUNNING; }
 bool ScriptAnimator::Progress(int time_since_last_frame) {
   if (!is_running()) return true;
 
+  Core::Instance().scene_manager().Dirty(scene_node_);
   if (!current_animator_->Progress(time_since_last_frame, scene_node_) &&
       !MoveToNextAnimation()) {
     Stop();

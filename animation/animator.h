@@ -5,8 +5,8 @@
 #include <vector>
 
 #include "animation/executor.h"
-#include "core/scene.h"
 #include "proto/animation.pb.h"
+#include "proto/scene.pb.h"
 
 namespace troll {
 

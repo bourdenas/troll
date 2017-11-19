@@ -15,7 +15,7 @@ bitmap_config: {
 
 scene_node: {
   id: 'mario'
-  sprite: 'mario'
+  sprite_id: 'mario'
   frame_index: 0
 
   position: {

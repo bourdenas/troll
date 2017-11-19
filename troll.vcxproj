@@ -104,14 +104,8 @@
     <ClInclude Include="animation\animator-manager.h" />
     <ClInclude Include="animation\animator.h" />
     <ClInclude Include="animation\executor.h" />
-    <ClInclude Include="core\action.h" />
-    <ClInclude Include="core\event.h" />
-    <ClInclude Include="core\primitives.h" />
-    <ClInclude Include="core\property-owner.h" />
     <ClInclude Include="core\scene-manager.h" />
-    <ClInclude Include="core\scene.h" />
     <ClInclude Include="core\troll-core.h" />
-    <ClInclude Include="core\world-element.h" />
     <ClInclude Include="proto\animation.pb.h" />
     <ClInclude Include="proto\primitives.pb.h" />
     <ClInclude Include="proto\scene.pb.h" />
@@ -125,7 +119,6 @@
     <ClCompile Include="animation\executor.cc" />
     <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\scene-manager.cc" />
-    <ClCompile Include="core\scene.cc" />
     <ClCompile Include="core\troll-core.cc" />
     <ClCompile Include="proto\animation.pb.cc" />
     <ClCompile Include="proto\primitives.pb.cc" />

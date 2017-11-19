@@ -4,8 +4,8 @@
 #include <memory>
 #include <string>
 
-#include "core/scene.h"
 #include "proto/primitives.pb.h"
+#include "proto/scene.pb.h"
 #include "sdl/renderer.h"
 
 namespace troll {
@@ -29,8 +29,8 @@ class SceneManager {
 
   void Render();
 
-  // Marks a region inside the viewport dirty and queue it for rendering.
-  void Invalidate(const Box& region);
+  // Marks scene nodes that need to be queued for rendering during this frame.
+  void Dirty(const SceneNode* scene_node);
 
   const Scene& scene() const { return scene_; }
   const Box& viewport() const { return viewport_; }
@@ -42,7 +42,7 @@ class SceneManager {
   Box world_bounds_;
   Box viewport_;
 
-  std::vector<Box> dirty_boxes_;
+  std::vector<const SceneNode*> dirty_nodes_;
 };
 
 }  // namespace troll

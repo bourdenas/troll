@@ -6,8 +6,7 @@
 #include <unordered_map>
 
 #include "core/scene-manager.h"
-#include "core/scene.h"
-#include "core/world-element.h"
+#include "proto/sprite.pb.h"
 #include "sdl/renderer.h"
 
 namespace troll {
@@ -22,6 +21,8 @@ class Core {
   void Init();
   void CleanUp();
   void Run();
+
+  SceneManager& scene_manager() { return *scene_manager_; }
 
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
@@ -39,8 +40,7 @@ class Core {
   void UnloadScene();
   void LoadSprites();
 
-  std::unordered_map<std::string, std::unique_ptr<Character>> characters_;
-  std::unordered_map<std::string, std::unique_ptr<Object>> objects_;
+  std::unordered_map<std::string, Sprite> sprites_;
   std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
 
   std::unique_ptr<Renderer> renderer_;

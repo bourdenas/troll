@@ -31,28 +31,10 @@
     <ClInclude Include="sdl\texture.h">
       <Filter>sdl</Filter>
     </ClInclude>
-    <ClInclude Include="core\action.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="core\event.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="core\primitives.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="core\property-owner.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="core\scene.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="core\scene-manager.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="core\troll-core.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="core\world-element.h">
       <Filter>core</Filter>
     </ClInclude>
     <ClInclude Include="animation\animator.h">
@@ -98,9 +80,6 @@
     </ClCompile>
     <ClCompile Include="animation\executor.cc">
       <Filter>animation</Filter>
-    </ClCompile>
-    <ClCompile Include="core\scene.cc">
-      <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="animation\animator-manager.cc">
       <Filter>animation</Filter>

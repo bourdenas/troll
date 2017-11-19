@@ -27,7 +27,7 @@ message Animation {
   optional VectorAnimation scaling = 6;
   optional FrameRangeAnimation frame_range = 7;
   optional FrameListAnimation frame_list = 8;
-  optional GotoAnimation goto = 9;
+  optional GotoAnimation go_to = 9;
   optional FlashAnimation flash = 10;
   optional TimerAnimation timer = 11;
 }
