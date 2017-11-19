@@ -4,12 +4,12 @@ scene_manager: 'BitmapSceneManager'
 viewport: {
   left: 0
   top: 0
-  right: 800
-  bottom: 600
+  width: 800
+  height: 600
 }
 
 bitmap_config: {
-  bitmap: 'dkarcade.png'
+  # bitmap: 'dkarcade.png'
   background_colour: '0x000000'
 }
 

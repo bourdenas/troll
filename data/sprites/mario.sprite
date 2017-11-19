@@ -5,144 +5,144 @@ colour_key: '0x000000'
 film: {
   left: 32
   top: 408
-  right: 55
-  bottom: 440
+  width: 23
+  height: 32
 }
 film: {
   left: 64
   top: 408
-  right: 94
-  bottom: 440
+  width: 30
+  height: 32
 }
 film: {
   left: 104
   top: 408
-  right: 134
-  bottom: 438
+  width: 30
+  height: 30
 }
 film: {
   left: 145
   top: 410
-  right: 172
-  bottom: 442
+  width: 27
+  height: 32
 }
 film: {
   left: 178
   top: 411
-  right: 206
-  bottom: 442
+  width: 28
+  height: 31
 }
 film: {
   left: 216
   top: 418
-  right: 250
-  bottom: 442
+  width: 34
+  height: 24
 }
 film: {
   left: 262
   top: 412
-  right: 294
-  bottom: 442
+  width: 32
+  height: 30
 }
 film: {
   left: 306
   top: 409
-  right: 332
-  bottom: 442
+  width: 26
+  height: 33
 }
 film: {
   left: 348
   top: 418
-  right: 393
-  bottom: 441
+  width: 45
+  height: 23
 }
 film: {
   left: 30
   top: 490
-  right: 53
-  bottom: 522
+  width: 23
+  height: 32
 }
 film: {
   left: 100
   top: 490
-  right: 127
-  bottom: 522
+  width: 27
+  height: 32
 }
 film: {
   left: 142
   top: 490
-  right: 168
-  bottom: 522
+  width: 26
+  height: 32
 }
 film: {
   left: 212
   top: 488
-  right: 242
-  bottom: 520
+  width: 30
+  height: 32
 }
 film: {
   left: 250
   top: 488
-  right: 280
-  bottom: 520
+  width: 30
+  height: 32
 }
 film: {
   left: 322
   top: 488
-  right: 354
-  bottom: 517
+  width: 32
+  height: 29
 }
 film: {
   left: 362
   top: 484
-  right: 386
-  bottom: 517
+  width: 24
+  height: 33
 }
 film: {
   left: 392
   top: 484
-  right: 423
-  bottom: 517
+  width: 31
+  height: 33
 }
 film: {
   left: 433
   top: 484
-  right: 463
-  bottom: 515
+  width: 30
+  height: 31
 }
 film: {
   left: 35
   top: 695
-  right: 67
-  bottom: 724
+  width: 32
+  height: 29
 }
 film: {
   left: 109
   top: 696
-  right: 139
-  bottom: 727
+  width: 30
+  height: 32
 }
 film: {
   left: 147
   top: 696
-  right: 177
-  bottom: 727
+  width: 30
+  height: 32
 }
 film: {
   left: 221
   top: 698
-  right: 247
-  bottom: 730
+  width: 26
+  height: 32
 }
 film: {
   left: 262
   top: 698
-  right: 289
-  bottom: 730
+  width: 27
+  height: 32
 }
 film: {
   left: 335
   top: 698
-  right: 359
-  bottom: 730
+  width: 24
+  height: 32
 }

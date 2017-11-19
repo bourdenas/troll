@@ -12,8 +12,8 @@ message Box {
   optional int32 left = 1;
   optional int32 top = 2;
 
-  optional int32 right = 3;
-  optional int32 bottom = 4;
+  optional int32 width = 3;
+  optional int32 height = 4;
 }
 
 message RGBa {
