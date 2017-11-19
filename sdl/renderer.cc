@@ -53,7 +53,15 @@ std::unique_ptr<Texture> Renderer::CreateTexture(int width, int height,
 
 void Renderer::BlitTexture(const Texture& src, const Box& src_box,
                            const Box& dst_box) const {
-  SDL_RenderCopy(sdl_renderer_, src.texture_, nullptr, nullptr);
+  SDL_Rect src_rect = {
+      src_box.left(), src_box.top(), src_box.width(), src_box.height(),
+  };
+  SDL_Rect dst_rect = {
+      dst_box.left(), dst_box.top(), dst_box.width(), dst_box.height(),
+  };
+  SDL_RenderCopy(sdl_renderer_, src.texture_,
+                 src_box.width() == 0 ? nullptr : &src_rect,
+                 dst_box.width() == 0 ? nullptr : &dst_rect);
 }
 
 void Renderer::Flip() const { SDL_RenderPresent(sdl_renderer_); }

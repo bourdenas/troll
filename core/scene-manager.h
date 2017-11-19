@@ -18,7 +18,7 @@ class SceneManager {
 
   void SetupScene();
 
-  void AddSceneNode(SceneNode* node);
+  void AddSceneNode(const SceneNode& node);
   void RemoveSceneNode(const std::string& id);
 
   const SceneNode& GetSceneNodeById(const std::string& id) const;
