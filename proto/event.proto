@@ -1,0 +1,7 @@
+syntax = "proto2";
+
+package troll;
+
+message Event {
+  optional string id = 1;
+}

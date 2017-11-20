@@ -1,5 +1,6 @@
 syntax = "proto2";
 
+import "action.proto";
 import "primitives.proto";
 
 package troll;
@@ -12,6 +13,8 @@ message Scene {
   optional BitmapSceneManagerConfig bitmap_config = 4;
 
   repeated SceneNode scene_node = 5;
+
+  repeated Action init = 6;
 }
 
 message BitmapSceneManagerConfig {

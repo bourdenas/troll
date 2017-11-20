@@ -1,0 +1,64 @@
+syntax = "proto2";
+
+import "event.proto";
+import "primitives.proto";
+
+package troll;
+
+message Action {
+  oneof Action {
+    QuitAction quit = 1;
+    EmitAction emit = 2;
+
+    ChangeSceneAction change_scene = 3;
+    
+    SceneNodeAction create_scene_node = 4;
+    SceneNodeAction destroy_scene_node = 5;
+
+    AnimationScriptAction play_animation_script = 6;
+    AnimationScriptAction stop_animation_script = 7;
+    AnimationScriptAction pause_animation_script = 8;
+
+    DisplayTextAction display_text = 9;
+  }
+}
+
+message QuitAction {
+}
+
+message EmitAction {
+  optional Event event = 1;
+}
+
+message ChangeSceneAction {
+  optional string scene_id = 1;
+}
+
+message SceneNodeAction {
+  optional string scene_node_id = 1;
+
+  optional string sprite_id = 2;
+  optional int32 frame_index = 3;
+  optional Vector position = 4;
+
+  optional string parent_scene_node_id = 5;
+}
+
+message AnimationScriptAction {
+  optional string script_id = 1;
+  optional string scene_node_id = 2;
+}
+
+message DisplayTextAction {
+  optional string text = 1;
+  optional Vector position = 2;
+  optional int32 display_duration = 3;
+
+  optional int32 size = 4;
+  optional bool bold = 5;
+  optional bool italics = 6;
+
+  optional RGBa colour = 7;
+  optional RGBa background_colour = 8;
+  optional string font = 9;
+}
