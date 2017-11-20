@@ -43,13 +43,19 @@
     <ClInclude Include="proto\animation.pb.h">
       <Filter>proto</Filter>
     </ClInclude>
-    <ClInclude Include="animation\executor.h">
-      <Filter>animation</Filter>
-    </ClInclude>
     <ClInclude Include="animation\animator-manager.h">
       <Filter>animation</Filter>
     </ClInclude>
     <ClInclude Include="proto\primitives.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="animation\performer.h">
+      <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\action.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\event.pb.h">
       <Filter>proto</Filter>
     </ClInclude>
   </ItemGroup>
@@ -78,13 +84,19 @@
     <ClCompile Include="animation\animator.cc">
       <Filter>animation</Filter>
     </ClCompile>
-    <ClCompile Include="animation\executor.cc">
-      <Filter>animation</Filter>
-    </ClCompile>
     <ClCompile Include="animation\animator-manager.cc">
       <Filter>animation</Filter>
     </ClCompile>
     <ClCompile Include="proto\primitives.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="animation\performer.cc">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\action.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\event.pb.cc">
       <Filter>proto</Filter>
     </ClCompile>
   </ItemGroup>
@@ -99,6 +111,12 @@
       <Filter>proto</Filter>
     </None>
     <None Include="proto\primitives.proto">
+      <Filter>proto</Filter>
+    </None>
+    <None Include="proto\action.proto">
+      <Filter>proto</Filter>
+    </None>
+    <None Include="proto\event.proto">
       <Filter>proto</Filter>
     </None>
   </ItemGroup>

@@ -10,40 +10,40 @@ namespace troll {
 
 void Animator::Start() {
   if (animation_.has_translation()) {
-    executors_.push_back(
-        std::make_unique<TranslationExecutor>(animation_.translation()));
+    performers_.push_back(
+        std::make_unique<TranslationPerformer>(animation_.translation()));
   }
   if (animation_.has_rotation()) {
-    executors_.push_back(
-        std::make_unique<RotationExecutor>(animation_.rotation()));
+    performers_.push_back(
+        std::make_unique<RotationPerformer>(animation_.rotation()));
   }
   if (animation_.has_scaling()) {
-    executors_.push_back(
-        std::make_unique<ScalingExecutor>(animation_.scaling()));
+    performers_.push_back(
+        std::make_unique<ScalingPerformer>(animation_.scaling()));
   }
   if (animation_.has_frame_range()) {
-    executors_.push_back(
-        std::make_unique<FrameRangeExecutor>(animation_.frame_range()));
+    performers_.push_back(
+        std::make_unique<FrameRangePerformer>(animation_.frame_range()));
   }
   if (animation_.has_frame_list()) {
-    executors_.push_back(
-        std::make_unique<FrameListExecutor>(animation_.frame_list()));
+    performers_.push_back(
+        std::make_unique<FrameListPerformer>(animation_.frame_list()));
   }
   if (animation_.has_go_to()) {
-    executors_.push_back(std::make_unique<GotoExecutor>(animation_.go_to()));
+    performers_.push_back(std::make_unique<GotoPerformer>(animation_.go_to()));
   }
   if (animation_.has_flash()) {
-    executors_.push_back(std::make_unique<FlashExecutor>(animation_.flash()));
+    performers_.push_back(std::make_unique<FlashPerformer>(animation_.flash()));
   }
 }
 
 bool Animator::Progress(int time_since_last_frame, SceneNode* scene_node) {
   const bool is_done = ranges::accumulate(
-      executors_ |
+      performers_ |
           ranges::view::transform(
-              [time_since_last_frame,
-               scene_node](const std::unique_ptr<Executor>& executor) -> bool {
-                return executor->Progress(time_since_last_frame, scene_node);
+              [time_since_last_frame, scene_node](
+                  const std::unique_ptr<Performer>& performer) -> bool {
+                return performer->Progress(time_since_last_frame, scene_node);
               }),
       false, std::logical_or<bool>());
 

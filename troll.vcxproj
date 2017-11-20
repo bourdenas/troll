@@ -103,10 +103,12 @@
   <ItemGroup>
     <ClInclude Include="animation\animator-manager.h" />
     <ClInclude Include="animation\animator.h" />
-    <ClInclude Include="animation\executor.h" />
+    <ClInclude Include="animation\performer.h" />
     <ClInclude Include="core\scene-manager.h" />
     <ClInclude Include="core\troll-core.h" />
+    <ClInclude Include="proto\action.pb.h" />
     <ClInclude Include="proto\animation.pb.h" />
+    <ClInclude Include="proto\event.pb.h" />
     <ClInclude Include="proto\primitives.pb.h" />
     <ClInclude Include="proto\scene.pb.h" />
     <ClInclude Include="proto\sprite.pb.h" />
@@ -116,18 +118,22 @@
   <ItemGroup>
     <ClCompile Include="animation\animator-manager.cc" />
     <ClCompile Include="animation\animator.cc" />
-    <ClCompile Include="animation\executor.cc" />
+    <ClCompile Include="animation\performer.cc" />
     <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\scene-manager.cc" />
     <ClCompile Include="core\troll-core.cc" />
+    <ClCompile Include="proto\action.pb.cc" />
     <ClCompile Include="proto\animation.pb.cc" />
+    <ClCompile Include="proto\event.pb.cc" />
     <ClCompile Include="proto\primitives.pb.cc" />
     <ClCompile Include="proto\scene.pb.cc" />
     <ClCompile Include="proto\sprite.pb.cc" />
     <ClCompile Include="sdl\renderer.cc" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="proto\action.proto" />
     <None Include="proto\animation.proto" />
+    <None Include="proto\event.proto" />
     <None Include="proto\primitives.proto" />
     <None Include="proto\scene.proto" />
     <None Include="proto\sprite.proto" />

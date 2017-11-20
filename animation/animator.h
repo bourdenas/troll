@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "animation/executor.h"
+#include "animation/performer.h"
 #include "proto/animation.pb.h"
 #include "proto/scene.pb.h"
 
@@ -25,7 +25,7 @@ class Animator {
  private:
   const Animation& animation_;
 
-  std::vector<std::unique_ptr<Executor>> executors_;
+  std::vector<std::unique_ptr<Performer>> performers_;
   int run_number_ = 0;
 };
 
