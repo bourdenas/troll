@@ -2,6 +2,7 @@ syntax = "proto2";
 
 import "event.proto";
 import "primitives.proto";
+import "scene-node.proto";
 
 package troll;
 
@@ -35,13 +36,7 @@ message ChangeSceneAction {
 }
 
 message SceneNodeAction {
-  optional string scene_node_id = 1;
-
-  optional string sprite_id = 2;
-  optional int32 frame_index = 3;
-  optional Vector position = 4;
-
-  optional string parent_scene_node_id = 5;
+  optional SceneNode scene_node = 1;
 }
 
 message AnimationScriptAction {

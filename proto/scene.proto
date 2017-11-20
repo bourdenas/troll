@@ -2,6 +2,7 @@ syntax = "proto2";
 
 import "action.proto";
 import "primitives.proto";
+import "scene-node.proto";
 
 package troll;
 
@@ -25,16 +26,3 @@ message BitmapSceneManagerConfig {
   optional int32 height = 4;
 }
 
-// A SceneNode is an instance of a movable/interactable element in the world.
-// It represents a tangible element of the game that has dimensions defined by
-// a bounding box.
-message SceneNode {
-  optional string id = 1;
-  optional string sprite_id = 2;
-  optional int32 frame_index = 3;
-
-  optional Vector position = 4;
-  optional bool visible = 5;
-
-  repeated SceneNode scene_node = 6;
-}
