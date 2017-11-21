@@ -58,6 +58,15 @@
     <ClInclude Include="proto\event.pb.h">
       <Filter>proto</Filter>
     </ClInclude>
+    <ClInclude Include="proto\scene-node.pb.h">
+      <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="core\action-manager.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\executor.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -99,6 +108,15 @@
     <ClCompile Include="proto\event.pb.cc">
       <Filter>proto</Filter>
     </ClCompile>
+    <ClCompile Include="proto\scene-node.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="core\action-manager.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\executor.cc">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\scene.proto">
@@ -117,6 +135,9 @@
       <Filter>proto</Filter>
     </None>
     <None Include="proto\event.proto">
+      <Filter>proto</Filter>
+    </None>
+    <None Include="proto\scene-node.proto">
       <Filter>proto</Filter>
     </None>
   </ItemGroup>

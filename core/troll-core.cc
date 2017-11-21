@@ -76,7 +76,25 @@ void Core::Run() {
   }
 }
 
+void Core::Halt() { halt_ = true; }
+
+void Core::LoadScene(const std::string& scene_id) {
+  LoadSprites();
+  scene_manager_ = std::make_unique<SceneManager>(
+      LoadTextProto<Scene>("../data/scenes/" + scene_id), *renderer_);
+  scene_manager_->SetupScene();
+}
+
+void Core::UnloadScene() {
+  textures_.clear();
+  sprites_.clear();
+}
+
 bool Core::InputHandling() {
+  if (halt_) {
+    return false;
+  }
+
   SDL_Event event;
   while (SDL_PollEvent(&event)) {
     if (event.type == SDL_QUIT) {
@@ -104,18 +122,6 @@ void Core::FrameEnded(int time_since_last_frame) {
   }
   fps_counter_.fps = fps_counter_.fp_count;
   fps_counter_.elapsed_time = fps_counter_.fp_count = 0;
-}
-
-void Core::LoadScene(const std::string& scene_id) {
-  LoadSprites();
-  scene_manager_ = std::make_unique<SceneManager>(
-      LoadTextProto<Scene>("../data/scenes/" + scene_id), *renderer_);
-  scene_manager_->SetupScene();
-}
-
-void Core::UnloadScene() {
-  textures_.clear();
-  sprites_.clear();
 }
 
 void Core::LoadSprites() {

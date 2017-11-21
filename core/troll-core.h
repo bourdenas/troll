@@ -20,7 +20,12 @@ class Core {
 
   void Init();
   void CleanUp();
+
   void Run();
+  void Halt();
+
+  void LoadScene(const std::string& scene);
+  void UnloadScene();
 
   SceneManager& scene_manager() { return *scene_manager_; }
 
@@ -36,8 +41,6 @@ class Core {
   void FrameStarted(int time_since_last_frame);
   void FrameEnded(int time_since_last_frame);
 
-  void LoadScene(const std::string& scene);
-  void UnloadScene();
   void LoadSprites();
 
   std::unordered_map<std::string, Sprite> sprites_;
@@ -52,6 +55,8 @@ class Core {
     int fp_count = 0;
   };
   FpsCounter fps_counter_;
+
+  bool halt_ = false;
 
   friend class SceneManager;
 };
