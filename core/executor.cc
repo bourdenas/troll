@@ -1,5 +1,6 @@
 #include "core/executor.h"
 
+#include "animation/animator-manager.h"
 #include "core/troll-core.h"
 
 namespace troll {
@@ -27,7 +28,10 @@ void DestroySceneNodeExecutor::Execute(const Action& action) const {
 }
 
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {
-  // TODO(bourdenas): Implement animation framework.
+  auto* scene_node = Core::Instance().scene_manager().GetSceneNodeById(
+      action.play_animation_script().scene_node_id());
+  AnimatorManager::Instance().Play(action.play_animation_script().script_id(),
+                                   scene_node);
 }
 
 void StopAnimationScriptExecutor::Execute(const Action& action) const {
