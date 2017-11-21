@@ -11,6 +11,8 @@
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/unique.hpp>
 
+#include "animation/animator-manager.h"
+#include "core/action-manager.h"
 #include "proto/animation.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
@@ -49,6 +51,8 @@ std::vector<Message> LoadTextProtoFromPath(const std::string& path,
 }  // namespace
 
 void Core::Init() {
+  ActionManager::Instance().Init();
+
   renderer_ = std::make_unique<Renderer>();
   renderer_->Init(800, 600);
 
@@ -128,7 +132,8 @@ void Core::LoadSprites() {
   const auto sprites =
       LoadTextProtoFromPath<Sprite>("../data/sprites/", ".sprite");
   const auto animations =
-      LoadTextProtoFromPath<AnimationScripts>("../data/sprites/", ".animation");
+      LoadTextProtoFromPath<SpriteAnimation>("../data/sprites/", ".animation");
+  AnimatorManager::Instance().Init(animations);
 
   textures_ =
       sprites | ranges::view::transform(
