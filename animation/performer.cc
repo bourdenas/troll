@@ -23,6 +23,10 @@ bool ScalingPerformer::Execute(SceneNode* scene_node) {
 bool FrameRangePerformer::Execute(SceneNode* scene_node) {
   scene_node->set_frame_index(++current_frame_);
   // TODO: handle sprite alignment.
+  if (current_frame_ == animation_.end_frame()) {
+    current_frame_ = animation_.start_frame() - 1;
+    return true;
+  }
   return current_frame_ == animation_.end_frame();
 }
 

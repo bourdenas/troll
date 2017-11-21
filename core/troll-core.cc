@@ -112,8 +112,8 @@ bool Core::InputHandling() {
 }
 
 void Core::FrameStarted(int time_since_last_frame) {
-  // AnimatorManager::Instance().Progress(timeSinceLastFrame);
-  // Physics::Instance().Progress(timeSinceLastFrame);
+  AnimatorManager::Instance().Progress(time_since_last_frame);
+  // Physics::Instance().Progress(time_since_last_frame);
   // CollisionChecker::Instance().PerformCollisions();
 }
 

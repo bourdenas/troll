@@ -47,6 +47,9 @@ class ScriptAnimator {
   bool is_finished() const { return state_ == State::FINISHED; }
   bool is_paused() const { return state_ == State::PAUSED; }
 
+  const std::string& script_id() const { return script_.id(); }
+  const std::string& scene_node_id() const { return scene_node_->id(); }
+
  private:
   // Returns true, if there was a next animation.
   bool MoveToNextAnimation();

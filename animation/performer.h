@@ -80,7 +80,8 @@ class ScalingPerformer : public PerformerBase<VectorAnimation> {
 class FrameRangePerformer : public PerformerBase<FrameRangeAnimation> {
  public:
   FrameRangePerformer(const FrameRangeAnimation& animation)
-      : PerformerBase<FrameRangeAnimation>(animation) {}
+      : PerformerBase<FrameRangeAnimation>(animation),
+        current_frame_(animation.start_frame()) {}
 
  protected:
   bool Execute(SceneNode* scene_node) override;

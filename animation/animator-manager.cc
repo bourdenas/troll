@@ -21,6 +21,7 @@ void AnimatorManager::Play(const std::string& script_id,
                            SceneNode* scene_node) {
   running_scripts_.push_back(
       std::make_unique<ScriptAnimator>(scripts_[script_id], scene_node));
+  running_scripts_.back()->Start();
 }
 
 void AnimatorManager::PauseAll() { paused_ = true; }

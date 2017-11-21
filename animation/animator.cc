@@ -53,6 +53,7 @@ bool Animator::Progress(int time_since_last_frame, SceneNode* scene_node) {
 void ScriptAnimator::Start() {
   if (MoveToNextAnimation()) {
     state_ = State::RUNNING;
+    Core::Instance().scene_manager().Dirty(scene_node_);
   }
 }
 

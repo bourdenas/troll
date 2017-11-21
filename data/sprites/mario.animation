@@ -1,5 +1,5 @@
 script: {
-  id: 'walk_left'
+  id: 'mario_walk_left'
   animation: {
     termination: ANY
     frame_range: {
@@ -18,7 +18,7 @@ script: {
 }
 
 script: {
-  id: 'walk_right'
+  id: 'mario_walk_right'
   animation: {
     termination: ANY
     frame_range: {
@@ -38,7 +38,7 @@ script: {
 }
 
 script: {
-  id: 'jump'
+  id: 'mario_jump'
   animation: {
     repeat: 11
     translation: {
@@ -72,7 +72,7 @@ script: {
 }
 
 script: {
-  id: 'climb_up'
+  id: 'mario_climb_up'
   animation: {
     termination: ANY
     translation: {
@@ -89,7 +89,7 @@ script: {
 }
 
 script: {
-  id: 'climb_down'
+  id: 'mario_climb_down'
   animation: {
     termination: ANY
     translation: {

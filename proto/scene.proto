@@ -15,7 +15,7 @@ message Scene {
 
   repeated SceneNode scene_node = 5;
 
-  repeated Action init = 6;
+  repeated Action on_init = 6;
 }
 
 message BitmapSceneManagerConfig {

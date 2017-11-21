@@ -1,5 +1,6 @@
 #include "core/scene-manager.h"
 
+#include "core/action-manager.h"
 #include "core/troll-core.h"
 
 namespace troll {
@@ -14,6 +15,10 @@ void SceneManager::SetupScene() {
 
   for (const auto& node : scene_.scene_node()) {
     AddSceneNode(node);
+  }
+
+  for (const auto& action : scene_.on_init()) {
+    ActionManager::Instance().Execute(action);
   }
 }
 
@@ -53,7 +58,22 @@ void SceneManager::ScrollViewport(const Vector& by) {
   // TODO(bourdenas): Render everything.
 }
 
-void SceneManager::Render() { renderer_.Flip(); }
+void SceneManager::Render() {
+  for (const auto* node : dirty_nodes_) {
+    const auto& sprite = Core::Instance().sprites_[node->sprite_id()];
+    const auto& bounding_box = sprite.film(node->frame_index());
+
+    Box destination;
+    destination.set_left(node->position().x());
+    destination.set_top(node->position().y());
+    destination.set_width(bounding_box.width());
+    destination.set_height(bounding_box.height());
+
+    renderer_.BlitTexture(*Core::Instance().textures_[sprite.resource()],
+                          bounding_box, destination);
+  }
+  renderer_.Flip();
+}
 
 void SceneManager::Dirty(const SceneNode* scene_node) {
   dirty_nodes_.push_back(scene_node);
