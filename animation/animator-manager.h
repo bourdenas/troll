@@ -2,6 +2,7 @@
 #define TROLL_ANIMATION_ANIMATOR_MANAGER_H_
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 #include "animation/animator.h"
@@ -17,8 +18,13 @@ class AnimatorManager {
     return singleton;
   }
 
-  void Register(const AnimationScript& script, SceneNode* scene_node);
-  void Clear();
+  void Init(const std::vector<SpriteAnimation>& animations);
+
+  void Play(const std::string& script_id, SceneNode* scene_node);
+
+  void PauseAll();
+  void ResumeAll();
+  void StopAll();
 
   void Progress(int time_since_last_frame);
 
@@ -30,7 +36,10 @@ class AnimatorManager {
   void CheckAnimatorsStatus();
   void RemoveTerminated();
 
-  std::vector<std::unique_ptr<ScriptAnimator>> scripts_;
+  std::unordered_map<std::string, AnimationScript> scripts_;
+
+  bool paused_ = false;
+  std::vector<std::unique_ptr<ScriptAnimator>> running_scripts_;
 };
 
 }  // namespace troll
