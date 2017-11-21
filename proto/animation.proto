@@ -4,7 +4,7 @@ import "primitives.proto";
 
 package troll;
 
-message AnimationScripts {
+message SpriteAnimation {
   repeated AnimationScript script = 1;
 }
 
