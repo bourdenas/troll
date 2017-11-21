@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 #include "proto/primitives.pb.h"
 #include "proto/scene.pb.h"
@@ -21,8 +22,8 @@ class SceneManager {
   void AddSceneNode(const SceneNode& node);
   void RemoveSceneNode(const std::string& id);
 
-  const SceneNode& GetSceneNodeById(const std::string& id) const;
-  const SceneNode& GetSceneNodeAt(const Vector& at) const;
+  SceneNode* GetSceneNodeById(const std::string& id);
+  SceneNode* GetSceneNodeAt(const Vector& at);
 
   void SetViewport(const Box& view);
   void ScrollViewport(const Vector& by);
@@ -42,6 +43,7 @@ class SceneManager {
   Box world_bounds_;
   Box viewport_;
 
+  std::unordered_map<std::string, SceneNode> scene_nodes_;
   std::vector<const SceneNode*> dirty_nodes_;
 };
 

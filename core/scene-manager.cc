@@ -29,18 +29,28 @@ void SceneManager::AddSceneNode(const SceneNode& node) {
 
   renderer_.BlitTexture(*Core::Instance().textures_[sprite.resource()],
                         bounding_box, destination);
+
+  scene_nodes_.emplace(node.id(), node);
 }
 
-void SceneManager::RemoveSceneNode(const std::string& id) {}
+void SceneManager::RemoveSceneNode(const std::string& id) {
+  // TODO(bourdenas): This will create dangling ptrs all over the place.
+  scene_nodes_.erase(id);
+}
+
+SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
+  const auto it = scene_nodes_.find(id);
+  return it != scene_nodes_.end() ? &it->second : nullptr;
+}
 
 void SceneManager::SetViewport(const Box& view) {
   viewport_ = view;
-  // TODO: Render everything.
+  // TODO(bourdenas): Render everything.
 }
 
 void SceneManager::ScrollViewport(const Vector& by) {
-  // TODO: translate(viewport, by)
-  // TODO: Render everything.
+  // TODO(bourdenas): translate(viewport, by)
+  // TODO(bourdenas): Render everything.
 }
 
 void SceneManager::Render() { renderer_.Flip(); }
