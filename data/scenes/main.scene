@@ -10,7 +10,23 @@ viewport: {
 
 bitmap_config: {
   # bitmap: 'dkarcade.png'
-  background_colour: '0x000000'
+  background_colour: {
+    red: 0
+    green: 0
+    blue: 0
+    alpha: 0
+  }
+}
+
+scene_node: {
+  id: 'mario'
+  sprite_id: 'mario'
+  frame_index: 15
+
+  position: {
+    x: 100
+    y: 100
+  }
 }
 
 scene_node: {
@@ -19,7 +35,42 @@ scene_node: {
   frame_index: 0
 
   position: {
-    x: 100
+    x: 300
     y: 100
+  }
+}
+
+scene_node: {
+  id: 'platform'
+  sprite_id: 'platform'
+  frame_index: 0
+
+  position: {
+    x: 200
+    y: 100
+  }
+}
+
+scene_node: {
+  id: 'dk'
+  sprite_id: 'dk'
+  frame_index: 0
+
+  position: {
+    x: 100
+    y: 200
+  }
+}
+
+on_init: {
+  play_animation_script: {
+    script_id: 'mario_walk_right'
+    scene_node_id: 'mario'
+  }
+}
+on_init: {
+  play_animation_script: {
+    script_id: 'dk_taunt'
+    scene_node_id: 'dk'
   }
 }
