@@ -20,7 +20,7 @@ message Scene {
 
 message BitmapSceneManagerConfig {
   optional string bitmap = 1;
-  optional string background_colour = 2;
+  optional RGBa background_colour = 2;
 
   optional int32 width = 3;
   optional int32 height = 4;

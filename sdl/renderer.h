@@ -26,6 +26,9 @@ class Renderer {
   // Blit a texture area to the screen.
   void BlitTexture(const Texture& src, const Box& src_box,
                    const Box& dst_box) const;
+  // Fill the destination area with specified colour.
+  void FillColour(const RGBa& colour, const Box& dst_box) const;
+
   // Commit all changes to the screen.
   void Flip() const;
 

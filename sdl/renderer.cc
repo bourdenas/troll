@@ -64,6 +64,15 @@ void Renderer::BlitTexture(const Texture& src, const Box& src_box,
                  dst_box.width() == 0 ? nullptr : &dst_rect);
 }
 
+void Renderer::FillColour(const RGBa& colour, const Box& dst_box) const {
+  SDL_SetRenderDrawColor(sdl_renderer_, colour.red(), colour.green(),
+                         colour.blue(), colour.alpha());
+  SDL_Rect dst_rect = {
+      dst_box.left(), dst_box.top(), dst_box.width(), dst_box.height(),
+  };
+  SDL_RenderFillRect(sdl_renderer_, &dst_rect);
+}
+
 void Renderer::Flip() const { SDL_RenderPresent(sdl_renderer_); }
 
 void Renderer::ClearScreen() const { SDL_RenderClear(sdl_renderer_); }
