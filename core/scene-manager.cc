@@ -7,6 +7,9 @@ namespace troll {
 
 void SceneManager::SetupScene() {
   renderer_.ClearScreen();
+  renderer_.FillColour(scene_.bitmap_config().background_colour(),
+                       scene_.viewport());
+
   if (scene_.bitmap_config().has_bitmap()) {
     renderer_.BlitTexture(
         *Core::Instance().textures_[scene_.bitmap_config().bitmap()], Box(),
@@ -23,19 +26,8 @@ void SceneManager::SetupScene() {
 }
 
 void SceneManager::AddSceneNode(const SceneNode& node) {
-  const auto& sprite = Core::Instance().sprites_[node.sprite_id()];
-  const auto& bounding_box = sprite.film(node.frame_index());
-
-  Box destination;
-  destination.set_left(node.position().x());
-  destination.set_top(node.position().y());
-  destination.set_width(bounding_box.width());
-  destination.set_height(bounding_box.height());
-
-  renderer_.BlitTexture(*Core::Instance().textures_[sprite.resource()],
-                        bounding_box, destination);
-
-  scene_nodes_.emplace(node.id(), node);
+  const auto it = scene_nodes_.emplace(node.id(), node).first;
+  Dirty(&it->second);
 }
 
 void SceneManager::RemoveSceneNode(const std::string& id) {
@@ -59,24 +51,43 @@ void SceneManager::ScrollViewport(const Vector& by) {
 }
 
 void SceneManager::Render() {
-  for (const auto* node : dirty_nodes_) {
-    const auto& sprite = Core::Instance().sprites_[node->sprite_id()];
-    const auto& bounding_box = sprite.film(node->frame_index());
-
-    Box destination;
-    destination.set_left(node->position().x());
-    destination.set_top(node->position().y());
-    destination.set_width(bounding_box.width());
-    destination.set_height(bounding_box.height());
-
-    renderer_.BlitTexture(*Core::Instance().textures_[sprite.resource()],
-                          bounding_box, destination);
+  for (const auto& box : dirty_boxes_) {
+    renderer_.FillColour(scene_.bitmap_config().background_colour(), box);
   }
+  dirty_boxes_.clear();
+
+  for (const auto* node : dirty_nodes_) {
+    BlitSceneNode(*node);
+  }
+  dirty_nodes_.clear();
+
   renderer_.Flip();
+}
+
+Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) const {
+  const auto& sprite = Core::Instance().sprites_[node.sprite_id()];
+
+  auto bounding_box = sprite.film(node.frame_index());
+  bounding_box.set_left(node.position().x());
+  bounding_box.set_top(node.position().y());
+  return bounding_box;
 }
 
 void SceneManager::Dirty(const SceneNode* scene_node) {
   dirty_nodes_.push_back(scene_node);
+  dirty_boxes_.push_back(GetSceneNodeBoundingBox(*scene_node));
+}
+
+void SceneManager::BlitSceneNode(const SceneNode& node) const {
+  const auto& sprite = Core::Instance().sprites_[node.sprite_id()];
+  const auto& bounding_box = sprite.film(node.frame_index());
+
+  Box destination = bounding_box;
+  destination.set_left(node.position().x());
+  destination.set_top(node.position().y());
+
+  renderer_.BlitTexture(*Core::Instance().textures_[sprite.resource()],
+                        bounding_box, destination);
 }
 
 }  // namespace troll

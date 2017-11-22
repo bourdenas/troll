@@ -30,6 +30,8 @@ class SceneManager {
 
   void Render();
 
+  Box GetSceneNodeBoundingBox(const SceneNode& node) const;
+
   // Marks scene nodes that need to be queued for rendering during this frame.
   void Dirty(const SceneNode* scene_node);
 
@@ -37,6 +39,8 @@ class SceneManager {
   const Box& viewport() const { return viewport_; }
 
  private:
+  void BlitSceneNode(const SceneNode& node) const;
+
   Scene scene_;
   const Renderer& renderer_;
 
@@ -45,6 +49,7 @@ class SceneManager {
 
   std::unordered_map<std::string, SceneNode> scene_nodes_;
   std::vector<const SceneNode*> dirty_nodes_;
+  std::vector<Box> dirty_boxes_;
 };
 
 }  // namespace troll
