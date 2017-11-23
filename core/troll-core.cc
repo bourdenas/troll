@@ -56,6 +56,9 @@ void Core::Init() {
   renderer_ = std::make_unique<Renderer>();
   renderer_->Init(800, 600);
 
+  constexpr char* kDefaultFont = "fonts/times.ttf";
+  fonts_[kDefaultFont] = renderer_->LoadFont(kDefaultFont, 16);
+
   LoadScene("main.scene");
 }
 

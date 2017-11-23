@@ -45,6 +45,7 @@ class Core {
 
   std::unordered_map<std::string, Sprite> sprites_;
   std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
+  std::unordered_map<std::string, std::unique_ptr<Font>> fonts_;
 
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<SceneManager> scene_manager_;

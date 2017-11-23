@@ -5,6 +5,7 @@
 #include <string>
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
 
 #include "proto/primitives.pb.h"
 
@@ -16,19 +17,22 @@ class Texture {
   Texture(const Texture&) = delete;
   ~Texture() { SDL_DestroyTexture(texture_); }
 
-  int GetPixel(const Vector& at) { return 0; }
-  void SetPixel(const Vector& at, int pixel) {}
+  SDL_Texture* texture() const { return texture_; }
 
-  Box GetBounds() const { return Box(); }
-  void SetColourKey(const std::string& key) {}
-
-  bool Overlap(Texture* right, const Box& intersection, const Box& leftRect,
-               const Box& rightRect, unsigned leftKey, unsigned rightKey) {
-    return false;
-  }
-
-  // private:
+ private:
   SDL_Texture* texture_;
+};
+
+class Font {
+ public:
+  Font(TTF_Font* font) : font_(font) {}
+  Font(const Font&) = delete;
+  ~Font() { TTF_CloseFont(font_); }
+
+  TTF_Font* font() const { return font_; }
+
+ private:
+  TTF_Font* font_;
 };
 
 }  // namespace troll

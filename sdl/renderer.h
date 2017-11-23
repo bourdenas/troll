@@ -19,9 +19,15 @@ class Renderer {
 
   // Load an image file into a texture.
   std::unique_ptr<Texture> LoadTexture(const std::string& filename);
+  std::unique_ptr<Font> LoadFont(const std::string& filename, int font_size);
+
   // Create a texture of the input size and colour.
-  std::unique_ptr<Texture> CreateTexture(int width, int height,
-                                         const RGBa& colour);
+  std::unique_ptr<Texture> CreateTexture(const RGBa& colour, int width,
+                                         int height);
+  // Create a text surface area.
+  std::unique_ptr<Texture> CreateText(const std::string& text, const Font& font,
+                                      const RGBa& colour,
+                                      const RGBa& background_colour) const;
 
   // Blit a texture area to the screen.
   void BlitTexture(const Texture& src, const Box& src_box,
@@ -33,12 +39,7 @@ class Renderer {
   void Flip() const;
 
   void ShowCursor(bool show) {}
-  Box CreateText(const std::string& id, const std::string& text,
-                 const RGBa& fg_colour, const RGBa& bg_colour,
-                 const std::string& font, size_t size, bool bold,
-                 bool italics) {
-    return Box();
-  }
+
   void PrintText(const std::string& text, const Vector& at) {}
   void ClearScreen() const;
 
