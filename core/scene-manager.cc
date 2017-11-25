@@ -74,8 +74,8 @@ Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) const {
 }
 
 void SceneManager::Dirty(const SceneNode* scene_node) {
-  dirty_nodes_.push_back(scene_node);
   dirty_boxes_.push_back(GetSceneNodeBoundingBox(*scene_node));
+  dirty_nodes_.push_back(scene_node);
 }
 
 void SceneManager::BlitSceneNode(const SceneNode& node) const {

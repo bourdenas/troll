@@ -3,9 +3,11 @@
 #include <fstream>
 #include <iostream>
 
+#include <absl/strings/str_cat.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
 #include <boost/filesystem.hpp>
+#include <range/v3/action/insert.hpp>
 #include <range/v3/action/sort.hpp>
 #include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
@@ -48,6 +50,11 @@ std::vector<Message> LoadTextProtoFromPath(const std::string& path,
       });
   return messages;
 }
+
+constexpr char* kDefaultFont = "fonts/times.ttf";
+constexpr char* kFpsTexture = "__fps_texture";
+constexpr char* kFpsSprite = "__fps_sprite";
+
 }  // namespace
 
 void Core::Init() {
@@ -56,8 +63,14 @@ void Core::Init() {
   renderer_ = std::make_unique<Renderer>();
   renderer_->Init(800, 600);
 
-  constexpr char* kDefaultFont = "fonts/times.ttf";
   fonts_[kDefaultFont] = renderer_->LoadFont(kDefaultFont, 16);
+
+  textures_[kFpsTexture] = PrintFpsCounter(0);
+  Sprite fps_sprite;
+  fps_sprite.set_id(kFpsSprite);
+  fps_sprite.set_resource(kFpsTexture);
+  *fps_sprite.add_film() = textures_[kFpsTexture]->GetBoundingBox();
+  sprites_[kFpsSprite] = fps_sprite;
 
   LoadScene("main.scene");
 }
@@ -129,6 +142,20 @@ void Core::FrameEnded(int time_since_last_frame) {
   }
   fps_counter_.fps = fps_counter_.fp_count;
   fps_counter_.elapsed_time = fps_counter_.fp_count = 0;
+
+  textures_[kFpsTexture] = PrintFpsCounter(fps_counter_.fps);
+  *sprites_[kFpsSprite].mutable_film(0) =
+      textures_[kFpsTexture]->GetBoundingBox();
+  scene_manager_->Dirty(scene_manager_->GetSceneNodeById("fps_counter"));
+}
+
+std::unique_ptr<Texture> Core::PrintFpsCounter(int fps) {
+  RGBa gray;
+  gray.set_red(200);
+  gray.set_green(200);
+  gray.set_blue(200);
+  return renderer_->CreateText(absl::StrCat(fps), *fonts_[kDefaultFont], gray,
+                               RGBa());
 }
 
 void Core::LoadSprites() {
@@ -138,17 +165,19 @@ void Core::LoadSprites() {
       LoadTextProtoFromPath<SpriteAnimation>("../data/sprites/", ".animation");
   AnimatorManager::Instance().Init(animations);
 
-  textures_ =
+  ranges::action::insert(
+      textures_,
       sprites | ranges::view::transform(
                     [](const Sprite& sprite) { return sprite.resource(); }) |
-      ranges::action::sort | ranges::view::unique |
-      ranges::view::transform([this](const std::string& resource) {
-        return std::make_pair(resource, renderer_->LoadTexture(resource));
-      });
+          ranges::action::sort | ranges::view::unique |
+          ranges::view::transform([this](const std::string& resource) {
+            return std::make_pair(resource, renderer_->LoadTexture(resource));
+          }));
 
-  sprites_ = sprites | ranges::view::transform([](const Sprite& sprite) {
-               return std::make_pair(sprite.id(), sprite);
-             });
+  ranges::action::insert(
+      sprites_, sprites | ranges::view::transform([](const Sprite& sprite) {
+                  return std::make_pair(sprite.id(), sprite);
+                }));
 }
 
 }  // namespace troll

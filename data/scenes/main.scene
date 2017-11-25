@@ -62,6 +62,16 @@ scene_node: {
   }
 }
 
+scene_node: {
+  id: 'fps_counter'
+  sprite_id: '__fps_sprite'
+
+  position: {
+    x: 10
+    y: 10
+  }
+}
+
 on_init: {
   play_animation_script: {
     script_id: 'mario_walk_right'

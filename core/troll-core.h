@@ -41,6 +41,7 @@ class Core {
   void FrameStarted(int time_since_last_frame);
   void FrameEnded(int time_since_last_frame);
 
+  std::unique_ptr<Texture> PrintFpsCounter(int fps);
   void LoadSprites();
 
   std::unordered_map<std::string, Sprite> sprites_;
