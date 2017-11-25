@@ -19,6 +19,8 @@ class Texture {
 
   SDL_Texture* texture() const { return texture_; }
 
+  Box GetBoundingBox() const;
+
  private:
   SDL_Texture* texture_;
 };
