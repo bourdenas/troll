@@ -117,6 +117,9 @@
     <ClCompile Include="core\executor.cc">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="sdl\texture.cc">
+      <Filter>sdl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\scene.proto">

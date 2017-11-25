@@ -135,6 +135,7 @@
     <ClCompile Include="proto\scene.pb.cc" />
     <ClCompile Include="proto\sprite.pb.cc" />
     <ClCompile Include="sdl\renderer.cc" />
+    <ClCompile Include="sdl\texture.cc" />
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\action.proto" />
