@@ -1,6 +1,6 @@
 #include "sdl/renderer.h"
 
-#include <iostream>
+#include <glog/logging.h>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
@@ -12,26 +12,26 @@ namespace troll {
 
 void Renderer::Init(int width, int height) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-    std::cout << "SDL_Init error: " << SDL_GetError() << std::endl;
+    LOG(ERROR) << "SDL_Init error: " << SDL_GetError();
     return;
   }
 
   if (TTF_Init() != 0) {
-    std::cout << "TTF_Init: " << SDL_GetError() << std::endl;
+    LOG(ERROR) << "TTF_Init: " << SDL_GetError();
     return;
   }
 
   window_ = SDL_CreateWindow("Troll the World!", 100, 100, width, height,
                              SDL_WINDOW_SHOWN);
   if (window_ == nullptr) {
-    std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
+    LOG(ERROR) << "SDL_CreateWindow Error: " << SDL_GetError();
     return;
   }
 
   sdl_renderer_ = SDL_CreateRenderer(
       window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (sdl_renderer_ == nullptr) {
-    std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
+    LOG(ERROR) << "SDL_CreateRenderer Error: " << SDL_GetError();
     return;
   }
 }
@@ -47,7 +47,7 @@ std::unique_ptr<Texture> Renderer::LoadTexture(const std::string& filename) {
   SDL_Texture* texture =
       IMG_LoadTexture(sdl_renderer_, (kResourcePath + filename).c_str());
   if (texture == nullptr) {
-    std::cout << SDL_GetError() << std::endl;
+    LOG(ERROR) << SDL_GetError();
   }
   return std::make_unique<Texture>(texture);
 }
@@ -58,7 +58,7 @@ std::unique_ptr<Font> Renderer::LoadFont(const std::string& filename,
 
   TTF_Font* font = TTF_OpenFont((kResourcePath + filename).c_str(), font_size);
   if (font == nullptr) {
-    std::cout << SDL_GetError() << std::endl;
+    LOG(ERROR) << SDL_GetError();
   }
   return std::make_unique<Font>(font);
 }
@@ -76,13 +76,13 @@ std::unique_ptr<Texture> Renderer::CreateText(
       {static_cast<Uint8>(colour.red()), static_cast<Uint8>(colour.green()),
        static_cast<Uint8>(colour.blue()), static_cast<Uint8>(colour.alpha())});
   if (surface == nullptr) {
-    std::cout << SDL_GetError() << std::endl;
+    LOG(ERROR) << SDL_GetError();
     return {};
   }
 
   SDL_Texture* texture = SDL_CreateTextureFromSurface(sdl_renderer_, surface);
   if (texture == nullptr) {
-    std::cout << SDL_GetError() << std::endl;
+    LOG(ERROR) << SDL_GetError();
   }
   SDL_FreeSurface(surface);
 
