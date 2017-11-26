@@ -1,9 +1,9 @@
 #include "core/troll-core.h"
 
 #include <fstream>
-#include <iostream>
 
 #include <absl/strings/str_cat.h>
+#include <glog/logging.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
 #include <boost/filesystem.hpp>
@@ -26,7 +26,7 @@ namespace {
 // Load a proto message from text file.
 template <class Message>
 Message LoadTextProto(const std::string& uri) {
-  std::cout << "Loading proto text file '" << uri << "'..." << std::endl;
+  LOG(INFO) << "Loading proto text file '" << uri << "'...";
   std::fstream istream(uri, std::ios::in);
   google::protobuf::io::IstreamInputStream pbstream(&istream);
 

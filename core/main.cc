@@ -1,11 +1,12 @@
-#include <iostream>
+#include <glog/logging.h>
 
 #include "core/troll-core.h"
 
-int main(int argc, char *args[]) {
+int main(int argc, char *argv[]) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-  std::cout << "Troll climbing the bridge...\n";
+  google::InitGoogleLogging(argv[0]);
+  LOG(INFO) << "Troll climbing the bridge...";
 
   troll::Core::Instance().Init();
   troll::Core::Instance().Run();
