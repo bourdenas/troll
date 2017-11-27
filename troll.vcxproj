@@ -105,11 +105,14 @@
     <ClInclude Include="animation\animator.h" />
     <ClInclude Include="animation\performer.h" />
     <ClInclude Include="core\action-manager.h" />
+    <ClInclude Include="core\collision-checker.h" />
     <ClInclude Include="core\executor.h" />
     <ClInclude Include="core\scene-manager.h" />
     <ClInclude Include="core\troll-core.h" />
+    <ClInclude Include="core\util-lib.h" />
     <ClInclude Include="proto\action.pb.h" />
     <ClInclude Include="proto\animation.pb.h" />
+    <ClInclude Include="proto\collision.pb.h" />
     <ClInclude Include="proto\event.pb.h" />
     <ClInclude Include="proto\primitives.pb.h" />
     <ClInclude Include="proto\scene-node.pb.h" />
@@ -123,12 +126,15 @@
     <ClCompile Include="animation\animator.cc" />
     <ClCompile Include="animation\performer.cc" />
     <ClCompile Include="core\action-manager.cc" />
+    <ClCompile Include="core\collision-checker.cc" />
     <ClCompile Include="core\executor.cc" />
     <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\scene-manager.cc" />
     <ClCompile Include="core\troll-core.cc" />
+    <ClCompile Include="core\util-lib.cc" />
     <ClCompile Include="proto\action.pb.cc" />
     <ClCompile Include="proto\animation.pb.cc" />
+    <ClCompile Include="proto\collision.pb.cc" />
     <ClCompile Include="proto\event.pb.cc" />
     <ClCompile Include="proto\primitives.pb.cc" />
     <ClCompile Include="proto\scene-node.pb.cc" />
@@ -140,6 +146,7 @@
   <ItemGroup>
     <None Include="proto\action.proto" />
     <None Include="proto\animation.proto" />
+    <None Include="proto\collision.proto" />
     <None Include="proto\event.proto" />
     <None Include="proto\primitives.proto" />
     <None Include="proto\scene-node.proto" />

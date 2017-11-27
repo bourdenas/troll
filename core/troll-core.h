@@ -27,6 +27,9 @@ class Core {
   void LoadScene(const std::string& scene);
   void UnloadScene();
 
+  const Sprite* GetSprite(const std::string& sprite_id) const;
+  const Texture* GetTexture(const std::string& texture_id) const;
+
   SceneManager& scene_manager() { return *scene_manager_; }
 
   Core(const Core&) = delete;
@@ -59,8 +62,6 @@ class Core {
   FpsCounter fps_counter_;
 
   bool halt_ = false;
-
-  friend class SceneManager;
 };
 
 }  // namespace troll

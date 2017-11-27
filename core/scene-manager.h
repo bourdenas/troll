@@ -30,8 +30,6 @@ class SceneManager {
 
   void Render();
 
-  Box GetSceneNodeBoundingBox(const SceneNode& node) const;
-
   // Marks a scene node that needs to be queued for rendering during this frame.
   void Dirty(const SceneNode* scene_node);
 

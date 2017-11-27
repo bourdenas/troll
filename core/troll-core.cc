@@ -9,12 +9,13 @@
 #include <boost/filesystem.hpp>
 #include <range/v3/action/insert.hpp>
 #include <range/v3/action/sort.hpp>
-#include <range/v3/view/remove_if.hpp>
+#include <range/v3/view/filter.hpp>
 #include <range/v3/view/transform.hpp>
 #include <range/v3/view/unique.hpp>
 
 #include "animation/animator-manager.h"
 #include "core/action-manager.h"
+#include "core/collision-checker.h"
 #include "proto/animation.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
@@ -42,8 +43,8 @@ std::vector<Message> LoadTextProtoFromPath(const std::string& path,
   const boost::filesystem::path resource_path(path);
   const std::vector<Message> messages =
       boost::filesystem::directory_iterator(resource_path) |
-      ranges::view::remove_if([&extension](const auto& p) {
-        return p.path().extension() != extension;
+      ranges::view::filter([&extension](const auto& p) {
+        return p.path().extension() == extension;
       }) |
       ranges::view::transform([](const auto& p) {
         return LoadTextProto<Message>(p.path().string());
@@ -110,6 +111,16 @@ void Core::UnloadScene() {
   sprites_.clear();
 }
 
+const Sprite* Core::GetSprite(const std::string& sprite_id) const {
+  const auto it = sprites_.find(sprite_id);
+  return it != sprites_.end() ? &it->second : nullptr;
+}
+
+const Texture* Core::GetTexture(const std::string& texture_id) const {
+  const auto it = textures_.find(texture_id);
+  return it != textures_.end() ? it->second.get() : nullptr;
+}
+
 bool Core::InputHandling() {
   if (halt_) {
     return false;
@@ -130,7 +141,7 @@ bool Core::InputHandling() {
 void Core::FrameStarted(int time_since_last_frame) {
   AnimatorManager::Instance().Progress(time_since_last_frame);
   // Physics::Instance().Progress(time_since_last_frame);
-  // CollisionChecker::Instance().PerformCollisions();
+  CollisionChecker::Instance().CheckCollisions();
 }
 
 void Core::FrameEnded(int time_since_last_frame) {

@@ -28,9 +28,8 @@ scene_node: {
     y: 100
   }
 }
-
 scene_node: {
-  id: 'mario'
+  id: 'mario_clone'
   sprite_id: 'mario'
   frame_index: 0
 
@@ -39,7 +38,6 @@ scene_node: {
     y: 100
   }
 }
-
 scene_node: {
   id: 'platform'
   sprite_id: 'platform'
@@ -50,7 +48,6 @@ scene_node: {
     y: 100
   }
 }
-
 scene_node: {
   id: 'dk'
   sprite_id: 'dk'
@@ -61,7 +58,6 @@ scene_node: {
     y: 200
   }
 }
-
 scene_node: {
   id: 'fps_counter'
   sprite_id: '__fps_sprite'
@@ -69,6 +65,14 @@ scene_node: {
   position: {
     x: 10
     y: 10
+  }
+}
+
+collision: {
+  sprite_id: 'mario'
+  sprite_id: 'platform'
+  action: {
+    quit: {}
   }
 }
 

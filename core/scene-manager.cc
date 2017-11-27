@@ -1,7 +1,9 @@
 #include "core/scene-manager.h"
 
 #include "core/action-manager.h"
+#include "core/collision-checker.h"
 #include "core/troll-core.h"
+#include "core/util-lib.h"
 
 namespace troll {
 
@@ -12,10 +14,11 @@ void SceneManager::SetupScene() {
 
   if (scene_.bitmap_config().has_bitmap()) {
     renderer_.BlitTexture(
-        *Core::Instance().textures_[scene_.bitmap_config().bitmap()], Box(),
+        *Core::Instance().GetTexture(scene_.bitmap_config().bitmap()), Box(),
         Box());
   }
 
+  CollisionChecker::Instance().Init(scene_);
   for (const auto& node : scene_.scene_node()) {
     AddSceneNode(node);
   }
@@ -28,11 +31,13 @@ void SceneManager::SetupScene() {
 void SceneManager::AddSceneNode(const SceneNode& node) {
   const auto it = scene_nodes_.emplace(node.id(), node).first;
   Dirty(&it->second);
+  CollisionChecker::Instance().AddSceneNode(node);
 }
 
 void SceneManager::RemoveSceneNode(const std::string& id) {
   // TODO(bourdenas): This will create dangling ptrs all over the place.
   scene_nodes_.erase(id);
+  CollisionChecker::Instance().RemoveSceneNode(id);
 }
 
 SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
@@ -64,29 +69,22 @@ void SceneManager::Render() {
   renderer_.Flip();
 }
 
-Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) const {
-  const auto& sprite = Core::Instance().sprites_[node.sprite_id()];
-
-  auto bounding_box = sprite.film(node.frame_index());
-  bounding_box.set_left(node.position().x());
-  bounding_box.set_top(node.position().y());
-  return bounding_box;
-}
-
 void SceneManager::Dirty(const SceneNode* scene_node) {
-  dirty_boxes_.push_back(GetSceneNodeBoundingBox(*scene_node));
+  dirty_boxes_.push_back(util::GetSceneNodeBoundingBox(*scene_node));
   dirty_nodes_.push_back(scene_node);
+  CollisionChecker::Instance().Dirty(*scene_node);
 }
 
 void SceneManager::BlitSceneNode(const SceneNode& node) const {
-  const auto& sprite = Core::Instance().sprites_[node.sprite_id()];
-  const auto& bounding_box = sprite.film(node.frame_index());
+  const auto* sprite = Core::Instance().GetSprite(node.sprite_id());
+  if (sprite == nullptr) return;
 
+  const auto& bounding_box = sprite->film(node.frame_index());
   Box destination = bounding_box;
   destination.set_left(node.position().x());
   destination.set_top(node.position().y());
 
-  renderer_.BlitTexture(*Core::Instance().textures_[sprite.resource()],
+  renderer_.BlitTexture(*Core::Instance().GetTexture(sprite->resource()),
                         bounding_box, destination);
 }
 
