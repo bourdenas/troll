@@ -31,7 +31,7 @@ class SceneManager {
   void Render();
 
   // Marks a scene node that needs to be queued for rendering during this frame.
-  void Dirty(const SceneNode* scene_node);
+  void Dirty(const SceneNode& scene_node);
 
   const Scene& scene() const { return scene_; }
   const Box& viewport() const { return viewport_; }

@@ -157,7 +157,7 @@ void Core::FrameEnded(int time_since_last_frame) {
   textures_[kFpsTexture] = PrintFpsCounter(fps_counter_.fps);
   *sprites_[kFpsSprite].mutable_film(0) =
       textures_[kFpsTexture]->GetBoundingBox();
-  scene_manager_->Dirty(scene_manager_->GetSceneNodeById("fps_counter"));
+  scene_manager_->Dirty(*scene_manager_->GetSceneNodeById("fps_counter"));
 }
 
 std::unique_ptr<Texture> Core::PrintFpsCounter(int fps) {

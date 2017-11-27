@@ -30,14 +30,16 @@ void SceneManager::SetupScene() {
 
 void SceneManager::AddSceneNode(const SceneNode& node) {
   const auto it = scene_nodes_.emplace(node.id(), node).first;
-  Dirty(&it->second);
+  Dirty(it->second);
   CollisionChecker::Instance().AddSceneNode(node);
 }
 
 void SceneManager::RemoveSceneNode(const std::string& id) {
   // TODO(bourdenas): This will create dangling ptrs all over the place.
-  scene_nodes_.erase(id);
   CollisionChecker::Instance().RemoveSceneNode(id);
+
+  const auto it = scene_nodes_.find(id);
+  scene_nodes_.erase(it);
 }
 
 SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
@@ -69,10 +71,10 @@ void SceneManager::Render() {
   renderer_.Flip();
 }
 
-void SceneManager::Dirty(const SceneNode* scene_node) {
-  dirty_boxes_.push_back(util::GetSceneNodeBoundingBox(*scene_node));
-  dirty_nodes_.push_back(scene_node);
-  CollisionChecker::Instance().Dirty(*scene_node);
+void SceneManager::Dirty(const SceneNode& scene_node) {
+  dirty_boxes_.push_back(util::GetSceneNodeBoundingBox(scene_node));
+  dirty_nodes_.push_back(&scene_node);
+  CollisionChecker::Instance().Dirty(scene_node);
 }
 
 void SceneManager::BlitSceneNode(const SceneNode& node) const {
