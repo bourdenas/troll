@@ -24,7 +24,7 @@ void CreateSceneNodeExecutor::Execute(const Action& action) const {
 
 void DestroySceneNodeExecutor::Execute(const Action& action) const {
   Core::Instance().scene_manager().RemoveSceneNode(
-      action.create_scene_node().scene_node().id());
+      action.destroy_scene_node().scene_node().id());
 }
 
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {
