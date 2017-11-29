@@ -53,11 +53,10 @@ void CollisionChecker::AddSceneNode(const SceneNode& scene_node) {
   dirty_nodes_.insert(&scene_node);
 }
 
-void CollisionChecker::RemoveSceneNode(const std::string& node_id) {
-  active_nodes_.erase(std::remove_if(
-      active_nodes_.begin(), active_nodes_.end(),
-      [&node_id](const SceneNode* node) { return node->id() == node_id; }));
-  // dirty_nodes_.erase(&scene_node);
+void CollisionChecker::RemoveSceneNode(const SceneNode& scene_node) {
+  active_nodes_.erase(
+      std::remove(active_nodes_.begin(), active_nodes_.end(), &scene_node));
+  dirty_nodes_.erase(&scene_node);
 }
 
 void CollisionChecker::Dirty(const SceneNode& node) {

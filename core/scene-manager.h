@@ -13,11 +13,10 @@ namespace troll {
 
 class SceneManager {
  public:
-  SceneManager(const Scene& scene, const Renderer& renderer)
-      : scene_(scene), renderer_(renderer) {}
+  SceneManager(const Renderer& renderer) : renderer_(renderer) {}
   ~SceneManager() = default;
 
-  void SetupScene();
+  void SetupScene(const Scene& scene);
 
   void AddSceneNode(const SceneNode& node);
   void RemoveSceneNode(const std::string& id);
@@ -39,9 +38,9 @@ class SceneManager {
  private:
   void BlitSceneNode(const SceneNode& node) const;
 
-  Scene scene_;
   const Renderer& renderer_;
 
+  Scene scene_;
   Box world_bounds_;
   Box viewport_;
 

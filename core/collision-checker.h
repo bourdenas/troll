@@ -22,7 +22,7 @@ class CollisionChecker {
   void CleanUp();
 
   void AddSceneNode(const SceneNode& scene_node);
-  void RemoveSceneNode(const std::string& node_id);
+  void RemoveSceneNode(const SceneNode& scene_node);
 
   // Marks a scene node that needs to be queued for rendering during this frame.
   void Dirty(const SceneNode& node);

@@ -7,7 +7,8 @@
 
 namespace troll {
 
-void SceneManager::SetupScene() {
+void SceneManager::SetupScene(const Scene& scene) {
+  scene_ = scene;
   renderer_.ClearScreen();
   renderer_.FillColour(scene_.bitmap_config().background_colour(),
                        scene_.viewport());
@@ -31,14 +32,17 @@ void SceneManager::SetupScene() {
 void SceneManager::AddSceneNode(const SceneNode& node) {
   const auto it = scene_nodes_.emplace(node.id(), node).first;
   Dirty(it->second);
-  CollisionChecker::Instance().AddSceneNode(node);
+
+  CollisionChecker::Instance().AddSceneNode(it->second);
 }
 
 void SceneManager::RemoveSceneNode(const std::string& id) {
-  // TODO(bourdenas): This will create dangling ptrs all over the place.
-  CollisionChecker::Instance().RemoveSceneNode(id);
-
   const auto it = scene_nodes_.find(id);
+  Dirty(it->second);
+
+  CollisionChecker::Instance().RemoveSceneNode(it->second);
+  dirty_nodes_.erase(
+      std::remove(dirty_nodes_.begin(), dirty_nodes_.end(), &it->second));
   scene_nodes_.erase(it);
 }
 

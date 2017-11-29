@@ -101,9 +101,9 @@ void Core::Halt() { halt_ = true; }
 
 void Core::LoadScene(const std::string& scene_id) {
   LoadSprites();
-  scene_manager_ = std::make_unique<SceneManager>(
-      LoadTextProto<Scene>("../data/scenes/" + scene_id), *renderer_);
-  scene_manager_->SetupScene();
+  scene_manager_ = std::make_unique<SceneManager>(*renderer_);
+  scene_manager_->SetupScene(
+      LoadTextProto<Scene>("../data/scenes/" + scene_id));
 }
 
 void Core::UnloadScene() {

@@ -72,7 +72,22 @@ collision: {
   sprite_id: 'mario'
   sprite_id: 'platform'
   action: {
-    quit: {}
+    destroy_scene_node: {
+      scene_node: {
+        id: 'platform'
+      }
+    }
+  }
+}
+collision: {
+  sprite_id: 'mario'
+  sprite_id: 'mario'
+  action: {
+    destroy_scene_node: {
+      scene_node: {
+        id: 'mario_clone'
+      }
+    }
   }
 }
 
