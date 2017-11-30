@@ -28,18 +28,21 @@ void DestroySceneNodeExecutor::Execute(const Action& action) const {
 }
 
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {
-  auto* scene_node = Core::Instance().scene_manager().GetSceneNodeById(
+  AnimatorManager::Instance().Play(
+      action.play_animation_script().script_id(),
       action.play_animation_script().scene_node_id());
-  AnimatorManager::Instance().Play(action.play_animation_script().script_id(),
-                                   scene_node);
 }
 
 void StopAnimationScriptExecutor::Execute(const Action& action) const {
-  // TODO(bourdenas): Implement animation framework.
+  AnimatorManager::Instance().Stop(
+      action.stop_animation_script().script_id(),
+      action.stop_animation_script().scene_node_id());
 }
 
 void PauseAnimationScriptExecutor::Execute(const Action& action) const {
-  // TODO(bourdenas): Implement animation framework.
+  AnimatorManager::Instance().Pause(
+      action.pause_animation_script().script_id(),
+      action.pause_animation_script().scene_node_id());
 }
 
 void DisplayTextExecutor::Execute(const Action& action) const {

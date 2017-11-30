@@ -29,11 +29,13 @@ class Animator {
   int run_number_ = 0;
 };
 
-// Runs an animation script, i.e. animation sequence on a specific scene node.
+// Runs an animation script, i.e. a sequence of animations on a single
+// scene-node.
 class ScriptAnimator {
  public:
-  ScriptAnimator(const AnimationScript& script, SceneNode* scene_node)
-      : script_(script), scene_node_(scene_node) {}
+  ScriptAnimator(const AnimationScript& script,
+                 const std::string& scene_node_id)
+      : script_(script), scene_node_id_(scene_node_id) {}
 
   void Start();
   void Stop();
@@ -48,7 +50,7 @@ class ScriptAnimator {
   bool is_paused() const { return state_ == State::PAUSED; }
 
   const std::string& script_id() const { return script_.id(); }
-  const std::string& scene_node_id() const { return scene_node_->id(); }
+  const std::string& scene_node_id() const { return scene_node_id_; }
 
  private:
   // Returns true, if there was a next animation.
@@ -62,7 +64,7 @@ class ScriptAnimator {
   };
 
   const AnimationScript& script_;
-  SceneNode* scene_node_;
+  std::string scene_node_id_;
 
   State state_ = State::INIT;
   std::unique_ptr<Animator> current_animator_;

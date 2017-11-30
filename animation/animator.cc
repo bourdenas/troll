@@ -53,7 +53,9 @@ bool Animator::Progress(int time_since_last_frame, SceneNode* scene_node) {
 void ScriptAnimator::Start() {
   if (MoveToNextAnimation()) {
     state_ = State::RUNNING;
-    Core::Instance().scene_manager().Dirty(*scene_node_);
+    const auto* scene_node =
+        Core::Instance().scene_manager().GetSceneNodeById(scene_node_id_);
+    Core::Instance().scene_manager().Dirty(*scene_node);
   }
 }
 
@@ -66,8 +68,15 @@ void ScriptAnimator::Resume() { state_ = State::RUNNING; }
 bool ScriptAnimator::Progress(int time_since_last_frame) {
   if (!is_running()) return true;
 
-  Core::Instance().scene_manager().Dirty(*scene_node_);
-  if (!current_animator_->Progress(time_since_last_frame, scene_node_) &&
+  auto* scene_node =
+      Core::Instance().scene_manager().GetSceneNodeById(scene_node_id_);
+  if (scene_node == nullptr) {
+    Stop();
+    return is_finished();
+  }
+
+  Core::Instance().scene_manager().Dirty(*scene_node);
+  if (!current_animator_->Progress(time_since_last_frame, scene_node) &&
       !MoveToNextAnimation()) {
     Stop();
   }

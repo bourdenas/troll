@@ -18,10 +18,30 @@ void AnimatorManager::Init(const std::vector<SpriteAnimation>& animations) {
 }
 
 void AnimatorManager::Play(const std::string& script_id,
-                           SceneNode* scene_node) {
+                           const std::string& scene_node_id) {
   running_scripts_.push_back(
-      std::make_unique<ScriptAnimator>(scripts_[script_id], scene_node));
+      std::make_unique<ScriptAnimator>(scripts_[script_id], scene_node_id));
   running_scripts_.back()->Start();
+}
+
+void AnimatorManager::Stop(const std::string& script_id,
+                           const std::string& scene_node_id) {
+  for (const auto& animator : running_scripts_) {
+    if (animator->script_id() == script_id &&
+        animator->scene_node_id() == scene_node_id) {
+      animator->Stop();
+    }
+  }
+}
+
+void AnimatorManager::Pause(const std::string& script_id,
+                            const std::string& scene_node_id) {
+  for (const auto& animator : running_scripts_) {
+    if (animator->script_id() == script_id &&
+        animator->scene_node_id() == scene_node_id) {
+      animator->Pause();
+    }
+  }
 }
 
 void AnimatorManager::PauseAll() { paused_ = true; }

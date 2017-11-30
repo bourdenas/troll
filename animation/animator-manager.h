@@ -20,7 +20,9 @@ class AnimatorManager {
 
   void Init(const std::vector<SpriteAnimation>& animations);
 
-  void Play(const std::string& script_id, SceneNode* scene_node);
+  void Play(const std::string& script_id, const std::string& scene_node_id);
+  void Stop(const std::string& script_id, const std::string& scene_node_id);
+  void Pause(const std::string& script_id, const std::string& scene_node_id);
 
   void PauseAll();
   void ResumeAll();

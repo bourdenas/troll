@@ -35,7 +35,6 @@ class PerformerBase : public Performer {
     while (animation_.delay() < wait_time_) {
       wait_time_ -= animation_.delay();
 
-      // TODO: register SceneNode with collision checker.
       if (Execute(scene_node)) {
         return true;
       }
