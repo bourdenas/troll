@@ -3,7 +3,6 @@
 #include <glog/logging.h>
 #include <range/v3/view/empty.hpp>
 #include <range/v3/view/filter.hpp>
-#include <range/v3/view/for_each.hpp>
 #include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
 
@@ -66,9 +65,9 @@ void CollisionChecker::Dirty(const SceneNode& node) {
 bool CheckCollision(const SceneNode& left, const SceneNode& right) {
   const Box left_box = util::GetSceneNodeBoundingBox(left);
   const Box right_box = util::GetSceneNodeBoundingBox(right);
-  return abs(left_box.left() - right_box.left()) * 2 <
+  return abs(left_box.left() - right_box.left()) * 2 <=
              left_box.width() + right_box.width() &&
-         abs(left_box.top() - right_box.top()) * 2 <
+         abs(left_box.top() - right_box.top()) * 2 <=
              left_box.height() + right_box.height();
 }
 
