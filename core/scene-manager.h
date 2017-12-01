@@ -37,6 +37,7 @@ class SceneManager {
 
  private:
   void BlitSceneNode(const SceneNode& node) const;
+  void CleanUpDeletedSceneNodes();
 
   const Renderer& renderer_;
 
@@ -45,6 +46,8 @@ class SceneManager {
   Box viewport_;
 
   std::unordered_map<std::string, SceneNode> scene_nodes_;
+  std::vector<std::string> dead_scene_nodes_;
+
   std::vector<const SceneNode*> dirty_nodes_;
   std::vector<Box> dirty_boxes_;
 };
