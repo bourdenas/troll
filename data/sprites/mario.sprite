@@ -2,145 +2,145 @@ id: 'mario'
 resource: 'dkarcade.png'
 colour_key: '0x000000'
 
-film: {
+film {
   left: 32
   top: 408
   width: 23
   height: 32
 }
-film: {
+film {
   left: 64
   top: 408
   width: 30
   height: 32
 }
-film: {
+film {
   left: 104
   top: 408
   width: 30
   height: 30
 }
-film: {
+film {
   left: 145
   top: 410
   width: 27
   height: 32
 }
-film: {
+film {
   left: 178
   top: 411
   width: 28
   height: 31
 }
-film: {
+film {
   left: 216
   top: 418
   width: 34
   height: 24
 }
-film: {
+film {
   left: 262
   top: 412
   width: 32
   height: 30
 }
-film: {
+film {
   left: 306
   top: 409
   width: 26
   height: 33
 }
-film: {
+film {
   left: 348
   top: 418
   width: 45
   height: 23
 }
-film: {
+film {
   left: 30
   top: 490
   width: 23
   height: 32
 }
-film: {
+film {
   left: 100
   top: 490
   width: 27
   height: 32
 }
-film: {
+film {
   left: 142
   top: 490
   width: 26
   height: 32
 }
-film: {
+film {
   left: 212
   top: 488
   width: 30
   height: 32
 }
-film: {
+film {
   left: 250
   top: 488
   width: 30
   height: 32
 }
-film: {
+film {
   left: 322
   top: 488
   width: 32
   height: 29
 }
-film: {
+film {
   left: 362
   top: 484
   width: 24
   height: 33
 }
-film: {
+film {
   left: 392
   top: 484
   width: 31
   height: 33
 }
-film: {
+film {
   left: 433
   top: 484
   width: 30
   height: 31
 }
-film: {
+film {
   left: 35
   top: 695
   width: 32
   height: 29
 }
-film: {
+film {
   left: 109
   top: 696
   width: 30
   height: 32
 }
-film: {
+film {
   left: 147
   top: 696
   width: 30
   height: 32
 }
-film: {
+film {
   left: 221
   top: 698
   width: 26
   height: 32
 }
-film: {
+film {
   left: 262
   top: 698
   width: 27
   height: 32
 }
-film: {
+film {
   left: 335
   top: 698
   width: 24

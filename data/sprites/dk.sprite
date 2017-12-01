@@ -2,67 +2,67 @@ id: 'dk'
 resource: 'dkarcade.png'
 colour_key: '0x000000'
 
-film: {
+film {
   left: 24
   top: 116
   width: 78
   height: 64
 }
-film: {
+film {
   left: 130
   top: 116
   width: 80
   height: 64
 }
-film: {
+film {
   left: 236
   top: 120
   width: 92
   height: 64
 }
-film: {
+film {
   left: 344
   top: 120
   width: 88
   height: 64
 }
-film: {
+film {
   left: 22
   top: 210
   width: 76
   height: 72
 }
-film: {
+film {
   left: 130
   top: 218
   width: 86
   height: 64
 }
-film: {
+film {
   left: 242
   top: 218
   width: 79
   height: 59
 }
-film: {
+film {
   left: 358
   top: 218
   width: 80
   height: 64
 }
-film: {
+film {
   left: 26
   top: 308
   width: 86
   height: 64
 }
-film: {
+film {
   left: 126
   top: 308
   width: 86
   height: 64
 }
-film: {
+film {
   left: 238
   top: 308
   width: 92

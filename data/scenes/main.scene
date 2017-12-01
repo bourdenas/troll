@@ -1,16 +1,16 @@
 id: 'main'
 scene_manager: 'BitmapSceneManager'
 
-viewport: {
+viewport {
   left: 0
   top: 0
   width: 800
   height: 600
 }
 
-bitmap_config: {
+bitmap_config {
   # bitmap: 'dkarcade.png'
-  background_colour: {
+  background_colour {
     red: 0
     green: 0
     blue: 0
@@ -18,87 +18,101 @@ bitmap_config: {
   }
 }
 
-scene_node: {
+scene_node {
   id: 'mario'
   sprite_id: 'mario'
   frame_index: 15
 
-  position: {
+  position {
     x: 100
     y: 100
   }
 }
-scene_node: {
+scene_node {
   id: 'mario_clone'
   sprite_id: 'mario'
   frame_index: 0
 
-  position: {
+  position {
     x: 300
     y: 100
   }
 }
-scene_node: {
+scene_node {
   id: 'platform'
   sprite_id: 'platform'
   frame_index: 0
 
-  position: {
+  position {
     x: 200
     y: 100
   }
 }
-scene_node: {
+scene_node {
   id: 'dk'
   sprite_id: 'dk'
   frame_index: 0
 
-  position: {
+  position {
     x: 100
     y: 200
   }
 }
-scene_node: {
+scene_node {
   id: 'fps_counter'
   sprite_id: '__fps_sprite'
 
-  position: {
+  position {
     x: 10
     y: 10
   }
 }
 
-collision: {
+collision {
   sprite_id: 'mario'
   sprite_id: 'platform'
-  action: {
-    destroy_scene_node: {
-      scene_node: {
+  action {
+    destroy_scene_node {
+      scene_node {
+        id: 'mario'
+      }
+    }
+  }
+  action {
+    destroy_scene_node {
+      scene_node {
         id: 'platform'
       }
     }
   }
+  action {
+    destroy_scene_node {
+      scene_node {
+        id: 'dk'
+      }
+    }
+  }
 }
-collision: {
+collision {
   sprite_id: 'mario'
   sprite_id: 'mario'
-  action: {
-    destroy_scene_node: {
-      scene_node: {
+  action {
+    destroy_scene_node {
+      scene_node {
         id: 'mario_clone'
       }
     }
   }
 }
 
-on_init: {
-  play_animation_script: {
+on_init {
+  play_animation_script {
     script_id: 'mario_walk_right'
     scene_node_id: 'mario'
   }
 }
-on_init: {
-  play_animation_script: {
+on_init {
+  play_animation_script {
     script_id: 'dk_taunt'
     scene_node_id: 'dk'
   }

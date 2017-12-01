@@ -1,15 +1,15 @@
-script: {
+script {
   id: 'mario_walk_left'
-  animation: {
+  animation {
     termination: ANY
-    frame_range: {
+    frame_range {
       start_frame: 0
       end_frame: 2
       delay: 90
       vertical_align: BOTTOM
     }
-    translation: {
-      vec: {
+    translation {
+      vec {
         x: -1
       }
       delay: 10
@@ -17,19 +17,19 @@ script: {
   }
 }
 
-script: {
+script {
   id: 'mario_walk_right'
-  animation: {
+  animation {
     termination: ANY
-    frame_range: {
+    frame_range {
       start_frame: 15
       end_frame: 17
       delay: 90
       horizontal_align: RIGHT
       vertical_align: BOTTOM
     }
-    translation: {
-      vec: {
+    translation {
+      vec {
         x: 1
       }
       delay: 10
@@ -37,21 +37,21 @@ script: {
   }
 }
 
-script: {
+script {
   id: 'mario_jump'
-  animation: {
+  animation {
     repeat: 11
-    translation: {
-      vec: {
+    translation {
+      vec {
         y: -1
       }
       delay: 10
     }
   }
-  animation: {
+  animation {
     repeat: 11
-    translation: {
-      vec: {
+    translation {
+      vec {
         y: 1
       }
       delay: 10
@@ -59,11 +59,11 @@ script: {
   }
 }
 
-script: {
+script {
   id: 'mario_hit'
-  animation: {
+  animation {
     repeat: 1
-    frame_list: {
+    frame_list {
       frame: 8
       delay: 90
       vertical_align: BOTTOM
@@ -71,34 +71,34 @@ script: {
   }
 }
 
-script: {
+script {
   id: 'mario_climb_up'
-  animation: {
+  animation {
     termination: ANY
-    translation: {
-      vec: {
+    translation {
+      vec {
         y: -1
       }
       delay: 15
     }
-    frame_list: {
+    frame_list {
       frame: [3, 7]
       delay: 200
     }
   }
 }
 
-script: {
+script {
   id: 'mario_climb_down'
-  animation: {
+  animation {
     termination: ANY
-    translation: {
-      vec: {
+    translation {
+      vec {
         y: 1
       }
       delay: 15
     }
-    frame_list: {
+    frame_list {
       frame: [7, 3]
       delay: 200
     }

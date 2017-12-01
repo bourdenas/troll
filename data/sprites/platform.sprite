@@ -2,7 +2,7 @@ id: 'platform'
 resource: 'dkarcade.png'
 colour_key: '0x000000'
 
-film: {
+film {
   left: 648
   top: 500
   width: 32

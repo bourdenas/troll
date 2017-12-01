@@ -1,8 +1,8 @@
-script: {
+script {
   id: 'dk_taunt'
-  animation: {
+  animation {
     termination: ANY
-    frame_range: {
+    frame_range {
       start_frame: 2
       end_frame: 3
       delay: 300
