@@ -76,6 +76,9 @@
     <ClInclude Include="core\util-lib.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="core\resource-manager.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -136,6 +139,9 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\util-lib.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\resource-manager.cc">
       <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>

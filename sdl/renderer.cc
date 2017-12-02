@@ -42,7 +42,8 @@ void Renderer::CleanUp() {
   SDL_Quit();
 }
 
-std::unique_ptr<Texture> Renderer::LoadTexture(const std::string& filename) {
+std::unique_ptr<Texture> Renderer::LoadTexture(
+    const std::string& filename) const {
   constexpr char* kResourcePath = "../data/resources/";
   SDL_Texture* texture =
       IMG_LoadTexture(sdl_renderer_, (kResourcePath + filename).c_str());
@@ -53,7 +54,7 @@ std::unique_ptr<Texture> Renderer::LoadTexture(const std::string& filename) {
 }
 
 std::unique_ptr<Font> Renderer::LoadFont(const std::string& filename,
-                                         int font_size) {
+                                         int font_size) const {
   constexpr char* kResourcePath = "../data/resources/";
 
   TTF_Font* font = TTF_OpenFont((kResourcePath + filename).c_str(), font_size);
@@ -64,7 +65,7 @@ std::unique_ptr<Font> Renderer::LoadFont(const std::string& filename,
 }
 
 std::unique_ptr<Texture> Renderer::CreateTexture(const RGBa& colour, int width,
-                                                 int height) {
+                                                 int height) const {
   return nullptr;
 }
 

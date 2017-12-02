@@ -58,15 +58,6 @@ scene_node {
     y: 200
   }
 }
-scene_node {
-  id: 'fps_counter'
-  sprite_id: '__fps_sprite'
-
-  position {
-    x: 10
-    y: 10
-  }
-}
 
 collision {
   sprite_id: 'mario'

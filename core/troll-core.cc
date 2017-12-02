@@ -1,62 +1,16 @@
 #include "core/troll-core.h"
 
-#include <fstream>
-
 #include <absl/strings/str_cat.h>
-#include <glog/logging.h>
-#include <google/protobuf/io/zero_copy_stream_impl.h>
-#include <google/protobuf/text_format.h>
-#include <boost/filesystem.hpp>
-#include <range/v3/action/insert.hpp>
-#include <range/v3/action/sort.hpp>
-#include <range/v3/view/filter.hpp>
-#include <range/v3/view/transform.hpp>
-#include <range/v3/view/unique.hpp>
 
 #include "animation/animator-manager.h"
 #include "core/action-manager.h"
 #include "core/collision-checker.h"
-#include "proto/animation.pb.h"
+#include "core/resource-manager.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
 #include "sdl/renderer.h"
 
 namespace troll {
-
-namespace {
-// Load a proto message from text file.
-template <class Message>
-Message LoadTextProto(const std::string& uri) {
-  LOG(INFO) << "Loading proto text file '" << uri << "'...";
-  std::fstream istream(uri, std::ios::in);
-  google::protobuf::io::IstreamInputStream pbstream(&istream);
-
-  Message message;
-  google::protobuf::TextFormat::Parse(&pbstream, &message);
-  return message;
-}
-
-// Load proto message from all text files under a path.
-template <class Message>
-std::vector<Message> LoadTextProtoFromPath(const std::string& path,
-                                           const std::string& extension) {
-  const boost::filesystem::path resource_path(path);
-  const std::vector<Message> messages =
-      boost::filesystem::directory_iterator(resource_path) |
-      ranges::view::filter([&extension](const auto& p) {
-        return p.path().extension() == extension;
-      }) |
-      ranges::view::transform([](const auto& p) {
-        return LoadTextProto<Message>(p.path().string());
-      });
-  return messages;
-}
-
-constexpr char* kDefaultFont = "fonts/times.ttf";
-constexpr char* kFpsTexture = "__fps_texture";
-constexpr char* kFpsSprite = "__fps_sprite";
-
-}  // namespace
 
 void Core::Init() {
   ActionManager::Instance().Init();
@@ -64,20 +18,12 @@ void Core::Init() {
   renderer_ = std::make_unique<Renderer>();
   renderer_->Init(800, 600);
 
-  fonts_[kDefaultFont] = renderer_->LoadFont(kDefaultFont, 16);
-
-  textures_[kFpsTexture] = PrintFpsCounter(0);
-  Sprite fps_sprite;
-  fps_sprite.set_id(kFpsSprite);
-  fps_sprite.set_resource(kFpsTexture);
-  *fps_sprite.add_film() = textures_[kFpsTexture]->GetBoundingBox();
-  sprites_[kFpsSprite] = fps_sprite;
-
+  ResourceManager::Instance().LoadResources(*renderer_);
   LoadScene("main.scene");
 }
 
 void Core::CleanUp() {
-  UnloadScene();
+  ResourceManager::Instance().CleanUp();
 
   renderer_->CleanUp();
 }
@@ -100,25 +46,8 @@ void Core::Run() {
 void Core::Halt() { halt_ = true; }
 
 void Core::LoadScene(const std::string& scene_id) {
-  LoadSprites();
   scene_manager_ = std::make_unique<SceneManager>(*renderer_);
-  scene_manager_->SetupScene(
-      LoadTextProto<Scene>("../data/scenes/" + scene_id));
-}
-
-void Core::UnloadScene() {
-  textures_.clear();
-  sprites_.clear();
-}
-
-const Sprite* Core::GetSprite(const std::string& sprite_id) const {
-  const auto it = sprites_.find(sprite_id);
-  return it != sprites_.end() ? &it->second : nullptr;
-}
-
-const Texture* Core::GetTexture(const std::string& texture_id) const {
-  const auto it = textures_.find(texture_id);
-  return it != textures_.end() ? it->second.get() : nullptr;
+  scene_manager_->SetupScene(ResourceManager::Instance().LoadScene(scene_id));
 }
 
 bool Core::InputHandling() {
@@ -153,42 +82,6 @@ void Core::FrameEnded(int time_since_last_frame) {
   }
   fps_counter_.fps = fps_counter_.fp_count;
   fps_counter_.elapsed_time = fps_counter_.fp_count = 0;
-
-  textures_[kFpsTexture] = PrintFpsCounter(fps_counter_.fps);
-  *sprites_[kFpsSprite].mutable_film(0) =
-      textures_[kFpsTexture]->GetBoundingBox();
-  scene_manager_->Dirty(*scene_manager_->GetSceneNodeById("fps_counter"));
-}
-
-std::unique_ptr<Texture> Core::PrintFpsCounter(int fps) {
-  RGBa gray;
-  gray.set_red(200);
-  gray.set_green(200);
-  gray.set_blue(200);
-  return renderer_->CreateText(absl::StrCat(fps), *fonts_[kDefaultFont], gray,
-                               RGBa());
-}
-
-void Core::LoadSprites() {
-  const auto sprites =
-      LoadTextProtoFromPath<Sprite>("../data/sprites/", ".sprite");
-  const auto animations =
-      LoadTextProtoFromPath<SpriteAnimation>("../data/sprites/", ".animation");
-  AnimatorManager::Instance().Init(animations);
-
-  ranges::action::insert(
-      textures_,
-      sprites | ranges::view::transform(
-                    [](const Sprite& sprite) { return sprite.resource(); }) |
-          ranges::action::sort | ranges::view::unique |
-          ranges::view::transform([this](const std::string& resource) {
-            return std::make_pair(resource, renderer_->LoadTexture(resource));
-          }));
-
-  ranges::action::insert(
-      sprites_, sprites | ranges::view::transform([](const Sprite& sprite) {
-                  return std::make_pair(sprite.id(), sprite);
-                }));
 }
 
 }  // namespace troll

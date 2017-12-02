@@ -18,8 +18,6 @@ class AnimatorManager {
     return singleton;
   }
 
-  void Init(const std::vector<SpriteAnimation>& animations);
-
   void Play(const std::string& script_id, const std::string& scene_node_id);
   void Stop(const std::string& script_id, const std::string& scene_node_id);
   void Pause(const std::string& script_id, const std::string& scene_node_id);
@@ -37,8 +35,6 @@ class AnimatorManager {
 
   void CheckAnimatorsStatus();
   void RemoveTerminated();
-
-  std::unordered_map<std::string, AnimationScript> scripts_;
 
   bool paused_ = false;
   std::vector<std::unique_ptr<ScriptAnimator>> running_scripts_;

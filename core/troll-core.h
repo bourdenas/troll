@@ -25,10 +25,6 @@ class Core {
   void Halt();
 
   void LoadScene(const std::string& scene);
-  void UnloadScene();
-
-  const Sprite* GetSprite(const std::string& sprite_id) const;
-  const Texture* GetTexture(const std::string& texture_id) const;
 
   SceneManager& scene_manager() { return *scene_manager_; }
 
@@ -43,13 +39,6 @@ class Core {
 
   void FrameStarted(int time_since_last_frame);
   void FrameEnded(int time_since_last_frame);
-
-  std::unique_ptr<Texture> PrintFpsCounter(int fps);
-  void LoadSprites();
-
-  std::unordered_map<std::string, Sprite> sprites_;
-  std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
-  std::unordered_map<std::string, std::unique_ptr<Font>> fonts_;
 
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<SceneManager> scene_manager_;

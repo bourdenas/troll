@@ -2,7 +2,7 @@
 
 #include "core/action-manager.h"
 #include "core/collision-checker.h"
-#include "core/troll-core.h"
+#include "core/resource-manager.h"
 #include "core/util-lib.h"
 
 namespace troll {
@@ -14,9 +14,9 @@ void SceneManager::SetupScene(const Scene& scene) {
                        scene_.viewport());
 
   if (scene_.bitmap_config().has_bitmap()) {
-    renderer_.BlitTexture(
-        *Core::Instance().GetTexture(scene_.bitmap_config().bitmap()), Box(),
-        Box());
+    renderer_.BlitTexture(*ResourceManager::Instance().GetTexture(
+                              scene_.bitmap_config().bitmap()),
+                          Box(), Box());
   }
 
   CollisionChecker::Instance().Init(scene_);
@@ -80,16 +80,16 @@ void SceneManager::Dirty(const SceneNode& scene_node) {
 }
 
 void SceneManager::BlitSceneNode(const SceneNode& node) const {
-  const auto* sprite = Core::Instance().GetSprite(node.sprite_id());
-  if (sprite == nullptr) return;
+  const auto* sprite = ResourceManager::Instance().GetSprite(node.sprite_id());
 
   const auto& bounding_box = sprite->film(node.frame_index());
   Box destination = bounding_box;
   destination.set_left(node.position().x());
   destination.set_top(node.position().y());
 
-  renderer_.BlitTexture(*Core::Instance().GetTexture(sprite->resource()),
-                        bounding_box, destination);
+  renderer_.BlitTexture(
+      *ResourceManager::Instance().GetTexture(sprite->resource()), bounding_box,
+      destination);
 }
 
 void SceneManager::CleanUpDeletedSceneNodes() {

@@ -18,12 +18,13 @@ class Renderer {
   void CleanUp();
 
   // Load an image file into a texture.
-  std::unique_ptr<Texture> LoadTexture(const std::string& filename);
-  std::unique_ptr<Font> LoadFont(const std::string& filename, int font_size);
+  std::unique_ptr<Texture> LoadTexture(const std::string& filename) const;
+  std::unique_ptr<Font> LoadFont(const std::string& filename,
+                                 int font_size) const;
 
   // Create a texture of the input size and colour.
   std::unique_ptr<Texture> CreateTexture(const RGBa& colour, int width,
-                                         int height);
+                                         int height) const;
   // Create a text surface area.
   std::unique_ptr<Texture> CreateText(const std::string& text, const Font& font,
                                       const RGBa& colour,
@@ -38,9 +39,9 @@ class Renderer {
   // Commit all changes to the screen.
   void Flip() const;
 
-  void ShowCursor(bool show) {}
+  void ShowCursor(bool show) const {}
 
-  void PrintText(const std::string& text, const Vector& at) {}
+  void PrintText(const std::string& text, const Vector& at) const {}
   void ClearScreen() const;
 
  private:
