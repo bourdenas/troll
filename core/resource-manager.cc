@@ -132,6 +132,8 @@ void ResourceManager::LoadTextures(const Renderer& renderer) {
               });
 }
 
+constexpr char kDefaultFont[] = "fonts/times.ttf";
+
 void ResourceManager::LoadFonts(const Renderer& renderer) {
   fonts_[kDefaultFont] = renderer.LoadFont(kDefaultFont, 16);
 }
