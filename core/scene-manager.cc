@@ -1,5 +1,7 @@
 #include "core/scene-manager.h"
 
+#include <glog/logging.h>
+
 #include "core/action-manager.h"
 #include "core/collision-checker.h"
 #include "core/resource-manager.h"
@@ -30,21 +32,30 @@ void SceneManager::SetupScene(const Scene& scene) {
 }
 
 void SceneManager::AddSceneNode(const SceneNode& node) {
-  const auto it = scene_nodes_.emplace(node.id(), node).first;
-  Dirty(it->second);
+  const auto res = scene_nodes_.emplace(node.id(), node);
+  DLOG_IF(FATAL, !res.second) << "AddSceneNode() SceneNode with id='"
+                              << node.id() << "' already exists.";
 
+  const auto it = res.first;
+  Dirty(it->second);
   CollisionChecker::Instance().AddSceneNode(it->second);
 }
 
 void SceneManager::RemoveSceneNode(const std::string& id) {
-  dead_scene_nodes_.push_back(id);
   const auto it = scene_nodes_.find(id);
+  DLOG_IF(FATAL, it == scene_nodes_.end())
+      << "RemoveSceneNode() cannot find SceneNode with id='" << id << "'.";
+
   dirty_boxes_.push_back(util::GetSceneNodeBoundingBox(it->second));
+  dead_scene_nodes_.push_back(id);
 }
 
 SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
   const auto it = scene_nodes_.find(id);
-  return it != scene_nodes_.end() ? &it->second : nullptr;
+  DLOG_IF(FATAL, it == scene_nodes_.end()) << "SceneNode with id='" << id
+                                           << "' was not found.";
+
+  return &it->second;
 }
 
 void SceneManager::SetViewport(const Box& view) {
@@ -95,6 +106,9 @@ void SceneManager::BlitSceneNode(const SceneNode& node) const {
 void SceneManager::CleanUpDeletedSceneNodes() {
   for (const auto& id : dead_scene_nodes_) {
     const auto it = scene_nodes_.find(id);
+    DLOG_IF(FATAL, it == scene_nodes_.end())
+        << "CleanUpDeletedSceneNodes() SceneNode with id='" << id
+        << "' was not found.";
     CollisionChecker::Instance().RemoveSceneNode(it->second);
 
     const auto dirty_it =
