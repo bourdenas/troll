@@ -68,34 +68,34 @@ Scene ResourceManager::LoadScene(const std::string& scene_id) {
   return LoadTextProto<Scene>("../data/scenes/" + scene_id);
 }
 
-const Sprite* ResourceManager::GetSprite(const std::string& sprite_id) const {
+const Sprite& ResourceManager::GetSprite(const std::string& sprite_id) const {
   const auto it = sprites_.find(sprite_id);
   DLOG_IF(FATAL, it == sprites_.end()) << "Sprite with id='" << sprite_id
                                        << "' was not found.";
-  return &it->second;
+  return it->second;
 }
 
-const AnimationScript* ResourceManager::GetAnimationScript(
+const AnimationScript& ResourceManager::GetAnimationScript(
     const std::string& script_id) const {
   const auto it = scripts_.find(script_id);
   DLOG_IF(FATAL, it == scripts_.end()) << "AnimationScript with id='"
                                        << script_id << "' was not found.";
-  return &it->second;
+  return it->second;
 }
 
-const Texture* ResourceManager::GetTexture(
+const Texture& ResourceManager::GetTexture(
     const std::string& texture_id) const {
   const auto it = textures_.find(texture_id);
   DLOG_IF(FATAL, it == textures_.end()) << "Texture with id='" << texture_id
                                         << "' was not found.";
-  return it->second.get();
+  return *it->second;
 }
 
-const Font* ResourceManager::GetFont(const std::string& font_id) const {
+const Font& ResourceManager::GetFont(const std::string& font_id) const {
   const auto it = fonts_.find(font_id);
   DLOG_IF(FATAL, it == fonts_.end()) << "Font with id='" << font_id
                                      << "' was not found.";
-  return it->second.get();
+  return *it->second;
 }
 
 void ResourceManager::LoadSprites() {
