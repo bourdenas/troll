@@ -27,7 +27,8 @@ class CollisionChecker {
   // Marks a scene node that needs to be queued for rendering during this frame.
   void Dirty(const SceneNode& node);
 
-  // Checks SceneNodes for collisions and applies attached collision actions.
+  // Checks SceneNodes which were marked as dirty for collisions and applies
+  // collision actions as consequences.
   void CheckCollisions();
 
  private:
