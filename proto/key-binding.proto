@@ -1,0 +1,32 @@
+syntax = "proto2";
+
+import "action.proto";
+
+package troll;
+
+// The game context (e.g. screen) that the bindings are valid. Some input
+// actions are only allowed in specific screens. In same cases the same key can
+// have different effects in different contexts. Conflict resolution is not part
+// of the scope.
+message GameContext {
+  // Game context tag under which the key bindings are valid. An empty
+  // context_id is translated as global key bindings.
+  optional string context_id = 1;
+
+  // Key to action specification.
+  repeated KeyBinding binding = 2;
+}
+
+message KeyBinding {
+  repeated string key_code = 1;
+
+  // Condition of the key when the actions will be activated.
+  enum ActivationCondition {
+    PRESSED = 0;
+    RELEASED = 1;
+  }
+  optional ActivationCondition activate = 2;
+
+  // List of actions to perform on binding activation.
+  repeated Action action = 3;
+}
