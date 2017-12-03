@@ -25,10 +25,10 @@ class ResourceManager {
 
   Scene LoadScene(const std::string& scene);
 
-  const Sprite* GetSprite(const std::string& sprite_id) const;
-  const AnimationScript* GetAnimationScript(const std::string& script_id) const;
-  const Texture* GetTexture(const std::string& texture_id) const;
-  const Font* GetFont(const std::string& font_id) const;
+  const Sprite& GetSprite(const std::string& sprite_id) const;
+  const AnimationScript& GetAnimationScript(const std::string& script_id) const;
+  const Texture& GetTexture(const std::string& texture_id) const;
+  const Font& GetFont(const std::string& font_id) const;
 
   ResourceManager(const ResourceManager&) = delete;
   ResourceManager& operator=(const ResourceManager&) = delete;

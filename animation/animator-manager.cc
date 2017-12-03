@@ -28,7 +28,7 @@ auto MatchSceneNode(const std::string& scene_node_id) {
 void AnimatorManager::Play(const std::string& script_id,
                            const std::string& scene_node_id) {
   running_scripts_.push_back(std::make_unique<ScriptAnimator>(
-      *ResourceManager::Instance().GetAnimationScript(script_id),
+      ResourceManager::Instance().GetAnimationScript(script_id),
       scene_node_id));
   running_scripts_.back()->Start();
 }
