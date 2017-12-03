@@ -1,5 +1,6 @@
 #include "core/scene-manager.h"
 
+#include "animation/animator-manager.h"
 #include "core/action-manager.h"
 #include "core/collision-checker.h"
 #include "core/resource-manager.h"
@@ -96,6 +97,7 @@ void SceneManager::CleanUpDeletedSceneNodes() {
   for (const auto& id : dead_scene_nodes_) {
     const auto it = scene_nodes_.find(id);
     CollisionChecker::Instance().RemoveSceneNode(it->second);
+    AnimatorManager::Instance().StopNodeAnimations(id);
 
     const auto dirty_it =
         std::remove(dirty_nodes_.begin(), dirty_nodes_.end(), &it->second);

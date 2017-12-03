@@ -21,10 +21,13 @@ class AnimatorManager {
   void Play(const std::string& script_id, const std::string& scene_node_id);
   void Stop(const std::string& script_id, const std::string& scene_node_id);
   void Pause(const std::string& script_id, const std::string& scene_node_id);
+  void Resume(const std::string& script_id, const std::string& scene_node_id);
 
+  void StopNodeAnimations(const std::string& scene_node_id);
+
+  void StopAll();
   void PauseAll();
   void ResumeAll();
-  void StopAll();
 
   void Progress(int time_since_last_frame);
 
