@@ -4,29 +4,53 @@ import "action.proto";
 
 package troll;
 
-// The game context (e.g. screen) that the bindings are valid. Some input
+message KeyBindings {
+  repeated InputContext context = 1;
+}
+
+// The game input context (e.g. screen) that the bindings are valid. Some input
 // actions are only allowed in specific screens. In same cases the same key can
 // have different effects in different contexts. Conflict resolution is not part
 // of the scope.
-message GameContext {
+message InputContext {
   // Game context tag under which the key bindings are valid. An empty
   // context_id is translated as global key bindings.
-  optional string context_id = 1;
+  optional string id = 1;
 
   // Key to action specification.
-  repeated KeyBinding binding = 2;
+  repeated Interaction interaction = 2;
 }
 
-message KeyBinding {
+message Interaction {
+  // A user facing display name that describes the action to the user. Useful,
+  // for key configuration screens.
+  optional string display_name = 1;
+
+  // Alternatives of key combinations that trigger the interaction.
+  repeated KeyCombination key_combo = 2;
+
+  // Trigger of the interaction.
+  repeated Trigger trigger = 3;
+}
+
+// A combination of keys that trigger an interaction.
+message KeyCombination {
+  // A label that identifies the input key/interaction.
   repeated string key_code = 1;
+}
 
-  // Condition of the key when the actions will be activated.
-  enum ActivationCondition {
-    PRESSED = 0;
-    RELEASED = 1;
+// Describes an interaction with the environment, which is triggered by a key
+// state.
+message Trigger {
+  // State of key that triggers the interaction.
+  enum KeyState {
+    NONE = 0;
+    PRESSED = 1;
+    RELEASED = 2;
+    HOLD = 3;
   }
-  optional ActivationCondition activate = 2;
+  optional KeyState state = 1;
 
-  // List of actions to perform on binding activation.
-  repeated Action action = 3;
+  // List of actions to perform during the interaction.
+  repeated Action action = 2;
 }
