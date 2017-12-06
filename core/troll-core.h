@@ -33,7 +33,7 @@ class Core {
 
  private:
   Core() = default;
-  virtual ~Core() = default;
+  ~Core() = default;
 
   bool InputHandling();
 

@@ -35,7 +35,7 @@ class ResourceManager {
 
  private:
   ResourceManager() = default;
-  virtual ~ResourceManager() = default;
+  ~ResourceManager() = default;
 
   void LoadSprites();
   void LoadAnimations();

@@ -31,9 +31,11 @@ class AnimatorManager {
 
   void Progress(int time_since_last_frame);
 
+  AnimatorManager(const AnimatorManager&) = delete;
+  AnimatorManager& operator=(const AnimatorManager&) = delete;
+
  private:
   AnimatorManager() = default;
-  AnimatorManager(const AnimatorManager&) = delete;
   ~AnimatorManager() = default;
 
   void CheckAnimatorsStatus();

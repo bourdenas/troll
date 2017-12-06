@@ -20,9 +20,11 @@ class ActionManager {
 
   void Execute(const Action& action);
 
+  ActionManager(const ActionManager&) = delete;
+  ActionManager& operator=(const ActionManager&) = delete;
+
  private:
   ActionManager() = default;
-  ActionManager(const ActionManager&) = delete;
   ~ActionManager() = default;
 
   std::unordered_map<Action::ActionCase, std::unique_ptr<Executor>> executors_;
