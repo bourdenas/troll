@@ -17,6 +17,9 @@
     <Filter Include="animation">
       <UniqueIdentifier>{a82bd5ff-7764-453b-bdaf-f426631ba707}</UniqueIdentifier>
     </Filter>
+    <Filter Include="input">
+      <UniqueIdentifier>{ff884c83-fdda-4b36-8122-c79d3d292083}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="proto\scene.pb.h">
@@ -78,6 +81,15 @@
     </ClInclude>
     <ClInclude Include="core\resource-manager.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="input\input-event.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="input\input-manager.h">
+      <Filter>input</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\key-binding.pb.h">
+      <Filter>proto</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +156,12 @@
     <ClCompile Include="core\resource-manager.cc">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="input\input-manager.cc">
+      <Filter>input</Filter>
+    </ClCompile>
+    <ClCompile Include="proto\key-binding.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\scene.proto">
@@ -168,6 +186,9 @@
       <Filter>proto</Filter>
     </None>
     <None Include="proto\collision.proto">
+      <Filter>proto</Filter>
+    </None>
+    <None Include="proto\key-binding.proto">
       <Filter>proto</Filter>
     </None>
   </ItemGroup>
