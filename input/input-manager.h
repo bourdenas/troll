@@ -24,7 +24,7 @@ class InputManager {
   void ActivateContext(const std::string& context_id);
   void DeactivateContext(const std::string& context_id);
 
-  void Handle(const InputEvent& event);
+  void Handle(const InputEvent& event) const;
 
   InputManager(const InputManager&) = delete;
   InputManager& operator=(const InputManager&) = delete;
@@ -33,9 +33,16 @@ class InputManager {
   InputManager() = default;
   ~InputManager() = default;
 
+  void HandleKey(const InputEvent::KeyEvent& event) const;
+
+  // A mapping from a key code of a input backend into a semantic name.
   std::unordered_map<int, std::string> key_mapping_;
+
+  // Set of activated games input contexts.
   std::unordered_set<std::string> active_contexts_ = {""};
-  std::multimap<std::string, Trigger> interactions_;
+
+  // Mapping of {key, context} pairs to interaction triggers.
+  std::multimap<std::pair<std::string, std::string>, Trigger> interactions_;
 };
 
 }  // namespace troll

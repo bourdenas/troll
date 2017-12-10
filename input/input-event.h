@@ -44,7 +44,7 @@ class InputEvent {
     event_.mouse_event_ = mouse_event;
   }
 
-  EventType event_type() { return event_type_; }
+  EventType event_type() const { return event_type_; }
 
   const KeyEvent& key_event() const { return event_.key_event_; }
   const MouseEvent& mouse_event() const { return event_.mouse_event_; }
