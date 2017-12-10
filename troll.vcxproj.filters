@@ -91,6 +91,9 @@
     <ClInclude Include="proto\key-binding.pb.h">
       <Filter>proto</Filter>
     </ClInclude>
+    <ClInclude Include="sdl\input-backend.h">
+      <Filter>sdl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -161,6 +164,9 @@
     </ClCompile>
     <ClCompile Include="proto\key-binding.pb.cc">
       <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="sdl\input-backend.cc">
+      <Filter>sdl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

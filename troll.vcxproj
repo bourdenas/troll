@@ -122,6 +122,7 @@
     <ClInclude Include="proto\scene-node.pb.h" />
     <ClInclude Include="proto\scene.pb.h" />
     <ClInclude Include="proto\sprite.pb.h" />
+    <ClInclude Include="sdl\input-backend.h" />
     <ClInclude Include="sdl\renderer.h" />
     <ClInclude Include="sdl\texture.h" />
   </ItemGroup>
@@ -147,6 +148,7 @@
     <ClCompile Include="proto\scene-node.pb.cc" />
     <ClCompile Include="proto\scene.pb.cc" />
     <ClCompile Include="proto\sprite.pb.cc" />
+    <ClCompile Include="sdl\input-backend.cc" />
     <ClCompile Include="sdl\renderer.cc" />
     <ClCompile Include="sdl\texture.cc" />
   </ItemGroup>
