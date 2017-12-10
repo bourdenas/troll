@@ -4,10 +4,23 @@
 #include <range/v3/view/map.hpp>
 
 #include "core/action-manager.h"
+#include "core/resource-manager.h"
 
 namespace troll {
 
-void InputManager::Init() {}
+void InputManager::Init() {
+  const auto& bindings = ResourceManager::Instance().GetKeyBindings();
+  for (const auto& context : bindings.context()) {
+    for (const auto& interaction : context.interaction()) {
+      for (const auto& key_combo : interaction.key_combo()) {
+        for (const auto& trigger : interaction.trigger()) {
+          interactions_.emplace(
+              std::make_pair(key_combo.key_code(0), context.id()), trigger);
+        }
+      }
+    }
+  }
+}
 
 void InputManager::AddKeyMapping(const std::string& label, int key_code) {
   key_mapping_.emplace(key_code, label);
