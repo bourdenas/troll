@@ -6,8 +6,10 @@
 #include "core/action-manager.h"
 #include "core/collision-checker.h"
 #include "core/resource-manager.h"
+#include "input/input-manager.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
+#include "sdl/input-backend.h"
 #include "sdl/renderer.h"
 
 namespace troll {
@@ -20,6 +22,9 @@ void Core::Init() {
 
   ResourceManager::Instance().LoadResources(*renderer_);
   LoadScene("main.scene");
+
+  InputManager::Instance().Init();
+  InputBackend::Instance().Init();
 }
 
 void Core::CleanUp() {
@@ -55,14 +60,13 @@ bool Core::InputHandling() {
     return false;
   }
 
-  SDL_Event event;
-  while (SDL_PollEvent(&event)) {
-    if (event.type == SDL_QUIT) {
+  InputEvent event;
+  while ((event = InputBackend::Instance().PollEvent()).event_type() !=
+         InputEvent::EventType::NO_EVENT) {
+    if (event.event_type() == InputEvent::EventType::QUIT_EVENT) {
       return false;
     }
-    if (event.type == SDL_KEYDOWN) {
-      return false;
-    }
+    InputManager::Instance().Handle(event);
   }
   return true;
 }
