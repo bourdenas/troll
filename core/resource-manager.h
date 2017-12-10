@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "proto/animation.pb.h"
+#include "proto/key-binding.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
 #include "sdl/renderer.h"
@@ -25,6 +26,7 @@ class ResourceManager {
 
   Scene LoadScene(const std::string& scene);
 
+  const KeyBindings& GetKeyBindings() const;
   const Sprite& GetSprite(const std::string& sprite_id) const;
   const AnimationScript& GetAnimationScript(const std::string& script_id) const;
   const Texture& GetTexture(const std::string& texture_id) const;
@@ -37,11 +39,13 @@ class ResourceManager {
   ResourceManager() = default;
   ~ResourceManager() = default;
 
+  void LoadKeyBindings();
   void LoadSprites();
   void LoadAnimations();
   void LoadTextures(const Renderer& renderer);
   void LoadFonts(const Renderer& renderer);
 
+  KeyBindings key_bindings_;
   std::unordered_map<std::string, Sprite> sprites_;
   std::unordered_map<std::string, AnimationScript> scripts_;
   std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
