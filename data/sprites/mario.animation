@@ -1,4 +1,30 @@
 script {
+  id: 'mario_look_left'
+  animation {
+    termination: ANY
+    repeat: 1
+    frame_list {
+      frame: 0
+      delay: 0
+      vertical_align: BOTTOM
+    }
+  }
+}
+
+script {
+  id: 'mario_look_right'
+  animation {
+    termination: ANY
+    repeat: 1
+    frame_list {
+      frame: 15
+      delay: 0
+      vertical_align: BOTTOM
+    }
+  }
+}
+
+script {
   id: 'mario_walk_left'
   animation {
     termination: ANY

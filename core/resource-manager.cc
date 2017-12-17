@@ -14,6 +14,7 @@
 #include <range/v3/view/unique.hpp>
 
 #include "proto/animation.pb.h"
+#include "proto/key-binding.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
 #include "sdl/renderer.h"
@@ -53,6 +54,7 @@ std::vector<Message> LoadTextProtoFromPath(const std::string& path,
 void ResourceManager::LoadResources(const Renderer& renderer) {
   LoadSprites();
   LoadAnimations();
+  LoadKeyBindings();
   LoadTextures(renderer);
   LoadFonts(renderer);
 }
@@ -66,6 +68,10 @@ void ResourceManager::CleanUp() {
 
 Scene ResourceManager::LoadScene(const std::string& scene_id) {
   return LoadTextProto<Scene>("../data/scenes/" + scene_id);
+}
+
+const KeyBindings& ResourceManager::GetKeyBindings() const {
+  return key_bindings_;
 }
 
 const Sprite& ResourceManager::GetSprite(const std::string& sprite_id) const {
@@ -96,6 +102,14 @@ const Font& ResourceManager::GetFont(const std::string& font_id) const {
   DLOG_IF(FATAL, it == fonts_.end()) << "Font with id='" << font_id
                                      << "' was not found.";
   return *it->second;
+}
+
+void ResourceManager::LoadKeyBindings() {
+  const auto key_bindings =
+      LoadTextProtoFromPath<KeyBindings>("../data/scenes/", ".keys");
+  for (const auto& keys : key_bindings) {
+    key_bindings_.MergeFrom(keys);
+  }
 }
 
 void ResourceManager::LoadSprites() {

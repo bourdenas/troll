@@ -111,14 +111,18 @@
     <ClInclude Include="core\scene-manager.h" />
     <ClInclude Include="core\troll-core.h" />
     <ClInclude Include="core\util-lib.h" />
+    <ClInclude Include="input\input-event.h" />
+    <ClInclude Include="input\input-manager.h" />
     <ClInclude Include="proto\action.pb.h" />
     <ClInclude Include="proto\animation.pb.h" />
     <ClInclude Include="proto\collision.pb.h" />
     <ClInclude Include="proto\event.pb.h" />
+    <ClInclude Include="proto\key-binding.pb.h" />
     <ClInclude Include="proto\primitives.pb.h" />
     <ClInclude Include="proto\scene-node.pb.h" />
     <ClInclude Include="proto\scene.pb.h" />
     <ClInclude Include="proto\sprite.pb.h" />
+    <ClInclude Include="sdl\input-backend.h" />
     <ClInclude Include="sdl\renderer.h" />
     <ClInclude Include="sdl\texture.h" />
   </ItemGroup>
@@ -134,14 +138,17 @@
     <ClCompile Include="core\scene-manager.cc" />
     <ClCompile Include="core\troll-core.cc" />
     <ClCompile Include="core\util-lib.cc" />
+    <ClCompile Include="input\input-manager.cc" />
     <ClCompile Include="proto\action.pb.cc" />
     <ClCompile Include="proto\animation.pb.cc" />
     <ClCompile Include="proto\collision.pb.cc" />
     <ClCompile Include="proto\event.pb.cc" />
+    <ClCompile Include="proto\key-binding.pb.cc" />
     <ClCompile Include="proto\primitives.pb.cc" />
     <ClCompile Include="proto\scene-node.pb.cc" />
     <ClCompile Include="proto\scene.pb.cc" />
     <ClCompile Include="proto\sprite.pb.cc" />
+    <ClCompile Include="sdl\input-backend.cc" />
     <ClCompile Include="sdl\renderer.cc" />
     <ClCompile Include="sdl\texture.cc" />
   </ItemGroup>
@@ -150,6 +157,7 @@
     <None Include="proto\animation.proto" />
     <None Include="proto\collision.proto" />
     <None Include="proto\event.proto" />
+    <None Include="proto\key-binding.proto" />
     <None Include="proto\primitives.proto" />
     <None Include="proto\scene-node.proto" />
     <None Include="proto\scene.proto" />
