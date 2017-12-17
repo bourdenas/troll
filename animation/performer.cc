@@ -21,8 +21,8 @@ bool ScalingPerformer::Execute(SceneNode* scene_node) {
 }
 
 bool FrameRangePerformer::Execute(SceneNode* scene_node) {
-  scene_node->set_frame_index(++current_frame_);
   // TODO: handle sprite alignment.
+  scene_node->set_frame_index(++current_frame_);
   if (current_frame_ == animation_.end_frame()) {
     current_frame_ = animation_.start_frame() - 1;
     return true;
@@ -31,9 +31,9 @@ bool FrameRangePerformer::Execute(SceneNode* scene_node) {
 }
 
 bool FrameListPerformer::Execute(SceneNode* scene_node) {
-  scene_node->set_frame_index(animation_.frame(current_frame_index_));
   // TODO: handle sprite alignment.
-  return ++current_frame_index_ == animation_.frame_size();
+  scene_node->set_frame_index(animation_.frame(current_frame_index_++));
+  return (current_frame_index_ %= animation_.frame_size()) == 0;
 }
 
 bool GotoPerformer::Execute(SceneNode* scene_node) {
