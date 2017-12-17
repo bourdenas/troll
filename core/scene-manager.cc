@@ -116,7 +116,7 @@ void SceneManager::CleanUpDeletedSceneNodes() {
     const auto dirty_it =
         std::remove(dirty_nodes_.begin(), dirty_nodes_.end(), &it->second);
     if (dirty_it != dirty_nodes_.end()) {
-      dirty_nodes_.erase(dirty_it);
+      dirty_nodes_.erase(dirty_it, dirty_nodes_.end());
     }
     scene_nodes_.erase(it);
   }
