@@ -53,10 +53,7 @@ void SceneManager::RemoveSceneNode(const std::string& id) {
 
 SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
   const auto it = scene_nodes_.find(id);
-  DLOG_IF(FATAL, it == scene_nodes_.end()) << "SceneNode with id='" << id
-                                           << "' was not found.";
-
-  return &it->second;
+  return it != scene_nodes_.end() ? &it->second : nullptr;
 }
 
 void SceneManager::SetViewport(const Box& view) {
