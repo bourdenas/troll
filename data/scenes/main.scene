@@ -83,6 +83,12 @@ collision {
       }
     }
   }
+  action {
+    play_animation_script {
+      script_id: 'mario_walk_left'
+      scene_node_id: 'mario_clone'
+    }
+  }
 }
 collision {
   sprite_id: 'mario'
@@ -96,12 +102,6 @@ collision {
   }
 }
 
-on_init {
-  play_animation_script {
-    script_id: 'mario_walk_right'
-    scene_node_id: 'mario'
-  }
-}
 on_init {
   play_animation_script {
     script_id: 'dk_taunt'

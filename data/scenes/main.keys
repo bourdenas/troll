@@ -8,7 +8,7 @@ context {
     }
 
     trigger {
-      state: HOLD
+      state: PRESSED
       action {
         play_animation_script {
           script_id: 'mario_walk_left'
@@ -34,7 +34,7 @@ context {
     }
 
     trigger {
-      state: HOLD
+      state: PRESSED
       action {
         play_animation_script {
           script_id: 'mario_walk_right'
@@ -49,6 +49,20 @@ context {
           script_id: 'mario_look_right'
           scene_node_id: 'mario'
         }
+      }
+    }
+  }
+
+  interaction {
+    display_name: 'Quit'
+    key_combo {
+      key_code: 'q'
+    }
+
+    trigger {
+      state: PRESSED
+      action {
+        quit {}
       }
     }
   }
