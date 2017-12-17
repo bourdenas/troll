@@ -169,8 +169,7 @@ InputEvent InputBackend::PollEvent() const {
     case SDL_KEYUP: {
       return InputEvent::KeyEvent{
           event.key.keysym.sym, event.key.keysym.mod,
-          event.button.state == SDL_PRESSED ? Trigger::PRESSED
-                                            : Trigger::RELEASED,
+          event.key.state == SDL_PRESSED ? Trigger::PRESSED : Trigger::RELEASED,
       };
     }
 
