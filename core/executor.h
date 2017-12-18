@@ -14,6 +14,16 @@ class Executor {
   virtual ~Executor() = default;
 
   virtual void Execute(const Action& action) const = 0;
+
+  // Derived classes should override this function to returns an Action that
+  // when executed will reverse the effect of the input action. If an action in
+  // irreversible or if derived class does not override it, then a NoopAction is
+  // returned.
+  virtual Action Reverse(const Action& action) const;
+};
+
+class NoopExecutor : public Executor {
+  void Execute(const Action& action) const override;
 };
 
 class QuitExecutor : public Executor {
@@ -38,10 +48,12 @@ class DestroySceneNodeExecutor : public Executor {
 
 class PlayAnimationScriptExecutor : public Executor {
   void Execute(const Action& action) const override;
+  Action Reverse(const Action& action) const override;
 };
 
 class StopAnimationScriptExecutor : public Executor {
   void Execute(const Action& action) const override;
+  Action Reverse(const Action& action) const override;
 };
 
 class PauseAnimationScriptExecutor : public Executor {

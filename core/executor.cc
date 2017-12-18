@@ -7,6 +7,14 @@
 
 namespace troll {
 
+Action Executor::Reverse(const Action& action) const {
+  Action noop;
+  noop.mutable_noop();
+  return noop;
+}
+
+void NoopExecutor::Execute(const Action& action) const {}
+
 void QuitExecutor::Execute(const Action& action) const {
   Core::Instance().Halt();
 }
@@ -53,6 +61,12 @@ void PlayAnimationScriptExecutor::Execute(const Action& action) const {
                                    scene_node_id);
 }
 
+Action PlayAnimationScriptExecutor::Reverse(const Action& action) const {
+  Action reverse;
+  *reverse.mutable_stop_animation_script() = action.play_animation_script();
+  return reverse;
+}
+
 void StopAnimationScriptExecutor::Execute(const Action& action) const {
   const auto& scene_node_id = action.stop_animation_script().scene_node_id();
   if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
@@ -67,6 +81,12 @@ void StopAnimationScriptExecutor::Execute(const Action& action) const {
 
   AnimatorManager::Instance().Stop(action.stop_animation_script().script_id(),
                                    scene_node_id);
+}
+
+Action StopAnimationScriptExecutor::Reverse(const Action& action) const {
+  Action reverse;
+  *reverse.mutable_play_animation_script() = action.stop_animation_script();
+  return reverse;
 }
 
 void PauseAnimationScriptExecutor::Execute(const Action& action) const {
