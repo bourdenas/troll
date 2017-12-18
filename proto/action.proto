@@ -8,20 +8,24 @@ package troll;
 
 message Action {
   oneof Action {
-    QuitAction quit = 1;
-    EmitAction emit = 2;
+    NoopAction noop = 1;
+    QuitAction quit = 2;
+    EmitAction emit = 3;
 
-    ChangeSceneAction change_scene = 3;
+    ChangeSceneAction change_scene = 4;
     
-    SceneNodeAction create_scene_node = 4;
-    SceneNodeAction destroy_scene_node = 5;
+    SceneNodeAction create_scene_node = 5;
+    SceneNodeAction destroy_scene_node = 6;
 
-    AnimationScriptAction play_animation_script = 6;
-    AnimationScriptAction stop_animation_script = 7;
-    AnimationScriptAction pause_animation_script = 8;
+    AnimationScriptAction play_animation_script = 7;
+    AnimationScriptAction stop_animation_script = 8;
+    AnimationScriptAction pause_animation_script = 9;
 
-    DisplayTextAction display_text = 9;
+    DisplayTextAction display_text = 10;
   }
+}
+
+message NoopAction {
 }
 
 message QuitAction {
