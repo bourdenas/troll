@@ -8,7 +8,7 @@ context {
     }
 
     trigger {
-      state: PRESSED
+      state: HOLD
       action {
         play_animation_script {
           script_id: 'mario_walk_left'
@@ -34,7 +34,7 @@ context {
     }
 
     trigger {
-      state: PRESSED
+      state: HOLD
       action {
         play_animation_script {
           script_id: 'mario_walk_right'

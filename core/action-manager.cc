@@ -36,4 +36,12 @@ void ActionManager::Execute(const Action& action) {
   executors_[type]->Execute(action);
 }
 
+Action ActionManager::Reverse(const Action& action) {
+  const auto type = action.Action_case();
+  DLOG_IF(FATAL, executors_[type] == nullptr)
+      << "Action: " << action.DebugString()
+      << " is not registered with ActionManager and has no valid Executor.";
+  return executors_[type]->Reverse(action);
+}
+
 }  // namespace troll
