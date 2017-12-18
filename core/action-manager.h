@@ -19,6 +19,7 @@ class ActionManager {
   void Init();
 
   void Execute(const Action& action);
+  Action Reverse(const Action& action);
 
   ActionManager(const ActionManager&) = delete;
   ActionManager& operator=(const ActionManager&) = delete;

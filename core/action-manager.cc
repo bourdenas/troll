@@ -1,8 +1,11 @@
 #include "core/action-manager.h"
 
+#include <glog/logging.h>
+
 namespace troll {
 
 void ActionManager::Init() {
+  executors_.emplace(Action::kNoop, std::make_unique<NoopExecutor>());
   executors_.emplace(Action::kQuit, std::make_unique<QuitExecutor>());
   executors_.emplace(Action::kEmit, std::make_unique<EmitExecutor>());
 
@@ -27,7 +30,18 @@ void ActionManager::Init() {
 
 void ActionManager::Execute(const Action& action) {
   const auto type = action.Action_case();
+  DLOG_IF(FATAL, executors_[type] == nullptr)
+      << "Action: " << action.DebugString()
+      << " is not registered with ActionManager and has no valid Executor.";
   executors_[type]->Execute(action);
+}
+
+Action ActionManager::Reverse(const Action& action) {
+  const auto type = action.Action_case();
+  DLOG_IF(FATAL, executors_[type] == nullptr)
+      << "Action: " << action.DebugString()
+      << " is not registered with ActionManager and has no valid Executor.";
+  return executors_[type]->Reverse(action);
 }
 
 }  // namespace troll
