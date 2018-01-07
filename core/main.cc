@@ -1,5 +1,6 @@
 #include <glog/logging.h>
 
+#define SDL_MAIN_HANDLED
 #include "core/troll-core.h"
 
 int main(int argc, char *argv[]) {

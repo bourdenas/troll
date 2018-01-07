@@ -1,7 +1,5 @@
 #include "core/troll-core.h"
 
-#include <absl/strings/str_cat.h>
-
 #include "animation/animator-manager.h"
 #include "core/action-manager.h"
 #include "core/collision-checker.h"
