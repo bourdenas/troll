@@ -6,7 +6,7 @@
 #include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
 
-#include "core/action-manager.h"
+#include "action/action-manager.h"
 #include "core/util-lib.h"
 
 namespace troll {

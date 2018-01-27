@@ -2,8 +2,8 @@
 
 #include <glog/logging.h>
 
+#include "action/action-manager.h"
 #include "animation/animator-manager.h"
-#include "core/action-manager.h"
 #include "core/collision-checker.h"
 #include "core/resource-manager.h"
 #include "core/util-lib.h"

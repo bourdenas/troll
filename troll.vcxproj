@@ -101,12 +101,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="action\action-manager.h" />
+    <ClInclude Include="action\executor.h" />
     <ClInclude Include="animation\animator-manager.h" />
     <ClInclude Include="animation\animator.h" />
     <ClInclude Include="animation\performer.h" />
-    <ClInclude Include="core\action-manager.h" />
     <ClInclude Include="core\collision-checker.h" />
-    <ClInclude Include="core\executor.h" />
     <ClInclude Include="core\resource-manager.h" />
     <ClInclude Include="core\scene-manager.h" />
     <ClInclude Include="core\troll-core.h" />
@@ -127,12 +127,12 @@
     <ClInclude Include="sdl\texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="action\action-manager.cc" />
+    <ClCompile Include="action\executor.cc" />
     <ClCompile Include="animation\animator-manager.cc" />
     <ClCompile Include="animation\animator.cc" />
     <ClCompile Include="animation\performer.cc" />
-    <ClCompile Include="core\action-manager.cc" />
     <ClCompile Include="core\collision-checker.cc" />
-    <ClCompile Include="core\executor.cc" />
     <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\resource-manager.cc" />
     <ClCompile Include="core\scene-manager.cc" />

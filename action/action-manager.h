@@ -1,10 +1,10 @@
-#ifndef TROLL_CORE_ACTION_MANAGER_H_
-#define TROLL_CORE_ACTION_MANAGER_H_
+#ifndef TROLL_ACTION_ACTION_MANAGER_H_
+#define TROLL_ACTION_ACTION_MANAGER_H_
 
 #include <memory>
 #include <unordered_map>
 
-#include "core/executor.h"
+#include "action/executor.h"
 #include "proto/action.pb.h"
 
 namespace troll {
@@ -33,4 +33,4 @@ class ActionManager {
 
 }  // namespace troll
 
-#endif  // TROLL_CORE_ACTION_MANAGER_H_
+#endif  // TROLL_ACTION_ACTION_MANAGER_H_

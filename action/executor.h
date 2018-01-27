@@ -1,5 +1,5 @@
-#ifndef TROLL_CORE_EXECUTOR_H_
-#define TROLL_CORE_EXECUTOR_H_
+#ifndef TROLL_ACTION_EXECUTOR_H_
+#define TROLL_ACTION_EXECUTOR_H_
 
 #include <vector>
 
@@ -66,4 +66,4 @@ class DisplayTextExecutor : public Executor {
 
 }  // namespace troll
 
-#endif  // TROLL_CORE_EXECUTOR_H_
+#endif  // TROLL_ACTION_EXECUTOR_H_
