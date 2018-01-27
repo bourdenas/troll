@@ -1,9 +1,9 @@
 syntax = "proto2";
 
-import "action.proto";
-import "collision.proto";
-import "primitives.proto";
-import "scene-node.proto";
+import "proto/action.proto";
+import "proto/collision.proto";
+import "proto/primitives.proto";
+import "proto/scene-node.proto";
 
 package troll;
 
