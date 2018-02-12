@@ -4,6 +4,7 @@
 
 #include "animation/animator-manager.h"
 #include "core/troll-core.h"
+#include "scripting/script-manager.h"
 
 namespace troll {
 
@@ -107,6 +108,15 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
 
 void DisplayTextExecutor::Execute(const Action& action) const {
   // TODO(bourdenas): Implement show text.
+}
+
+void ImportModuleExecutor::Execute(const Action& action) const {
+  ScriptManager::Instance().ImportModule(action.import_module().module());
+}
+
+void ScriptExecutor::Execute(const Action& action) const {
+  ScriptManager::Instance().Call(action.call().module(),
+                                 action.call().function());
 }
 
 }  // namespace troll

@@ -64,6 +64,14 @@ class DisplayTextExecutor : public Executor {
   void Execute(const Action& action) const override;
 };
 
+class ImportModuleExecutor : public Executor {
+  void Execute(const Action& action) const override;
+};
+
+class ScriptExecutor : public Executor {
+  void Execute(const Action& action) const override;
+};
+
 }  // namespace troll
 
 #endif  // TROLL_ACTION_EXECUTOR_H_
