@@ -2,7 +2,17 @@
 
 #include <glog/logging.h>
 
+#include "action/action-manager.h"
+
 namespace troll {
+
+PYBIND11_EMBEDDED_MODULE(troll, m) {
+  m.def("execute", [](const std::string& encoded_action) {
+    Action action;
+    action.ParseFromString(encoded_action);
+    ActionManager::Instance().Execute(action);
+  });
+}
 
 void ScriptManager::Init() {}
 
