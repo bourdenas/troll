@@ -1,12 +1,13 @@
 #include "core/troll-core.h"
 
+#include "action/action-manager.h"
 #include "animation/animator-manager.h"
-#include "core/action-manager.h"
 #include "core/collision-checker.h"
 #include "core/resource-manager.h"
 #include "input/input-manager.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
+#include "scripting/script-manager.h"
 #include "sdl/input-backend.h"
 #include "sdl/renderer.h"
 
@@ -23,6 +24,7 @@ void Core::Init() {
 
   InputManager::Instance().Init();
   InputBackend::Instance().Init();
+  ScriptManager::Instance().Init();
 }
 
 void Core::CleanUp() {

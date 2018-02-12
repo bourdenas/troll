@@ -1,5 +1,5 @@
-#ifndef TROLL_CORE_EXECUTOR_H_
-#define TROLL_CORE_EXECUTOR_H_
+#ifndef TROLL_ACTION_EXECUTOR_H_
+#define TROLL_ACTION_EXECUTOR_H_
 
 #include <vector>
 
@@ -64,6 +64,14 @@ class DisplayTextExecutor : public Executor {
   void Execute(const Action& action) const override;
 };
 
+class ImportModuleExecutor : public Executor {
+  void Execute(const Action& action) const override;
+};
+
+class ScriptExecutor : public Executor {
+  void Execute(const Action& action) const override;
+};
+
 }  // namespace troll
 
-#endif  // TROLL_CORE_EXECUTOR_H_
+#endif  // TROLL_ACTION_EXECUTOR_H_

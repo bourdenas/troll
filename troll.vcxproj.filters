@@ -20,6 +20,12 @@
     <Filter Include="input">
       <UniqueIdentifier>{ff884c83-fdda-4b36-8122-c79d3d292083}</UniqueIdentifier>
     </Filter>
+    <Filter Include="action">
+      <UniqueIdentifier>{ba8a33be-37cd-48c3-859d-733dd956b2a4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="scripting">
+      <UniqueIdentifier>{5fcff62d-d53d-46b3-8522-8cb01662f0bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="proto\scene.pb.h">
@@ -64,12 +70,6 @@
     <ClInclude Include="proto\scene-node.pb.h">
       <Filter>proto</Filter>
     </ClInclude>
-    <ClInclude Include="core\action-manager.h">
-      <Filter>core</Filter>
-    </ClInclude>
-    <ClInclude Include="core\executor.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="proto\collision.pb.h">
       <Filter>proto</Filter>
     </ClInclude>
@@ -93,6 +93,15 @@
     </ClInclude>
     <ClInclude Include="sdl\input-backend.h">
       <Filter>sdl</Filter>
+    </ClInclude>
+    <ClInclude Include="action\action-manager.h">
+      <Filter>action</Filter>
+    </ClInclude>
+    <ClInclude Include="action\executor.h">
+      <Filter>action</Filter>
+    </ClInclude>
+    <ClInclude Include="scripting\script-manager.h">
+      <Filter>scripting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -138,12 +147,6 @@
     <ClCompile Include="proto\scene-node.pb.cc">
       <Filter>proto</Filter>
     </ClCompile>
-    <ClCompile Include="core\action-manager.cc">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="core\executor.cc">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="sdl\texture.cc">
       <Filter>sdl</Filter>
     </ClCompile>
@@ -167,6 +170,15 @@
     </ClCompile>
     <ClCompile Include="sdl\input-backend.cc">
       <Filter>sdl</Filter>
+    </ClCompile>
+    <ClCompile Include="action\action-manager.cc">
+      <Filter>action</Filter>
+    </ClCompile>
+    <ClCompile Include="action\executor.cc">
+      <Filter>action</Filter>
+    </ClCompile>
+    <ClCompile Include="scripting\script-manager.cc">
+      <Filter>scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,8 +1,8 @@
 syntax = "proto2";
 
-import "event.proto";
-import "primitives.proto";
-import "scene-node.proto";
+import "proto/event.proto";
+import "proto/primitives.proto";
+import "proto/scene-node.proto";
 
 package troll;
 
@@ -22,6 +22,9 @@ message Action {
     AnimationScriptAction pause_animation_script = 9;
 
     DisplayTextAction display_text = 10;
+
+    ScriptAction import_module = 11;
+    ScriptAction call = 12;
   }
 }
 
@@ -60,4 +63,9 @@ message DisplayTextAction {
   optional RGBa colour = 7;
   optional RGBa background_colour = 8;
   optional string font = 9;
+}
+
+message ScriptAction {
+  optional string module = 1;
+  optional string function = 2;
 }

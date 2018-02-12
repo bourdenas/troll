@@ -76,12 +76,13 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>D:\dev\troll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\troll;%(AdditionalIncludeDirectories);D:\dev\vcpkg\packages\python3_x86-windows\include\python3.6</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>D:\dev\vcpkg\packages\python3_x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -90,7 +91,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>D:\dev\troll;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\dev\troll;%(AdditionalIncludeDirectories);D:\dev\vcpkg\packages\python3_x86-windows\include\python3.6</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -98,15 +99,16 @@
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>D:\dev\vcpkg\packages\python3_x86-windows\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="action\action-manager.h" />
+    <ClInclude Include="action\executor.h" />
     <ClInclude Include="animation\animator-manager.h" />
     <ClInclude Include="animation\animator.h" />
     <ClInclude Include="animation\performer.h" />
-    <ClInclude Include="core\action-manager.h" />
     <ClInclude Include="core\collision-checker.h" />
-    <ClInclude Include="core\executor.h" />
     <ClInclude Include="core\resource-manager.h" />
     <ClInclude Include="core\scene-manager.h" />
     <ClInclude Include="core\troll-core.h" />
@@ -122,17 +124,18 @@
     <ClInclude Include="proto\scene-node.pb.h" />
     <ClInclude Include="proto\scene.pb.h" />
     <ClInclude Include="proto\sprite.pb.h" />
+    <ClInclude Include="scripting\script-manager.h" />
     <ClInclude Include="sdl\input-backend.h" />
     <ClInclude Include="sdl\renderer.h" />
     <ClInclude Include="sdl\texture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="action\action-manager.cc" />
+    <ClCompile Include="action\executor.cc" />
     <ClCompile Include="animation\animator-manager.cc" />
     <ClCompile Include="animation\animator.cc" />
     <ClCompile Include="animation\performer.cc" />
-    <ClCompile Include="core\action-manager.cc" />
     <ClCompile Include="core\collision-checker.cc" />
-    <ClCompile Include="core\executor.cc" />
     <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\resource-manager.cc" />
     <ClCompile Include="core\scene-manager.cc" />
@@ -148,6 +151,7 @@
     <ClCompile Include="proto\scene-node.pb.cc" />
     <ClCompile Include="proto\scene.pb.cc" />
     <ClCompile Include="proto\sprite.pb.cc" />
+    <ClCompile Include="scripting\script-manager.cc" />
     <ClCompile Include="sdl\input-backend.cc" />
     <ClCompile Include="sdl\renderer.cc" />
     <ClCompile Include="sdl\texture.cc" />

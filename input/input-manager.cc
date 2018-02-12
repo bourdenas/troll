@@ -5,7 +5,7 @@
 #include <range/v3/view/filter.hpp>
 #include <range/v3/view/transform.hpp>
 
-#include "core/action-manager.h"
+#include "action/action-manager.h"
 #include "core/resource-manager.h"
 
 namespace troll {
