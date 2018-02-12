@@ -34,3 +34,5 @@ data/resources/
 *.sublime-workspace
 *.sublime-project
 *_pb2.py
+
+*.pyc
