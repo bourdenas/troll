@@ -23,6 +23,9 @@
     <Filter Include="action">
       <UniqueIdentifier>{ba8a33be-37cd-48c3-859d-733dd956b2a4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="scripting">
+      <UniqueIdentifier>{5fcff62d-d53d-46b3-8522-8cb01662f0bb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="proto\scene.pb.h">
@@ -97,6 +100,9 @@
     <ClInclude Include="action\executor.h">
       <Filter>action</Filter>
     </ClInclude>
+    <ClInclude Include="scripting\script-manager.h">
+      <Filter>scripting</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -170,6 +176,9 @@
     </ClCompile>
     <ClCompile Include="action\executor.cc">
       <Filter>action</Filter>
+    </ClCompile>
+    <ClCompile Include="scripting\script-manager.cc">
+      <Filter>scripting</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

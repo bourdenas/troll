@@ -7,6 +7,7 @@
 #include "input/input-manager.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
+#include "scripting/script-manager.h"
 #include "sdl/input-backend.h"
 #include "sdl/renderer.h"
 
@@ -23,6 +24,7 @@ void Core::Init() {
 
   InputManager::Instance().Init();
   InputBackend::Instance().Init();
+  ScriptManager::Instance().Init();
 }
 
 void Core::CleanUp() {
