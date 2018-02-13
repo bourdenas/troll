@@ -1,0 +1,10 @@
+id: 'oil'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 478
+  top: 562
+  width: 32
+  height: 60
+}

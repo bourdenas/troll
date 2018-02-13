@@ -1,0 +1,10 @@
+id: 'barrel_stack'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 536
+  top: 558
+  width: 40
+  height: 84
+}

@@ -1,0 +1,16 @@
+id: 'ladder'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 620
+  top: 498
+  width: 19
+  height: 42
+}
+film {
+  left: 620
+  top: 500
+  width: 19
+  height: 10
+}

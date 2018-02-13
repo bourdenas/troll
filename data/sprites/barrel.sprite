@@ -1,0 +1,34 @@
+id: 'barrel'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 488
+  top: 114
+  width: 32
+  height: 20
+}
+film {
+  left: 490
+  top: 152
+  width: 24
+  height: 20
+}
+film {
+  left: 522
+  top: 152
+  width: 24
+  height: 20
+}
+film {
+  left: 554
+  top: 152
+  width: 24
+  height: 20
+}
+film {
+  left: 588
+  top: 612
+  width: 24
+  height: 20
+}

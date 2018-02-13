@@ -1,0 +1,22 @@
+id: 'heart'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 482
+  top: 426
+  width: 31
+  height: 27
+}
+film {
+  left: 527
+  top: 425
+  width: 34
+  height: 28
+}
+film {
+  left: 635
+  top: 363
+  width: 33
+  height: 29
+}

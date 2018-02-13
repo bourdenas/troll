@@ -1,0 +1,40 @@
+id: 'flame'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 480
+  top: 195
+  width: 30
+  height: 33
+}
+film {
+  left: 515
+  top: 197
+  width: 27
+  height: 31
+}
+film {
+  left: 549
+  top: 201
+  width: 31
+  height: 25
+}
+film {
+  left: 602
+  top: 202
+  width: 30
+  height: 24
+}
+film {
+  left: 639
+  top: 197
+  width: 28
+  height: 31
+}
+film {
+  left: 672
+  top: 195
+  width: 31
+  height: 33
+}

@@ -1,0 +1,10 @@
+id: 'mario_life'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 483
+  top: 479
+  width: 15
+  height: 17
+}

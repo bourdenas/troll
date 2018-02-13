@@ -1,0 +1,34 @@
+id: 'hammer'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 486
+  top: 305
+  width: 18
+  height: 21
+}
+film {
+  left: 34
+  top: 472
+  width: 16
+  height: 18
+}
+film {
+  left: 68
+  top: 502
+  width: 32
+  height: 18
+}
+film {
+  left: 67
+  top: 706
+  width: 22
+  height: 18
+}
+film {
+  left: 117
+  top: 678
+  width: 18
+  height: 18
+}

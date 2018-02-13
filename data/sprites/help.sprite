@@ -1,0 +1,10 @@
+id: 'help'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 230
+  top: 42
+  width: 48
+  height: 17
+}

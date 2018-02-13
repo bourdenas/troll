@@ -1,0 +1,28 @@
+id: 'princess'
+resource: 'dkarcade.png'
+colour_key: '0x000000'
+
+film {
+  left: 22
+  top: 44
+  width: 22
+  height: 44
+}
+film {
+  left: 78
+  top: 46
+  width: 30
+  height: 44
+}
+film {
+  left: 144
+  top: 52
+  width: 32
+  height: 38
+}
+film {
+  left: 200
+  top: 42
+  width: 30
+  height: 46
+}
