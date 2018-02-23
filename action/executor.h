@@ -46,6 +46,10 @@ class DestroySceneNodeExecutor : public Executor {
   void Execute(const Action& action) const override;
 };
 
+class OnCollisionExecutor : public Executor {
+  void Execute(const Action& action) const override;
+};
+
 class PlayAnimationScriptExecutor : public Executor {
   void Execute(const Action& action) const override;
   Action Reverse(const Action& action) const override;

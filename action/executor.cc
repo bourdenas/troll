@@ -3,6 +3,7 @@
 #include <glog/logging.h>
 
 #include "animation/animator-manager.h"
+#include "core/collision-checker.h"
 #include "core/troll-core.h"
 #include "scripting/script-manager.h"
 
@@ -44,6 +45,10 @@ void DestroySceneNodeExecutor::Execute(const Action& action) const {
   }
 
   Core::Instance().scene_manager().RemoveSceneNode(scene_node_id);
+}
+
+void OnCollisionExecutor::Execute(const Action& action) const {
+  CollisionChecker::Instance().RegisterCollision(action.on_collision());
 }
 
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {

@@ -17,22 +17,22 @@ message Action {
     SceneNodeAction create_scene_node = 5;
     SceneNodeAction destroy_scene_node = 6;
 
-    AnimationScriptAction play_animation_script = 7;
-    AnimationScriptAction stop_animation_script = 8;
-    AnimationScriptAction pause_animation_script = 9;
+    CollisionAction on_collision = 7;
 
-    DisplayTextAction display_text = 10;
+    AnimationScriptAction play_animation_script = 8;
+    AnimationScriptAction stop_animation_script = 9;
+    AnimationScriptAction pause_animation_script = 10;
 
-    ScriptAction import_module = 11;
-    ScriptAction call = 12;
+    DisplayTextAction display_text = 11;
+
+    ScriptAction import_module = 12;
+    ScriptAction call = 13;
   }
 }
 
-message NoopAction {
-}
+message NoopAction {}
 
-message QuitAction {
-}
+message QuitAction {}
 
 message EmitAction {
   optional Event event = 1;
@@ -44,6 +44,12 @@ message ChangeSceneAction {
 
 message SceneNodeAction {
   optional SceneNode scene_node = 1;
+}
+
+message CollisionAction {
+  repeated string sprite_id = 1;
+  repeated string scene_node_id = 2;
+  repeated Action action = 3;
 }
 
 message AnimationScriptAction {
