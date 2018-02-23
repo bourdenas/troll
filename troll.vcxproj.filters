@@ -70,9 +70,6 @@
     <ClInclude Include="proto\scene-node.pb.h">
       <Filter>proto</Filter>
     </ClInclude>
-    <ClInclude Include="proto\collision.pb.h">
-      <Filter>proto</Filter>
-    </ClInclude>
     <ClInclude Include="core\collision-checker.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -150,9 +147,6 @@
     <ClCompile Include="sdl\texture.cc">
       <Filter>sdl</Filter>
     </ClCompile>
-    <ClCompile Include="proto\collision.pb.cc">
-      <Filter>proto</Filter>
-    </ClCompile>
     <ClCompile Include="core\collision-checker.cc">
       <Filter>core</Filter>
     </ClCompile>
@@ -201,9 +195,6 @@
       <Filter>proto</Filter>
     </None>
     <None Include="proto\scene-node.proto">
-      <Filter>proto</Filter>
-    </None>
-    <None Include="proto\collision.proto">
       <Filter>proto</Filter>
     </None>
     <None Include="proto\key-binding.proto">

@@ -1,7 +1,6 @@
 syntax = "proto2";
 
 import "proto/action.proto";
-import "proto/collision.proto";
 import "proto/primitives.proto";
 import "proto/scene-node.proto";
 
@@ -15,9 +14,7 @@ message Scene {
   optional BitmapSceneManagerConfig bitmap_config = 4;
 
   repeated SceneNode scene_node = 5;
-  repeated Collision collision = 6;
-
-  repeated Action on_init = 7;
+  repeated Action on_init = 6;
 }
 
 message BitmapSceneManagerConfig {

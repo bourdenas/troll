@@ -1,6 +1,5 @@
 proto/action.proto
 proto/animation.proto
-proto/collision.proto
 proto/event.proto
 proto/key-binding.proto
 proto/primitives.proto
