@@ -22,7 +22,7 @@ void SceneManager::SetupScene(const Scene& scene) {
         Box(), Box());
   }
 
-  CollisionChecker::Instance().Init(scene_);
+  CollisionChecker::Instance().Init();
   for (const auto& node : scene_.scene_node()) {
     AddSceneNode(node);
   }
@@ -39,7 +39,6 @@ void SceneManager::AddSceneNode(const SceneNode& node) {
 
   const auto it = res.first;
   Dirty(it->second);
-  CollisionChecker::Instance().AddSceneNode(it->second);
 }
 
 void SceneManager::RemoveSceneNode(const std::string& id) {
@@ -107,7 +106,6 @@ void SceneManager::CleanUpDeletedSceneNodes() {
     DLOG_IF(FATAL, it == scene_nodes_.end())
         << "CleanUpDeletedSceneNodes() SceneNode with id='" << id
         << "' was not found.";
-    CollisionChecker::Instance().RemoveSceneNode(it->second);
     AnimatorManager::Instance().StopNodeAnimations(id);
 
     const auto dirty_it =

@@ -1,58 +1,56 @@
 #include "core/collision-checker.h"
 
 #include <glog/logging.h>
-#include <range/v3/view/empty.hpp>
-#include <range/v3/view/filter.hpp>
-#include <range/v3/view/remove_if.hpp>
+#include <range/v3/action/insert.hpp>
+#include <range/v3/algorithm/all_of.hpp>
+#include <range/v3/algorithm/none_of.hpp>
 #include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
+#include "core/troll-core.h"
 #include "core/util-lib.h"
 
 namespace troll {
 
-namespace {
-std::tuple<std::string, std::string> CollisionDirectoryKey(
-    const std::string& node_a, const std::string& node_b) {
-  const auto& left = node_a < node_b ? node_a : node_b;
-  const auto& right = node_a < node_b ? node_b : node_a;
-  return std::make_tuple(left, right);
-}
-}  // namespace
-
-void CollisionChecker::Init(const Scene& scene) {
-  collision_directory_ =
-      scene.collision() |
-      ranges::view::transform([](const Collision& collision) {
-        DLOG_IF(FATAL, collision.sprite_id_size() != 2)
-            << "Collision is a binary relation, but is defined as "
-            << collision.sprite_id_size() << " colliding sprites:\n"
-            << collision.DebugString();
-
-        return std::make_pair(CollisionDirectoryKey(collision.sprite_id(0),
-                                                    collision.sprite_id(1)),
-                              collision);
-      });
-}
-
-void CollisionChecker::CleanUp() {
+void CollisionChecker::Init() {
   dirty_nodes_.clear();
-  active_nodes_.clear();
-  collision_directory_.clear();
+  node_collision_directory_.clear();
+  sprite_collision_directory_.clear();
 }
 
-void CollisionChecker::AddSceneNode(const SceneNode& scene_node) {
-  active_nodes_.push_back(&scene_node);
-  dirty_nodes_.insert(&scene_node);
-}
+void CollisionChecker::RegisterCollision(const CollisionAction& collision) {
+  DLOG_IF(FATAL,
+          (collision.sprite_id_size() + collision.scene_node_id_size()) > 1)
+      << "Collision requires at least to sprites or scene nodes.\n "
+      << collision.DebugString();
 
-void CollisionChecker::RemoveSceneNode(const SceneNode& scene_node) {
-  const auto it =
-      std::remove(active_nodes_.begin(), active_nodes_.end(), &scene_node);
-  DLOG_IF(FATAL, it == active_nodes_.end())
-      << "CollisionChecker::RemoveSceneNode() SceneNode with id='"
-      << scene_node.id() << "' was not found.";
-  active_nodes_.erase(it);
+  ranges::action::insert(
+      node_collision_directory_,
+      collision.scene_node_id() | ranges::view::transform([&collision](
+                                      const std::string& scene_node_id) {
+        // Remove from collision the triggers criteria (node).
+        CollisionAction collision_copy = collision;
+        std::remove_if(
+            collision_copy.mutable_scene_node_id()->begin(),
+            collision_copy.mutable_scene_node_id()->end(),
+            [&scene_node_id](const auto& id) { return id == scene_node_id; });
+        collision_copy.mutable_scene_node_id()->RemoveLast();
+        return std::make_pair(scene_node_id, collision_copy);
+      }));
+
+  ranges::action::insert(
+      sprite_collision_directory_,
+      collision.sprite_id() |
+          ranges::view::transform([&collision](const std::string& sprite_id) {
+            // Remove from collision the triggers criteria (sprite).
+            CollisionAction collision_copy = collision;
+            std::remove_if(
+                collision_copy.mutable_sprite_id()->begin(),
+                collision_copy.mutable_sprite_id()->end(),
+                [&sprite_id](const auto& id) { return id == sprite_id; });
+            collision_copy.mutable_sprite_id()->RemoveLast();
+            return std::make_pair(sprite_id, collision_copy);
+          }));
 }
 
 void CollisionChecker::Dirty(const SceneNode& node) {
@@ -60,7 +58,8 @@ void CollisionChecker::Dirty(const SceneNode& node) {
 }
 
 namespace {
-bool CheckCollision(const SceneNode& left, const SceneNode& right) {
+// Returns true if the bounding boxes of two scene nodes are overlapping.
+bool CheckBoundingBoxCollision(const SceneNode& left, const SceneNode& right) {
   const Box left_box = util::GetSceneNodeBoundingBox(left);
   const Box right_box = util::GetSceneNodeBoundingBox(right);
   return abs(left_box.left() - right_box.left()) * 2 <=
@@ -68,20 +67,48 @@ bool CheckCollision(const SceneNode& left, const SceneNode& right) {
          abs(left_box.top() - right_box.top()) * 2 <=
              left_box.height() + right_box.height();
 }
+
+void CheckNodeCollisions(const SceneNode& node,
+                         const CollisionAction& collision) {
+  if (!ranges::all_of(
+          collision.scene_node_id() | ranges::view::transform([](
+                                          const auto& node_id) {
+            return Core::Instance().scene_manager().GetSceneNodeById(node_id);
+          }),
+          [&node](const SceneNode* other_node) {
+            return CheckBoundingBoxCollision(node, *other_node);
+          })) {
+    return;
+  }
+
+  for (const auto& sprite_id : collision.sprite_id()) {
+    if (ranges::none_of(
+            Core::Instance().scene_manager().GetSceneNodesBySprite(sprite_id),
+            [&node](const SceneNode& other_node) {
+              return &node != &other_node &&
+                     CheckBoundingBoxCollision(node, other_node);
+            })) {
+      return;
+    }
+  }
+
+  for (const auto& action : collision.action()) {
+    ActionManager::Instance().Execute(action);
+  }
+}
 }  // namespace
 
 void CollisionChecker::CheckCollisions() {
   for (const auto* node : dirty_nodes_) {
-    for (const auto* other : active_nodes_) {
-      if (node == other || !CheckCollision(*node, *other)) continue;
+    const auto node_range = node_collision_directory_.equal_range(node->id());
+    for (auto it = node_range.first; it != node_range.second; ++it) {
+      CheckNodeCollisions(*node, it->second);
+    }
 
-      const auto it = collision_directory_.find(
-          CollisionDirectoryKey(node->sprite_id(), other->sprite_id()));
-      if (it == collision_directory_.end()) continue;
-
-      for (const auto& action : it->second.action()) {
-        ActionManager::Instance().Execute(action);
-      }
+    const auto sprite_range =
+        sprite_collision_directory_.equal_range(node->sprite_id());
+    for (auto it = node_range.first; it != node_range.second; ++it) {
+      CheckNodeCollisions(*node, it->second);
     }
   }
   dirty_nodes_.clear();

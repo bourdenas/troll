@@ -1,13 +1,12 @@
 #ifndef TROLL_CORE_COLLISION_CHECKER_H_
 #define TROLL_CORE_COLLISION_CHECKER_H_
 
-#include <map>
 #include <string>
-#include <tuple>
+#include <unordered_map>
 #include <unordered_set>
 
+#include "proto/action.pb.h"
 #include "proto/scene-node.pb.h"
-#include "proto/scene.pb.h"
 
 namespace troll {
 
@@ -18,11 +17,8 @@ class CollisionChecker {
     return singleton;
   }
 
-  void Init(const Scene& scene);
-  void CleanUp();
-
-  void AddSceneNode(const SceneNode& scene_node);
-  void RemoveSceneNode(const SceneNode& scene_node);
+  void Init();
+  void RegisterCollision(const CollisionAction& collision);
 
   // Marks a scene node that needs to be queued for rendering during this frame.
   void Dirty(const SceneNode& node);
@@ -36,12 +32,13 @@ class CollisionChecker {
   CollisionChecker(const CollisionChecker&) = delete;
   ~CollisionChecker() = default;
 
-  // Directory of unordered SceneNode pairs to Collision definition.
-  std::map<std::tuple<std::string, std::string>, Collision>
-      collision_directory_;
-
-  // Active SceneNodes being tracked for collisions.
-  std::vector<const SceneNode*> active_nodes_;
+  // Directories of scene_node_id or sprite_id to Collision. Multiple copies of
+  // collisions exist in memory, indexed individually by each of the involved
+  // object for more efficient lookup.
+  std::unordered_multimap<std::string, CollisionAction>
+      node_collision_directory_;
+  std::unordered_multimap<std::string, CollisionAction>
+      sprite_collision_directory_;
 
   // Nodes that moved during this frame and should be checked for collisions.
   std::unordered_set<const SceneNode*> dirty_nodes_;

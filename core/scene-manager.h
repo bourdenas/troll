@@ -5,6 +5,9 @@
 #include <string>
 #include <unordered_map>
 
+#include <range/v3/view/filter.hpp>
+#include <range/v3/view/map.hpp>
+
 #include "proto/primitives.pb.h"
 #include "proto/scene.pb.h"
 #include "sdl/renderer.h"
@@ -23,6 +26,14 @@ class SceneManager {
 
   SceneNode* GetSceneNodeById(const std::string& id);
   SceneNode* GetSceneNodeAt(const Vector& at);
+
+  // Returns a view of active SceneNodes of a specific sprite.
+  auto GetSceneNodesBySprite(const std::string& sprite_id) const {
+    return scene_nodes_ | ranges::view::values |
+           ranges::view::filter([&sprite_id](const SceneNode& node) {
+             return node.sprite_id() == sprite_id;
+           });
+  }
 
   void SetViewport(const Box& view);
   void ScrollViewport(const Vector& by);
