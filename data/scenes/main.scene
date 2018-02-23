@@ -14,97 +14,17 @@ bitmap_config {
     red: 0
     green: 0
     blue: 0
-    alpha: 0
-  }
-}
-
-scene_node {
-  id: 'mario'
-  sprite_id: 'mario'
-  frame_index: 15
-
-  position {
-    x: 100
-    y: 100
-  }
-}
-scene_node {
-  id: 'mario_clone'
-  sprite_id: 'mario'
-  frame_index: 0
-
-  position {
-    x: 300
-    y: 100
-  }
-}
-scene_node {
-  id: 'platform'
-  sprite_id: 'platform'
-  frame_index: 0
-
-  position {
-    x: 200
-    y: 100
-  }
-}
-scene_node {
-  id: 'dk'
-  sprite_id: 'dk'
-  frame_index: 0
-
-  position {
-    x: 100
-    y: 200
-  }
-}
-
-collision {
-  sprite_id: 'mario'
-  sprite_id: 'platform'
-  action {
-    destroy_scene_node {
-      scene_node {
-        id: 'mario'
-      }
-    }
-  }
-  action {
-    destroy_scene_node {
-      scene_node {
-        id: 'platform'
-      }
-    }
-  }
-  action {
-    destroy_scene_node {
-      scene_node {
-        id: 'dk'
-      }
-    }
-  }
-  action {
-    play_animation_script {
-      script_id: 'mario_walk_left'
-      scene_node_id: 'mario_clone'
-    }
-  }
-}
-collision {
-  sprite_id: 'mario'
-  sprite_id: 'mario'
-  action {
-    destroy_scene_node {
-      scene_node {
-        id: 'mario_clone'
-      }
-    }
   }
 }
 
 on_init {
-  play_animation_script {
-    script_id: 'dk_taunt'
-    scene_node_id: 'dk'
+  import_module {
+    module: 'dk'
+  }
+}
+on_init {
+  call {
+    module: 'dk'
+    function: 'init'
   }
 }
