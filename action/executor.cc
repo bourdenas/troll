@@ -38,7 +38,7 @@ void DestroySceneNodeExecutor::Execute(const Action& action) const {
   const auto& scene_node_id = action.destroy_scene_node().scene_node().id();
   if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
       nullptr) {
-    DLOG(WARNING)
+    LOG(WARNING)
         << "DestroySceneNodeExecutor: Cannot destroy SceneNode with id='"
         << scene_node_id << "' that does not exist.";
     return;
@@ -55,7 +55,7 @@ void PlayAnimationScriptExecutor::Execute(const Action& action) const {
   const auto& scene_node_id = action.play_animation_script().scene_node_id();
   if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
       nullptr) {
-    DLOG(WARNING)
+    LOG(WARNING)
         << "PlayAnimationScriptExecutor: Cannot apply animation script '"
         << action.play_animation_script().script_id()
         << "' on SceneNode with id='" << scene_node_id
@@ -77,7 +77,7 @@ void StopAnimationScriptExecutor::Execute(const Action& action) const {
   const auto& scene_node_id = action.stop_animation_script().scene_node_id();
   if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
       nullptr) {
-    DLOG(WARNING)
+    LOG(WARNING)
         << "StopAnimationScriptExecutor: Cannot stop animation script '"
         << action.stop_animation_script().script_id()
         << "' on SceneNode with id='" << scene_node_id
@@ -99,7 +99,7 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
   const auto& scene_node_id = action.pause_animation_script().scene_node_id();
   if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
       nullptr) {
-    DLOG(WARNING)
+    LOG(WARNING)
         << "PauseAnimationScriptExecutor: Cannot pause animation script '"
         << action.pause_animation_script().script_id()
         << "' on SceneNode with id='" << scene_node_id

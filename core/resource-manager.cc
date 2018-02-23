@@ -76,31 +76,31 @@ const KeyBindings& ResourceManager::GetKeyBindings() const {
 
 const Sprite& ResourceManager::GetSprite(const std::string& sprite_id) const {
   const auto it = sprites_.find(sprite_id);
-  DLOG_IF(FATAL, it == sprites_.end()) << "Sprite with id='" << sprite_id
-                                       << "' was not found.";
+  LOG_IF(ERROR, it == sprites_.end()) << "Sprite with id='" << sprite_id
+                                      << "' was not found.";
   return it->second;
 }
 
 const AnimationScript& ResourceManager::GetAnimationScript(
     const std::string& script_id) const {
   const auto it = scripts_.find(script_id);
-  DLOG_IF(FATAL, it == scripts_.end()) << "AnimationScript with id='"
-                                       << script_id << "' was not found.";
+  LOG_IF(ERROR, it == scripts_.end()) << "AnimationScript with id='"
+                                      << script_id << "' was not found.";
   return it->second;
 }
 
 const Texture& ResourceManager::GetTexture(
     const std::string& texture_id) const {
   const auto it = textures_.find(texture_id);
-  DLOG_IF(FATAL, it == textures_.end()) << "Texture with id='" << texture_id
-                                        << "' was not found.";
+  LOG_IF(ERROR, it == textures_.end()) << "Texture with id='" << texture_id
+                                       << "' was not found.";
   return *it->second;
 }
 
 const Font& ResourceManager::GetFont(const std::string& font_id) const {
   const auto it = fonts_.find(font_id);
-  DLOG_IF(FATAL, it == fonts_.end()) << "Font with id='" << font_id
-                                     << "' was not found.";
+  LOG_IF(ERROR, it == fonts_.end()) << "Font with id='" << font_id
+                                    << "' was not found.";
   return *it->second;
 }
 

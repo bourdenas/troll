@@ -33,7 +33,7 @@ void ScriptManager::ImportModule(const std::string& module) {
 void ScriptManager::Call(const std::string& module,
                          const std::string& function) const {
   const auto it = modules_.find(module);
-  DLOG_IF(FATAL, it == modules_.end())
+  LOG_IF(ERROR, it == modules_.end())
       << "Using module '" << module << "' that was not imported first.\nCall: '"
       << module << "." << function << "()'";
 

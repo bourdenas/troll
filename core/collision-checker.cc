@@ -19,9 +19,9 @@ void CollisionChecker::Init() {
 }
 
 void CollisionChecker::RegisterCollision(const CollisionAction& collision) {
-  DLOG_IF(FATAL,
-          (collision.sprite_id_size() + collision.scene_node_id_size()) > 1)
-      << "Collision requires at least to sprites or scene nodes.\n "
+  LOG_IF(ERROR,
+         (collision.sprite_id_size() + collision.scene_node_id_size()) < 2)
+      << "Collision requires at least to sprites or scene nodes.\n"
       << collision.DebugString();
 
   ranges::action::insert(

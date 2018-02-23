@@ -34,8 +34,8 @@ void SceneManager::SetupScene(const Scene& scene) {
 
 void SceneManager::AddSceneNode(const SceneNode& node) {
   const auto res = scene_nodes_.emplace(node.id(), node);
-  DLOG_IF(FATAL, !res.second) << "AddSceneNode() SceneNode with id='"
-                              << node.id() << "' already exists.";
+  LOG_IF(ERROR, !res.second) << "AddSceneNode() SceneNode with id='"
+                             << node.id() << "' already exists.";
 
   const auto it = res.first;
   Dirty(it->second);
@@ -43,7 +43,7 @@ void SceneManager::AddSceneNode(const SceneNode& node) {
 
 void SceneManager::RemoveSceneNode(const std::string& id) {
   const auto it = scene_nodes_.find(id);
-  DLOG_IF(FATAL, it == scene_nodes_.end())
+  LOG_IF(ERROR, it == scene_nodes_.end())
       << "RemoveSceneNode() cannot find SceneNode with id='" << id << "'.";
 
   dirty_boxes_.push_back(util::GetSceneNodeBoundingBox(it->second));
@@ -103,7 +103,7 @@ void SceneManager::BlitSceneNode(const SceneNode& node) const {
 void SceneManager::CleanUpDeletedSceneNodes() {
   for (const auto& id : dead_scene_nodes_) {
     const auto it = scene_nodes_.find(id);
-    DLOG_IF(FATAL, it == scene_nodes_.end())
+    LOG_IF(ERROR, it == scene_nodes_.end())
         << "CleanUpDeletedSceneNodes() SceneNode with id='" << id
         << "' was not found.";
     AnimatorManager::Instance().StopNodeAnimations(id);
