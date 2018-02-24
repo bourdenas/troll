@@ -20,8 +20,8 @@ void CollisionChecker::Init() {
 
 void CollisionChecker::RegisterCollision(const CollisionAction& collision) {
   LOG_IF(ERROR,
-         (collision.sprite_id_size() + collision.scene_node_id_size()) < 2)
-      << "Collision requires at least to sprites or scene nodes.\n"
+         (collision.sprite_id_size() + collision.scene_node_id_size()) != 2)
+      << "Collision is a binary relation between sprites or scene nodes.\n"
       << collision.DebugString();
 
   ranges::action::insert(
@@ -59,43 +59,13 @@ void CollisionChecker::Dirty(const SceneNode& node) {
 
 namespace {
 // Returns true if the bounding boxes of two scene nodes are overlapping.
-bool CheckBoundingBoxCollision(const SceneNode& left, const SceneNode& right) {
+bool BoundingBoxesCollide(const SceneNode& left, const SceneNode& right) {
   const Box left_box = util::GetSceneNodeBoundingBox(left);
   const Box right_box = util::GetSceneNodeBoundingBox(right);
   return abs(left_box.left() - right_box.left()) * 2 <=
              left_box.width() + right_box.width() &&
          abs(left_box.top() - right_box.top()) * 2 <=
              left_box.height() + right_box.height();
-}
-
-void CheckNodeCollisions(const SceneNode& node,
-                         const CollisionAction& collision) {
-  if (!ranges::all_of(
-          collision.scene_node_id() | ranges::view::transform([](
-                                          const auto& node_id) {
-            return Core::Instance().scene_manager().GetSceneNodeById(node_id);
-          }),
-          [&node](const SceneNode* other_node) {
-            return &node != other_node &&
-                   CheckBoundingBoxCollision(node, *other_node);
-          })) {
-    return;
-  }
-
-  for (const auto& sprite_id : collision.sprite_id()) {
-    if (ranges::none_of(
-            Core::Instance().scene_manager().GetSceneNodesBySprite(sprite_id),
-            [&node](const SceneNode& other_node) {
-              return &node != &other_node &&
-                     CheckBoundingBoxCollision(node, other_node);
-            })) {
-      return;
-    }
-  }
-
-  for (const auto& action : collision.action()) {
-    ActionManager::Instance().Execute(action);
-  }
 }
 }  // namespace
 
@@ -113,6 +83,52 @@ void CollisionChecker::CheckCollisions() {
     }
   }
   dirty_nodes_.clear();
+}
+
+void CollisionChecker::CheckNodeCollisions(const SceneNode& node,
+                                           const CollisionAction& collision) {
+  const auto& other_node = *Core::Instance().scene_manager().GetSceneNodeById(
+      collision.scene_node_id(0));
+  const bool collide = BoundingBoxesCollide(node, other_node);
+
+  if (NodesAlreadyCollide(node, other_node)) {
+    if (!collide) {
+      RemoveCollidingNodes(node, other_node);
+    }
+    return;
+  }
+  if (!collide) return;
+
+  AddCollidingNodes(node, other_node);
+  for (const auto& action : collision.action()) {
+    ActionManager::Instance().Execute(action);
+  }
+}
+
+void CollisionChecker::AddCollidingNodes(const SceneNode& left,
+                                         const SceneNode& right) {
+  if (&left < &right) {
+    colliding_nodes_.emplace(&left, &right);
+  } else {
+    colliding_nodes_.emplace(&right, &left);
+  }
+}
+
+void CollisionChecker::RemoveCollidingNodes(const SceneNode& left,
+                                            const SceneNode& right) {
+  const auto pair = &left < &right ? std::make_pair(&left, &right)
+                                   : std::make_pair(&right, &left);
+  const auto it = colliding_nodes_.find(pair);
+  if (it != colliding_nodes_.end()) {
+    colliding_nodes_.erase(it);
+  }
+}
+
+bool CollisionChecker::NodesAlreadyCollide(const SceneNode& left,
+                                           const SceneNode& right) {
+  const auto pair = &left < &right ? std::make_pair(&left, &right)
+                                   : std::make_pair(&right, &left);
+  return colliding_nodes_.find(pair) != colliding_nodes_.end();
 }
 
 }  // namespace troll
