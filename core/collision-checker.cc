@@ -76,7 +76,8 @@ void CheckNodeCollisions(const SceneNode& node,
             return Core::Instance().scene_manager().GetSceneNodeById(node_id);
           }),
           [&node](const SceneNode* other_node) {
-            return CheckBoundingBoxCollision(node, *other_node);
+            return &node != other_node &&
+                   CheckBoundingBoxCollision(node, *other_node);
           })) {
     return;
   }
@@ -107,7 +108,7 @@ void CollisionChecker::CheckCollisions() {
 
     const auto sprite_range =
         sprite_collision_directory_.equal_range(node->sprite_id());
-    for (auto it = node_range.first; it != node_range.second; ++it) {
+    for (auto it = sprite_range.first; it != sprite_range.second; ++it) {
       CheckNodeCollisions(*node, it->second);
     }
   }
