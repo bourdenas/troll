@@ -1,9 +1,9 @@
 #include "core/collision-checker.h"
 
 #include <glog/logging.h>
-#include <range/v3/action/insert.hpp>
-#include <range/v3/algorithm/all_of.hpp>
+#include <range/v3/action/push_back.hpp>
 #include <range/v3/algorithm/none_of.hpp>
+#include <range/v3/view/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
@@ -13,48 +13,26 @@
 namespace troll {
 
 void CollisionChecker::Init() {
+  collision_directory_.clear();
   dirty_nodes_.clear();
-  node_collision_directory_.clear();
-  sprite_collision_directory_.clear();
+  colliding_node_pairs_.clear();
 }
 
 void CollisionChecker::RegisterCollision(const CollisionAction& collision) {
-  LOG_IF(ERROR,
-         (collision.sprite_id_size() + collision.scene_node_id_size()) != 2)
-      << "Collision is a binary relation between sprites or scene nodes.\n"
-      << collision.DebugString();
-
-  ranges::action::insert(
-      node_collision_directory_,
-      collision.scene_node_id() | ranges::view::transform([&collision](
-                                      const std::string& scene_node_id) {
-        // Remove from collision the triggers criteria (node).
-        CollisionAction collision_copy = collision;
-        std::remove_if(
-            collision_copy.mutable_scene_node_id()->begin(),
-            collision_copy.mutable_scene_node_id()->end(),
-            [&scene_node_id](const auto& id) { return id == scene_node_id; });
-        collision_copy.mutable_scene_node_id()->RemoveLast();
-        return std::make_pair(scene_node_id, collision_copy);
-      }));
-
-  ranges::action::insert(
-      sprite_collision_directory_,
-      collision.sprite_id() |
-          ranges::view::transform([&collision](const std::string& sprite_id) {
-            // Remove from collision the triggers criteria (sprite).
-            CollisionAction collision_copy = collision;
-            std::remove_if(
-                collision_copy.mutable_sprite_id()->begin(),
-                collision_copy.mutable_sprite_id()->end(),
-                [&sprite_id](const auto& id) { return id == sprite_id; });
-            collision_copy.mutable_sprite_id()->RemoveLast();
-            return std::make_pair(sprite_id, collision_copy);
-          }));
+  collision_directory_.push_back(collision);
 }
 
 void CollisionChecker::Dirty(const SceneNode& node) {
   dirty_nodes_.insert(&node);
+}
+
+void CollisionChecker::CheckCollisions() {
+  for (const auto* node : dirty_nodes_) {
+    for (const auto& collision : collision_directory_) {
+      CheckNodeCollision(*node, collision);
+    }
+  }
+  dirty_nodes_.clear();
 }
 
 namespace {
@@ -69,66 +47,89 @@ bool BoundingBoxesCollide(const SceneNode& left, const SceneNode& right) {
 }
 }  // namespace
 
-void CollisionChecker::CheckCollisions() {
-  for (const auto* node : dirty_nodes_) {
-    const auto node_range = node_collision_directory_.equal_range(node->id());
-    for (auto it = node_range.first; it != node_range.second; ++it) {
-      CheckNodeCollisions(*node, it->second);
-    }
-
-    const auto sprite_range =
-        sprite_collision_directory_.equal_range(node->sprite_id());
-    for (auto it = sprite_range.first; it != sprite_range.second; ++it) {
-      CheckNodeCollisions(*node, it->second);
-    }
-  }
-  dirty_nodes_.clear();
-}
-
-void CollisionChecker::CheckNodeCollisions(const SceneNode& node,
-                                           const CollisionAction& collision) {
-  const auto& other_node = *Core::Instance().scene_manager().GetSceneNodeById(
-      collision.scene_node_id(0));
-  const bool collide = BoundingBoxesCollide(node, other_node);
-
-  if (NodesAlreadyCollide(node, other_node)) {
-    if (!collide) {
-      RemoveCollidingNodes(node, other_node);
-    }
+void CollisionChecker::CheckNodeCollision(const SceneNode& node,
+                                          const CollisionAction& collision) {
+  // Check if node is part of this collision definition.
+  if (ranges::none_of(
+          collision.scene_node_id(),
+          [&node](const auto& node_id) { return node.id() == node_id; }) &&
+      ranges::none_of(collision.sprite_id(), [&node](const auto& sprite_id) {
+        return node.sprite_id() == sprite_id;
+      })) {
     return;
   }
-  if (!collide) return;
 
-  AddCollidingNodes(node, other_node);
+  // Collect all nodes in collision definition that need to be checked.
+  std::vector<const SceneNode*> potential_colliding_nodes;
+  potential_colliding_nodes |= ranges::action::push_back(
+      collision.scene_node_id() | ranges::view::transform([](const auto& id) {
+        return Core::Instance().scene_manager().GetSceneNodeById(id);
+      }) |
+      ranges::view::remove_if([&node](const SceneNode* other_node) {
+        return &node == other_node || other_node == nullptr;
+      }));
+  for (const auto& sprite_id : collision.sprite_id()) {
+    potential_colliding_nodes |= ranges::action::push_back(
+        Core::Instance().scene_manager().GetSceneNodesBySprite(sprite_id) |
+        ranges::view::transform([](const SceneNode& node) { return &node; }) |
+        ranges::view::remove_if([&node](const SceneNode* other_node) {
+          return &node == other_node;
+        }));
+  }
+
+  // Check all node pairs for collision.
+  if (ranges::none_of(potential_colliding_nodes,
+                      [&node, this](const SceneNode* other_node) {
+                        return NodePairTouched(node, *other_node);
+                      })) {
+    return;
+  }
+
   for (const auto& action : collision.action()) {
     ActionManager::Instance().Execute(action);
   }
 }
 
-void CollisionChecker::AddCollidingNodes(const SceneNode& left,
-                                         const SceneNode& right) {
-  if (&left < &right) {
-    colliding_nodes_.emplace(&left, &right);
-  } else {
-    colliding_nodes_.emplace(&right, &left);
+bool CollisionChecker::NodePairTouched(const SceneNode& left,
+                                       const SceneNode& right) {
+  const bool collide = BoundingBoxesCollide(left, right);
+  if (NodePairAlreadyCollides(left, right)) {
+    if (!collide) {
+      RemoveCollidingNodePair(left, right);
+    }
+    return false;
   }
+
+  if (collide) {
+    AddCollidingNodePair(left, right);
+  }
+  return collide;
 }
 
-void CollisionChecker::RemoveCollidingNodes(const SceneNode& left,
+void CollisionChecker::AddCollidingNodePair(const SceneNode& left,
                                             const SceneNode& right) {
-  const auto pair = &left < &right ? std::make_pair(&left, &right)
-                                   : std::make_pair(&right, &left);
-  const auto it = colliding_nodes_.find(pair);
-  if (it != colliding_nodes_.end()) {
-    colliding_nodes_.erase(it);
+  if (&left < &right) {
+    colliding_node_pairs_.emplace(&left, &right);
+  } else {
+    colliding_node_pairs_.emplace(&right, &left);
   }
 }
 
-bool CollisionChecker::NodesAlreadyCollide(const SceneNode& left,
-                                           const SceneNode& right) {
+void CollisionChecker::RemoveCollidingNodePair(const SceneNode& left,
+                                               const SceneNode& right) {
   const auto pair = &left < &right ? std::make_pair(&left, &right)
                                    : std::make_pair(&right, &left);
-  return colliding_nodes_.find(pair) != colliding_nodes_.end();
+  const auto it = colliding_node_pairs_.find(pair);
+  if (it != colliding_node_pairs_.end()) {
+    colliding_node_pairs_.erase(it);
+  }
+}
+
+bool CollisionChecker::NodePairAlreadyCollides(const SceneNode& left,
+                                               const SceneNode& right) {
+  const auto pair = &left < &right ? std::make_pair(&left, &right)
+                                   : std::make_pair(&right, &left);
+  return colliding_node_pairs_.find(pair) != colliding_node_pairs_.end();
 }
 
 }  // namespace troll

@@ -18,6 +18,7 @@ class CollisionChecker {
   }
 
   void Init();
+
   void RegisterCollision(const CollisionAction& collision);
 
   // Marks a scene node that needs to be queued for rendering during this frame.
@@ -32,26 +33,37 @@ class CollisionChecker {
   CollisionChecker(const CollisionChecker&) = delete;
   ~CollisionChecker() = default;
 
-  void CheckNodeCollisions(const SceneNode& node,
-                           const CollisionAction& collision);
+  // Checks is a node is affected by collision definition.
+  void CheckNodeCollision(const SceneNode& node,
+                          const CollisionAction& collision);
 
-  void AddCollidingNodes(const SceneNode& left, const SceneNode& right);
-  void RemoveCollidingNodes(const SceneNode& left, const SceneNode& right);
-  bool NodesAlreadyCollide(const SceneNode& left, const SceneNode& right);
+  // Returns true if the node pair touched in this frame while they were not
+  // touching before.
+  bool NodePairTouched(const SceneNode& left, const SceneNode& right);
 
-  // Directories of scene_node_id or sprite_id to Collision. Multiple copies of
-  // collisions exist in memory, indexed individually by each of the involved
-  // object for more efficient lookup.
-  std::unordered_multimap<std::string, CollisionAction>
-      node_collision_directory_;
-  std::unordered_multimap<std::string, CollisionAction>
-      sprite_collision_directory_;
+  // Functions for keeping track of colliding nodes to avoid triggering
+  // collision constantly. The intent is to trigger the collision only when the
+  // event happens.
+  void AddCollidingNodePair(const SceneNode& left, const SceneNode& right);
+  void RemoveCollidingNodePair(const SceneNode& left, const SceneNode& right);
+  bool NodePairAlreadyCollides(const SceneNode& left, const SceneNode& right);
+
+  // Directory of registered collisions.
+  std::vector<CollisionAction> collision_directory_;
 
   // Nodes that moved during this frame and should be checked for collisions.
   std::unordered_set<const SceneNode*> dirty_nodes_;
 
   // Node pairs that are in collision.
-  std::set<std::pair<const SceneNode*, const SceneNode*>> colliding_nodes_;
+  //
+  // NB: It is possible that ptrs in the set might end up to be dangling ptrs.
+  // For instance, a SceneNode is destroyed in collision. There is not problem
+  // of dereferencing these pointers. They are only used for identifying
+  // SceneNodes (like fingerprints). One possible bug could be, that the same
+  // address gets reallocated to a different node. This could prevent the new
+  // pair to collide. This might be a bit far-fetched but possible. Also it
+  // increases unnecessarily the size of the set if many nodes get destroyed.
+  std::set<std::pair<const SceneNode*, const SceneNode*>> colliding_node_pairs_;
 };
 
 }  // namespace troll
