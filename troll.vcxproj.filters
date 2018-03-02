@@ -111,9 +111,6 @@
     <ClCompile Include="sdl\renderer.cc">
       <Filter>sdl</Filter>
     </ClCompile>
-    <ClCompile Include="core\main.cc">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="core\scene-manager.cc">
       <Filter>core</Filter>
     </ClCompile>
@@ -173,6 +170,9 @@
     </ClCompile>
     <ClCompile Include="scripting\script-manager.cc">
       <Filter>scripting</Filter>
+    </ClCompile>
+    <ClCompile Include="core\main.cc">
+      <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
