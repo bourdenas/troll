@@ -1,11 +1,10 @@
 script {
   id: 'mario_look_left'
   animation {
-    termination: ANY
-    repeat: 1
     frame_list {
       frame: 0
       delay: 0
+      repeat: 1
       vertical_align: BOTTOM
     }
   }
@@ -14,11 +13,10 @@ script {
 script {
   id: 'mario_look_right'
   animation {
-    termination: ANY
-    repeat: 1
     frame_list {
       frame: 15
       delay: 0
+      repeat: 1
       vertical_align: BOTTOM
     }
   }
@@ -27,7 +25,6 @@ script {
 script {
   id: 'mario_walk_left'
   animation {
-    termination: ANY
     frame_range {
       start_frame: 0
       end_frame: 2
@@ -46,7 +43,6 @@ script {
 script {
   id: 'mario_walk_right'
   animation {
-    termination: ANY
     frame_range {
       start_frame: 15
       end_frame: 17
@@ -66,21 +62,21 @@ script {
 script {
   id: 'mario_jump'
   animation {
-    repeat: 11
     translation {
       vec {
         y: -1
       }
       delay: 10
+      repeat: 11
     }
   }
   animation {
-    repeat: 11
     translation {
       vec {
         y: 1
       }
       delay: 10
+      repeat: 11
     }
   }
 }
@@ -88,10 +84,10 @@ script {
 script {
   id: 'mario_hit'
   animation {
-    repeat: 1
     frame_list {
       frame: 8
       delay: 90
+      repeat: 1
       vertical_align: BOTTOM
     }
   }
@@ -100,7 +96,6 @@ script {
 script {
   id: 'mario_climb_up'
   animation {
-    termination: ANY
     translation {
       vec {
         y: -1
@@ -117,7 +112,6 @@ script {
 script {
   id: 'mario_climb_down'
   animation {
-    termination: ANY
     translation {
       vec {
         y: 1

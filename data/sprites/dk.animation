@@ -1,7 +1,6 @@
 script {
   id: 'dk_taunt'
   animation {
-    termination: ANY
     frame_range {
       start_frame: 2
       end_frame: 3

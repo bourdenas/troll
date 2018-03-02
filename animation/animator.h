@@ -19,14 +19,13 @@ class Animator {
   // Initialises the animator state.
   void Start();
 
-  // Returns false, if the Animator finished.
+  // Returns true if the Animator finished.
   bool Progress(int time_since_last_frame, SceneNode* scene_node);
 
  private:
   const Animation& animation_;
 
   std::vector<std::unique_ptr<Performer>> performers_;
-  int run_number_ = 0;
 };
 
 // Runs an animation script, i.e. a sequence of animations on a single
@@ -42,7 +41,7 @@ class ScriptAnimator {
   void Pause();
   void Resume();
 
-  // Returns false, if the script finished.
+  // Returns true if the script finished.
   bool Progress(int time_since_last_frame);
 
   bool is_running() const { return state_ == State::RUNNING; }
@@ -53,7 +52,7 @@ class ScriptAnimator {
   const std::string& scene_node_id() const { return scene_node_id_; }
 
  private:
-  // Returns true, if there was a next animation.
+  // Returns true if there is a next animation, false if the script is finished.
   bool MoveToNextAnimation();
 
   enum class State {

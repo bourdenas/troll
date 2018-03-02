@@ -1,12 +1,14 @@
 #include "animation/performer.h"
 
+#include <glog/logging.h>
+
+#include "core/util-lib.h"
+
 namespace troll {
 
 bool TranslationPerformer::Execute(SceneNode* scene_node) {
-  auto* pos = scene_node->mutable_position();
-  pos->set_x(pos->x() + animation_.vec().x());
-  pos->set_y(pos->y() + animation_.vec().y());
-  pos->set_z(pos->z() + animation_.vec().z());
+  Vector& pos = *scene_node->mutable_position();
+  pos = pos + animation_.vec();
   return true;
 }
 
@@ -22,9 +24,9 @@ bool ScalingPerformer::Execute(SceneNode* scene_node) {
 
 bool FrameRangePerformer::Execute(SceneNode* scene_node) {
   // TODO: handle sprite alignment.
-  scene_node->set_frame_index(++current_frame_);
-  if (current_frame_ == animation_.end_frame()) {
-    current_frame_ = animation_.start_frame() - 1;
+  scene_node->set_frame_index(current_frame_++);
+  if (current_frame_ == animation_.end_frame() + 1) {
+    current_frame_ = animation_.start_frame();
     return true;
   }
   return current_frame_ == animation_.end_frame();

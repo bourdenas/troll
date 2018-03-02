@@ -1,7 +1,6 @@
 #include "animation/animator.h"
 
-#include <range/v3/numeric/accumulate.hpp>
-#include <range/v3/view/transform.hpp>
+#include <range/v3/algorithm/any_of.hpp>
 
 #include "core/scene-manager.h"
 #include "core/troll-core.h"
@@ -38,16 +37,11 @@ void Animator::Start() {
 }
 
 bool Animator::Progress(int time_since_last_frame, SceneNode* scene_node) {
-  const bool is_done = ranges::accumulate(
-      performers_ |
-          ranges::view::transform(
-              [time_since_last_frame, scene_node](
-                  const std::unique_ptr<Performer>& performer) -> bool {
-                return performer->Progress(time_since_last_frame, scene_node);
-              }),
-      false, std::logical_or<bool>());
-
-  return !(is_done && ++run_number_ == animation_.repeat());
+  return ranges::any_of(
+      performers_, [time_since_last_frame, scene_node](
+                       const std::unique_ptr<Performer>& performer) -> bool {
+        return performer->Progress(time_since_last_frame, scene_node);
+      });
 }
 
 void ScriptAnimator::Start() {
@@ -76,7 +70,7 @@ bool ScriptAnimator::Progress(int time_since_last_frame) {
   }
 
   Core::Instance().scene_manager().Dirty(*scene_node);
-  if (!current_animator_->Progress(time_since_last_frame, scene_node) &&
+  if (current_animator_->Progress(time_since_last_frame, scene_node) &&
       !MoveToNextAnimation()) {
     Stop();
   }

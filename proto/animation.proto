@@ -14,27 +14,20 @@ message AnimationScript {
 }
 
 message Animation {
-  enum TerminationCondition {
-    ANY = 0;
-    ALL = 1;
-  }
-  optional TerminationCondition termination = 1;
-  optional int32 repeat = 2;
-  repeated string event = 3;
-
-  optional VectorAnimation translation = 4;
-  optional VectorAnimation rotation = 5;
-  optional VectorAnimation scaling = 6;
-  optional FrameRangeAnimation frame_range = 7;
-  optional FrameListAnimation frame_list = 8;
-  optional GotoAnimation go_to = 9;
-  optional FlashAnimation flash = 10;
-  optional TimerAnimation timer = 11;
+  optional VectorAnimation translation = 1;
+  optional VectorAnimation rotation = 2;
+  optional VectorAnimation scaling = 3;
+  optional FrameRangeAnimation frame_range = 4;
+  optional FrameListAnimation frame_list = 5;
+  optional GotoAnimation go_to = 6;
+  optional FlashAnimation flash = 7;
+  optional TimerAnimation timer = 8;
 }
 
 message VectorAnimation {
   optional Vector vec = 1;
   optional int32 delay = 2;
+  optional int32 repeat = 3;
 }
 
 enum VerticalAlign {
@@ -53,17 +46,19 @@ message FrameRangeAnimation {
   optional int32 start_frame = 1;
   optional int32 end_frame = 2;
   optional int32 delay = 3;
+  optional int32 repeat = 4;
 
-  optional VerticalAlign vertical_align = 4;
-  optional HorizontalAlign horizontal_align = 5;
+  optional VerticalAlign vertical_align = 5;
+  optional HorizontalAlign horizontal_align = 6;
 }
 
 message FrameListAnimation {
   repeated int32 frame = 1;
   optional int32 delay = 2;
+  optional int32 repeat = 3;
 
-  optional VerticalAlign vertical_align = 3;
-  optional HorizontalAlign horizontal_align = 4;
+  optional VerticalAlign vertical_align = 4;
+  optional HorizontalAlign horizontal_align = 5;
 }
 
 message GotoAnimation {
@@ -74,6 +69,7 @@ message GotoAnimation {
 
 message FlashAnimation {
   optional int32 delay = 1;
+  optional int32 repeat = 2;
 }
 
 message TimerAnimation {
