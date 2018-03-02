@@ -4,10 +4,21 @@
     <Filter Include="animation">
       <UniqueIdentifier>{479a34d2-bc2d-434a-b227-844d353b8f40}</UniqueIdentifier>
     </Filter>
+    <Filter Include="troll-test">
+      <UniqueIdentifier>{41f92f78-0579-4e8e-adf1-58a5b44540d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\animation\animator_test.cc">
       <Filter>animation</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="test-util.h">
+      <Filter>troll-test</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
