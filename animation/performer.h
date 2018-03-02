@@ -32,7 +32,7 @@ class PerformerBase : public Performer {
 
   bool Progress(int time_since_last_frame, SceneNode* scene_node) override {
     wait_time_ += time_since_last_frame;
-    while (animation_.delay() < wait_time_) {
+    while (animation_.delay() <= wait_time_) {
       wait_time_ -= animation_.delay();
 
       if (Execute(scene_node)) {
