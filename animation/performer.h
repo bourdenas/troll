@@ -19,6 +19,9 @@ class Performer {
   virtual bool Progress(int time_since_last_frame, SceneNode* scene_node) = 0;
 
  protected:
+  // Override if performer needs state initialisation.
+  virtual void Init(SceneNode* scene_node) {}
+
   // Actual exectution of the animation aspect. Returns true if animation is
   // finished.
   virtual bool Execute(SceneNode* scene_node) = 0;

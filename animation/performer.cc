@@ -38,16 +38,22 @@ bool FrameListPerformer::Execute(SceneNode* scene_node) {
   return (current_frame_index_ %= animation_.frame_size()) == 0;
 }
 
+void GotoPerformer::Init(SceneNode* scene_node) {
+  direction_ = animation_.destination() - scene_node->position();
+  distance_ = util::VectorLength(direction_);
+  util::VectorNormalise(&direction_);
+}
+
 bool GotoPerformer::Execute(SceneNode* scene_node) {
-  if (distance_ > 0 && distance_ > animation_.step()) {
-    // TODO: Figure out primitives that overload basic operators.
-    // scene_node->Translate(direction_ * animation_.step());
+  if (distance_ > animation_.step()) {
+    auto& pos = *scene_node->mutable_position();
+    pos = pos + direction_ * animation_.step();
     distance_ -= animation_.step();
-  } else {
-    *scene_node->mutable_position() = animation_.destination();
-    return true;
+    return false;
   }
-  return false;
+
+  *scene_node->mutable_position() = animation_.destination();
+  return true;
 }
 
 bool FlashPerformer::Execute(SceneNode* scene_node) {
