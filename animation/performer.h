@@ -120,13 +120,14 @@ class FrameRangePerformer
 
  private:
   int current_frame_ = 0;
-  int num_frames_ = 0;
 };
 
 class FrameListPerformer : public RepeatablePerformerBase<FrameListAnimation> {
  public:
   FrameListPerformer(const FrameListAnimation& animation)
       : RepeatablePerformerBase<FrameListAnimation>(animation) {}
+
+  void Init(SceneNode* scene_node) override;
 
  protected:
   bool Execute(SceneNode* scene_node) override;

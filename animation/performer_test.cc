@@ -217,4 +217,81 @@ TEST_F(PerformerTest, FrameRangeRewindsOnRepeat) {
   EXPECT_EQ(2, scene_node_.frame_index());
 }
 
+TEST_F(PerformerTest, FrameList) {
+  const auto frame_list = ParseProto<FrameListAnimation>(R"(
+    frame: [0, 2, 4, 6]
+    delay: 5
+    repeat: 1
+    )");
+  FrameListPerformer performer(frame_list);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 0
+    )")));
+
+  EXPECT_FALSE(performer.Progress(5, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 2
+    )")));
+
+  EXPECT_TRUE(performer.Progress(10, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 6
+    )")));
+}
+
+TEST_F(PerformerTest, FrameListWithSingleFrame) {
+  const auto frame_list = ParseProto<FrameListAnimation>(R"(
+    frame: [0]
+    delay: 5
+    repeat: 1
+    )");
+  FrameListPerformer performer(frame_list);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 0
+    )")));
+
+  EXPECT_TRUE(performer.Progress(5, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 0
+    )")));
+}
+
+TEST_F(PerformerTest, FrameListRewindsOnRepeat) {
+  const auto frame_list = ParseProto<FrameListAnimation>(R"(
+    frame: [0, 2, 4, 6]
+    delay: 5
+    repeat: 2
+    )");
+  FrameListPerformer performer(frame_list);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 0
+    )")));
+
+  EXPECT_FALSE(performer.Progress(5, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 2
+    )")));
+
+  EXPECT_FALSE(performer.Progress(10, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 6
+    )")));
+
+  EXPECT_FALSE(performer.Progress(10, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 2
+    )")));
+
+  EXPECT_TRUE(performer.Progress(10, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    frame_index: 6
+    )")));
+}
+
 }  // namespace troll

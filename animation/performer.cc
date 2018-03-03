@@ -39,10 +39,20 @@ bool FrameRangePerformer::Execute(SceneNode* scene_node) {
   return current_frame_ == animation_.end_frame();
 }
 
+void FrameListPerformer::Init(SceneNode* scene_node) {
+  scene_node->set_frame_index(animation_.frame(current_frame_index_++));
+}
+
 bool FrameListPerformer::Execute(SceneNode* scene_node) {
   // TODO: handle sprite alignment.
+  if (current_frame_index_ == animation_.frame_size()) {
+    current_frame_index_ = 0;
+    scene_node->set_frame_index(animation_.frame(current_frame_index_++));
+    return current_frame_index_ == animation_.frame_size();
+  }
+
   scene_node->set_frame_index(animation_.frame(current_frame_index_++));
-  return (current_frame_index_ %= animation_.frame_size()) == 0;
+  return current_frame_index_ == animation_.frame_size();
 }
 
 void GotoPerformer::Init(SceneNode* scene_node) {
