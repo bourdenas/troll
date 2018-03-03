@@ -83,7 +83,7 @@ message FlashAnimation {
 // destination, the animation finishes.
 message GotoAnimation {
   optional Vector destination = 1;
-  optional float step = 2;
+  optional double step = 2;
   optional int32 delay = 3;
 }
 

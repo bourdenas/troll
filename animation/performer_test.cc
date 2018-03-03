@@ -37,7 +37,7 @@ TEST_F(PerformerTest, Translation) {
   EXPECT_TRUE(performer.Progress(3, &scene_node_));
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     position {
-      x: 1 y: 0 z: 0
+      x: 1  y: 0  z: 0
     })")));
 }
 
@@ -61,7 +61,7 @@ TEST_F(PerformerTest, TranslationIndefinite) {
   EXPECT_FALSE(performer.Progress(3, &scene_node_));
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     position {
-      x: 1 y: 0 z: 0
+      x: 1  y: 0  z: 0
     })")));
 
   // Translation never finishes.
@@ -70,7 +70,7 @@ TEST_F(PerformerTest, TranslationIndefinite) {
   }
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     position {
-      x: 11 y: 0 z: 0
+      x: 11  y: 0  z: 0
     })")));
 }
 
@@ -92,7 +92,7 @@ TEST_F(PerformerTest, TranslationRepeatableThreeTimes) {
   EXPECT_TRUE(performer.Progress(5, &scene_node_));
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     position {
-      x: 3 y: 0 z: 0
+      x: 3  y: 0  z: 0
     })")));
 }
 
@@ -112,7 +112,7 @@ TEST_F(PerformerTest, TranslationProgressesMultipleTimesIfNeeded) {
   EXPECT_TRUE(performer.Progress(15, &scene_node_));
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     position {
-      x: 3 y: 0 z: 0
+      x: 3  y: 0  z: 0
     })")));
 }
 
@@ -132,7 +132,7 @@ TEST_F(PerformerTest, TranslationDoesntProgressMoreThanItIsAllowed) {
   EXPECT_TRUE(performer.Progress(50, &scene_node_));
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     position {
-      x: 3 y: 0 z: 0
+      x: 3  y: 0  z: 0
     })")));
 }
 
@@ -324,6 +324,51 @@ TEST_F(PerformerTest, FlashRepeats) {
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     visible: true
     )")));
+}
+
+TEST_F(PerformerTest, Goto) {
+  const auto goto_animation = ParseProto<GotoAnimation>(R"(
+    destination {
+      x: 10  y: 5  z: 0
+    }
+    step: 2
+    delay: 1
+    )");
+  GotoPerformer performer(goto_animation);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
+
+  // Math with double is hard! Not easy to check intermediate progress of
+  // position.
+  EXPECT_FALSE(performer.Progress(2, &scene_node_));
+  EXPECT_LT(3, scene_node_.position().x());
+  EXPECT_LT(1.5, scene_node_.position().y());
+  EXPECT_EQ(0, scene_node_.position().z());
+
+  // In final destination, we don't rely on double math, instead hard code the
+  // final destination.
+  EXPECT_TRUE(performer.Progress(10, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    position {
+      x: 10  y: 5  z: 0
+    })")));
+}
+
+TEST_F(PerformerTest, Timer) {
+  const auto timer = ParseProto<TimerAnimation>(R"(
+    delay: 1000
+    )");
+  TimerPerformer performer(timer);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
+
+  EXPECT_FALSE(performer.Progress(500, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
+
+  EXPECT_TRUE(performer.Progress(500, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 }
 
 }  // namespace troll
