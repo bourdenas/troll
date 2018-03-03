@@ -108,6 +108,7 @@
     <ClInclude Include="animation\animator-manager.h" />
     <ClInclude Include="animation\animator.h" />
     <ClInclude Include="animation\performer.h" />
+    <ClInclude Include="animation\script-animator.h" />
     <ClInclude Include="core\collision-checker.h" />
     <ClInclude Include="core\resource-manager.h" />
     <ClInclude Include="core\scene-manager.h" />
@@ -133,7 +134,9 @@
     <ClCompile Include="action\executor.cc" />
     <ClCompile Include="animation\animator-manager.cc" />
     <ClCompile Include="animation\animator.cc" />
+    <ClCompile Include="animation\animator_test.cc" />
     <ClCompile Include="animation\performer.cc" />
+    <ClCompile Include="animation\script-animator.cc" />
     <ClCompile Include="core\collision-checker.cc" />
     <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\resource-manager.cc" />

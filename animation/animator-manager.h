@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "animation/animator.h"
+#include "animation/script-animator.h"
 #include "proto/animation.pb.h"
 #include "proto/scene.pb.h"
 

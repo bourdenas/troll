@@ -96,6 +96,9 @@
     <ClInclude Include="scripting\script-manager.h">
       <Filter>scripting</Filter>
     </ClInclude>
+    <ClInclude Include="animation\script-animator.h">
+      <Filter>animation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -169,6 +172,12 @@
     </ClCompile>
     <ClCompile Include="core\main.cc">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="animation\animator_test.cc">
+      <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="animation\script-animator.cc">
+      <Filter>animation</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
