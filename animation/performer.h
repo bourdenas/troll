@@ -136,6 +136,18 @@ class FrameListPerformer : public RepeatablePerformerBase<FrameListAnimation> {
   int current_frame_index_ = 0;
 };
 
+class FlashPerformer : public RepeatablePerformerBase<FlashAnimation> {
+ public:
+  FlashPerformer(const FlashAnimation& animation)
+      : RepeatablePerformerBase<FlashAnimation>(animation) {}
+
+ protected:
+  bool Execute(SceneNode* scene_node) override;
+
+ private:
+  bool visible_ = true;
+};
+
 class GotoPerformer : public PerformerBase<GotoAnimation> {
  public:
   GotoPerformer(const GotoAnimation& animation)
@@ -152,18 +164,6 @@ class GotoPerformer : public PerformerBase<GotoAnimation> {
 
   // Distance to destination point.
   double distance_;
-};
-
-class FlashPerformer : public RepeatablePerformerBase<FlashAnimation> {
- public:
-  FlashPerformer(const FlashAnimation& animation)
-      : RepeatablePerformerBase<FlashAnimation>(animation) {}
-
- protected:
-  bool Execute(SceneNode* scene_node) override;
-
- private:
-  bool visible_ = true;
 };
 
 class TimerPerformer : public PerformerBase<TimerAnimation> {

@@ -55,6 +55,12 @@ bool FrameListPerformer::Execute(SceneNode* scene_node) {
   return current_frame_index_ == animation_.frame_size();
 }
 
+bool FlashPerformer::Execute(SceneNode* scene_node) {
+  visible_ = !visible_;
+  scene_node->set_visible(visible_);
+  return true;
+}
+
 void GotoPerformer::Init(SceneNode* scene_node) {
   direction_ = animation_.destination() - scene_node->position();
   distance_ = util::VectorLength(direction_);
@@ -70,12 +76,6 @@ bool GotoPerformer::Execute(SceneNode* scene_node) {
   }
 
   *scene_node->mutable_position() = animation_.destination();
-  return true;
-}
-
-bool FlashPerformer::Execute(SceneNode* scene_node) {
-  visible_ = !visible_;
-  scene_node->set_visible(visible_);
   return true;
 }
 

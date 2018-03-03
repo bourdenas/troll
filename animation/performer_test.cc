@@ -294,4 +294,36 @@ TEST_F(PerformerTest, FrameListRewindsOnRepeat) {
     )")));
 }
 
+TEST_F(PerformerTest, Flash) {
+  const auto flash = ParseProto<FlashAnimation>(R"(
+    delay: 5
+    repeat: 1
+    )");
+  FlashPerformer performer(flash);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
+
+  EXPECT_TRUE(performer.Progress(5, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    visible: false
+    )")));
+}
+
+TEST_F(PerformerTest, FlashRepeats) {
+  const auto flash = ParseProto<FlashAnimation>(R"(
+    delay: 5
+    repeat: 2
+    )");
+  FlashPerformer performer(flash);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
+
+  EXPECT_TRUE(performer.Progress(15, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    visible: true
+    )")));
+}
+
 }  // namespace troll
