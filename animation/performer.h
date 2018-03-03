@@ -15,13 +15,13 @@ class Performer {
   Performer() = default;
   virtual ~Performer() = default;
 
+  // Override if performer needs state initialisation.
+  virtual void Init(SceneNode* scene_node) {}
+
   // Returns true if the Animation was executed to end.
   virtual bool Progress(int time_since_last_frame, SceneNode* scene_node) = 0;
 
  protected:
-  // Override if performer needs state initialisation.
-  virtual void Init(SceneNode* scene_node) {}
-
   // Actual exectution of the animation aspect. Returns true if animation is
   // finished.
   virtual bool Execute(SceneNode* scene_node) = 0;
@@ -113,11 +113,14 @@ class FrameRangePerformer
       : RepeatablePerformerBase<FrameRangeAnimation>(animation),
         current_frame_(animation.start_frame()) {}
 
+  void Init(SceneNode* scene_node) override;
+
  protected:
   bool Execute(SceneNode* scene_node) override;
 
  private:
-  int current_frame_;
+  int current_frame_ = 0;
+  int num_frames_ = 0;
 };
 
 class FrameListPerformer : public RepeatablePerformerBase<FrameListAnimation> {
@@ -137,8 +140,9 @@ class GotoPerformer : public PerformerBase<GotoAnimation> {
   GotoPerformer(const GotoAnimation& animation)
       : PerformerBase<GotoAnimation>(animation) {}
 
- protected:
   void Init(SceneNode* scene_node) override;
+
+ protected:
   bool Execute(SceneNode* scene_node) override;
 
  private:

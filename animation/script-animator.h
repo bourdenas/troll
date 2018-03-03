@@ -33,8 +33,9 @@ class ScriptAnimator {
   const std::string& scene_node_id() const { return scene_node_id_; }
 
  private:
-  // Returns true if there is a next animation, false if the script is finished.
-  bool MoveToNextAnimation();
+  // Returns true if there is a next animation in the script, false if the
+  // script is finished.
+  bool MoveToNextAnimation(SceneNode* scene_node);
 
   enum class State {
     INIT,

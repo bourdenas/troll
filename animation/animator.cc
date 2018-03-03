@@ -4,7 +4,7 @@
 
 namespace troll {
 
-void Animator::Start() {
+void Animator::Start(SceneNode* scene_node) {
   if (animation_.has_translation()) {
     performers_.push_back(
         std::make_unique<TranslationPerformer>(animation_.translation()));
@@ -33,6 +33,10 @@ void Animator::Start() {
   }
   if (animation_.has_timer()) {
     performers_.push_back(std::make_unique<TimerPerformer>(animation_.timer()));
+  }
+
+  for (auto& performer : performers_) {
+    performer->Init(scene_node);
   }
 }
 

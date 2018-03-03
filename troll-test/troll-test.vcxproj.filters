@@ -12,6 +12,9 @@
     <ClCompile Include="..\animation\animator_test.cc">
       <Filter>animation</Filter>
     </ClCompile>
+    <ClCompile Include="..\animation\performer_test.cc">
+      <Filter>animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

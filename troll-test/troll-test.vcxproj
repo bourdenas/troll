@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\animation\animator_test.cc" />
+    <ClCompile Include="..\animation\performer_test.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test-util.h" />
@@ -66,6 +67,7 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
+      <AdditionalDependencies>%(AdditionalDependencies);gtestd.lib;gtest_maind.lib;gmockd.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">

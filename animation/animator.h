@@ -10,14 +10,14 @@
 
 namespace troll {
 
-// Runs an animation, which might be a composite animation containing different
-// types of transformations on a scene node. See also, "proto/animation.proto".
+// Runs a composite animation containing different types of transformations on a
+// scene node. See also, "proto/animation.proto".
 class Animator {
  public:
   Animator(const Animation& animation) : animation_(animation) {}
 
   // Initialises the animator state.
-  void Start();
+  void Start(SceneNode* scene_node);
 
   // Returns true if the Animator finished.
   bool Progress(int time_since_last_frame, SceneNode* scene_node);

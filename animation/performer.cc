@@ -22,13 +22,20 @@ bool ScalingPerformer::Execute(SceneNode* scene_node) {
   return true;
 }
 
+void FrameRangePerformer::Init(SceneNode* scene_node) {
+  current_frame_ = animation_.start_frame();
+  scene_node->set_frame_index(current_frame_++);
+}
+
 bool FrameRangePerformer::Execute(SceneNode* scene_node) {
   // TODO: handle sprite alignment.
-  scene_node->set_frame_index(current_frame_++);
-  if (current_frame_ == animation_.end_frame() + 1) {
+  if (current_frame_ == animation_.end_frame()) {
     current_frame_ = animation_.start_frame();
-    return true;
+    scene_node->set_frame_index(current_frame_++);
+    return current_frame_ == animation_.end_frame();
   }
+
+  scene_node->set_frame_index(current_frame_++);
   return current_frame_ == animation_.end_frame();
 }
 

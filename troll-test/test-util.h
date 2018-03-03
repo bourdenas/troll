@@ -2,6 +2,7 @@
 #define TROLL_TROLL_TEST_TEST_UTIL_H_
 
 #include <gmock/gmock.h>
+#include <google/protobuf/text_format.h>
 #include <gtest/gtest.h>
 
 namespace troll {

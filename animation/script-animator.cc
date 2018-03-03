@@ -7,11 +7,11 @@
 namespace troll {
 
 void ScriptAnimator::Start() {
-  if (!MoveToNextAnimation()) return;
+  auto* scene_node =
+      Core::Instance().scene_manager().GetSceneNodeById(scene_node_id_);
+  if (!MoveToNextAnimation(scene_node)) return;
 
   state_ = State::RUNNING;
-  const auto* scene_node =
-      Core::Instance().scene_manager().GetSceneNodeById(scene_node_id_);
   Core::Instance().scene_manager().Dirty(*scene_node);
 }
 
@@ -33,18 +33,18 @@ bool ScriptAnimator::Progress(int time_since_last_frame) {
 
   Core::Instance().scene_manager().Dirty(*scene_node);
   if (current_animator_->Progress(time_since_last_frame, scene_node) &&
-      !MoveToNextAnimation()) {
+      !MoveToNextAnimation(scene_node)) {
     Stop();
   }
   return is_finished();
 }
 
-bool ScriptAnimator::MoveToNextAnimation() {
+bool ScriptAnimator::MoveToNextAnimation(SceneNode* scene_node) {
   if (next_animation_index_ == script_.animation().size()) return false;
 
   current_animator_ =
       std::make_unique<Animator>(script_.animation(next_animation_index_++));
-  current_animator_->Start();
+  current_animator_->Start(scene_node);
   return true;
 }
 

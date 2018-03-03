@@ -14,16 +14,21 @@ message AnimationScript {
 }
 
 message Animation {
+  // Repeatable animations.
   optional VectorAnimation translation = 1;
   optional VectorAnimation rotation = 2;
   optional VectorAnimation scaling = 3;
   optional FrameRangeAnimation frame_range = 4;
   optional FrameListAnimation frame_list = 5;
-  optional GotoAnimation go_to = 6;
   optional FlashAnimation flash = 7;
+
+  // Non-repeatable animations.
+  optional GotoAnimation go_to = 6;
   optional TimerAnimation timer = 8;
 }
 
+// A vector based transformation (e.g. translation) that is a pplied on a node
+// after the specified delay.
 message VectorAnimation {
   optional Vector vec = 1;
   optional int32 delay = 2;
@@ -42,6 +47,9 @@ enum HorizontalAlign {
   HCENTRE = 2;
 }
 
+// Animation of frames in the [start, end) range. The start frame is applied
+// immediately to the scene node. The consequent frames are applied after the
+// specified delay.
 message FrameRangeAnimation {
   optional int32 start_frame = 1;
   optional int32 end_frame = 2;
@@ -52,6 +60,9 @@ message FrameRangeAnimation {
   optional HorizontalAlign horizontal_align = 6;
 }
 
+// Animation of frames in the order specified. The start frame is applied
+// immediately to the scene node. The consequent frames are applied after the
+// specified delay.
 message FrameListAnimation {
   repeated int32 frame = 1;
   optional int32 delay = 2;
@@ -61,17 +72,23 @@ message FrameListAnimation {
   optional HorizontalAlign horizontal_align = 5;
 }
 
+// Animation that makes a scene node to disappear/appear with a frequency.
+message FlashAnimation {
+  optional int32 delay = 1;
+  optional int32 repeat = 2;
+}
+
+// Animation that will move a scene node to the destination with a specified
+// step size. The animation is not repeatable. When scene node reaches the
+// destination, the animation finishes.
 message GotoAnimation {
   optional Vector destination = 1;
   optional float step = 2;
   optional int32 delay = 3;
 }
 
-message FlashAnimation {
-  optional int32 delay = 1;
-  optional int32 repeat = 2;
-}
-
+// Non-visual animation that can be used as a time-buffer between other actions
+// in the game.
 message TimerAnimation {
   optional int32 delay = 1;
 }
