@@ -55,6 +55,8 @@ SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
   return it != scene_nodes_.end() ? &it->second : nullptr;
 }
 
+SceneNode* SceneManager::GetSceneNodeAt(const Vector& at) { return nullptr; }
+
 void SceneManager::SetViewport(const Box& view) {
   viewport_ = view;
   // TODO(bourdenas): Render everything.

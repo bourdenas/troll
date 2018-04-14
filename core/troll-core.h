@@ -28,6 +28,12 @@ class Core {
 
   SceneManager& scene_manager() { return *scene_manager_; }
 
+  // NB: Intended to be used only as dependency injection for unit-tests.
+  // Takes ownership.
+  void SetupTestSceneManager(SceneManager* scene_manager) {
+    scene_manager_.reset(scene_manager);
+  }
+
   Core(const Core&) = delete;
   Core& operator=(const Core&) = delete;
 

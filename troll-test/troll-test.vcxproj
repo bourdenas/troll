@@ -25,6 +25,8 @@
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
+    <VcpkgTriplet>x86-windows</VcpkgTriplet>
+    <VcpkgEnabled>true</VcpkgEnabled>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
@@ -43,6 +45,7 @@
   <ItemGroup>
     <ClCompile Include="..\animation\animator_test.cc" />
     <ClCompile Include="..\animation\performer_test.cc" />
+    <ClCompile Include="..\animation\script-animator_test.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test-util.h" />

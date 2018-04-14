@@ -173,9 +173,6 @@
     <ClCompile Include="core\main.cc">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="animation\animator_test.cc">
-      <Filter>animation</Filter>
-    </ClCompile>
     <ClCompile Include="animation\script-animator.cc">
       <Filter>animation</Filter>
     </ClCompile>

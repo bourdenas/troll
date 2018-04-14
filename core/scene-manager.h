@@ -17,14 +17,14 @@ namespace troll {
 class SceneManager {
  public:
   SceneManager(const Renderer& renderer) : renderer_(renderer) {}
-  ~SceneManager() = default;
+  virtual ~SceneManager() = default;
 
   void SetupScene(const Scene& scene);
 
   void AddSceneNode(const SceneNode& node);
   void RemoveSceneNode(const std::string& id);
 
-  SceneNode* GetSceneNodeById(const std::string& id);
+  virtual SceneNode* GetSceneNodeById(const std::string& id);
   SceneNode* GetSceneNodeAt(const Vector& at);
 
   // Returns a view of active SceneNodes of a specific sprite.
@@ -41,7 +41,7 @@ class SceneManager {
   void Render();
 
   // Marks a scene node that needs to be queued for rendering during this frame.
-  void Dirty(const SceneNode& scene_node);
+  virtual void Dirty(const SceneNode& scene_node);
 
   const Scene& scene() const { return scene_; }
   const Box& viewport() const { return viewport_; }
