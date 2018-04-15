@@ -27,6 +27,8 @@ class SceneManager {
   virtual SceneNode* GetSceneNodeById(const std::string& id);
   SceneNode* GetSceneNodeAt(const Vector& at);
 
+  virtual Box GetSceneNodeBoundingBox(const SceneNode& node) const;
+
   // Returns a view of active SceneNodes of a specific sprite.
   auto GetSceneNodesBySprite(const std::string& sprite_id) const {
     return scene_nodes_ | ranges::view::values |

@@ -46,7 +46,7 @@ void SceneManager::RemoveSceneNode(const std::string& id) {
   LOG_IF(ERROR, it == scene_nodes_.end())
       << "RemoveSceneNode() cannot find SceneNode with id='" << id << "'.";
 
-  dirty_boxes_.push_back(util::GetSceneNodeBoundingBox(it->second));
+  dirty_boxes_.push_back(GetSceneNodeBoundingBox(it->second));
   dead_scene_nodes_.push_back(id);
 }
 
@@ -56,6 +56,15 @@ SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
 }
 
 SceneNode* SceneManager::GetSceneNodeAt(const Vector& at) { return nullptr; }
+
+Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) const {
+  const auto& sprite = ResourceManager::Instance().GetSprite(node.sprite_id());
+
+  auto bounding_box = sprite.film(node.frame_index());
+  bounding_box.set_left(node.position().x());
+  bounding_box.set_top(node.position().y());
+  return bounding_box;
+}
 
 void SceneManager::SetViewport(const Box& view) {
   viewport_ = view;
@@ -84,7 +93,7 @@ void SceneManager::Render() {
 }
 
 void SceneManager::Dirty(const SceneNode& scene_node) {
-  dirty_boxes_.push_back(util::GetSceneNodeBoundingBox(scene_node));
+  dirty_boxes_.push_back(GetSceneNodeBoundingBox(scene_node));
   dirty_nodes_.push_back(&scene_node);
   CollisionChecker::Instance().Dirty(scene_node);
 }

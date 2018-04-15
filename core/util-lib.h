@@ -7,8 +7,6 @@
 namespace troll {
 namespace util {
 
-Box GetSceneNodeBoundingBox(const SceneNode& node);
-
 double VectorLength(const Vector& v);
 double VectorSquaredLength(const Vector& v);
 

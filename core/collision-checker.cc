@@ -38,8 +38,9 @@ void CollisionChecker::CheckCollisions() {
 namespace {
 // Returns true if the bounding boxes of two scene nodes are overlapping.
 bool BoundingBoxesCollide(const SceneNode& left, const SceneNode& right) {
-  const Box left_box = util::GetSceneNodeBoundingBox(left);
-  const Box right_box = util::GetSceneNodeBoundingBox(right);
+  const auto& scene = Core::Instance().scene_manager();
+  const Box left_box = scene.GetSceneNodeBoundingBox(left);
+  const Box right_box = scene.GetSceneNodeBoundingBox(right);
   return abs(left_box.left() - right_box.left()) * 2 <=
              left_box.width() + right_box.width() &&
          abs(left_box.top() - right_box.top()) * 2 <=
