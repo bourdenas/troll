@@ -27,26 +27,15 @@ void CollisionChecker::Dirty(const SceneNode& node) {
 }
 
 void CollisionChecker::CheckCollisions() {
-  for (const auto* node : dirty_nodes_) {
+  const std::vector<const SceneNode*> dirty(dirty_nodes_.begin(),
+                                            dirty_nodes_.end());
+  dirty_nodes_.clear();
+  for (const auto* node : dirty) {
     for (const auto& collision : collision_directory_) {
       CheckNodeCollision(*node, collision);
     }
   }
-  dirty_nodes_.clear();
 }
-
-namespace {
-// Returns true if the bounding boxes of two scene nodes are overlapping.
-bool BoundingBoxesCollide(const SceneNode& left, const SceneNode& right) {
-  const auto& scene = Core::Instance().scene_manager();
-  const Box left_box = scene.GetSceneNodeBoundingBox(left);
-  const Box right_box = scene.GetSceneNodeBoundingBox(right);
-  return abs(left_box.left() - right_box.left()) * 2 <=
-             left_box.width() + right_box.width() &&
-         abs(left_box.top() - right_box.top()) * 2 <=
-             left_box.height() + right_box.height();
-}
-}  // namespace
 
 void CollisionChecker::CheckNodeCollision(const SceneNode& node,
                                           const CollisionAction& collision) {
@@ -90,6 +79,19 @@ void CollisionChecker::CheckNodeCollision(const SceneNode& node,
     ActionManager::Instance().Execute(action);
   }
 }
+
+namespace {
+// Returns true if the bounding boxes of two scene nodes are overlapping.
+bool BoundingBoxesCollide(const SceneNode& left, const SceneNode& right) {
+  const auto& scene = Core::Instance().scene_manager();
+  const Box left_box = scene.GetSceneNodeBoundingBox(left);
+  const Box right_box = scene.GetSceneNodeBoundingBox(right);
+  return abs(left_box.left() - right_box.left()) * 2 <=
+             left_box.width() + right_box.width() &&
+         abs(left_box.top() - right_box.top()) * 2 <=
+             left_box.height() + right_box.height();
+}
+}  // namespace
 
 bool CollisionChecker::NodePairTouched(const SceneNode& left,
                                        const SceneNode& right) {

@@ -3,22 +3,28 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "core/mock-scene-manager.h"
 #include "core/troll-core.h"
 #include "proto/animation.pb.h"
 #include "proto/scene-node.pb.h"
 #include "troll-test/test-util.h"
+#include "troll-test/testing-resource-manager.h"
 
 namespace troll {
 
 class AnimatorScriptTest : public testing::Test {
  protected:
   virtual void SetUp() {
-    scene_manager_ = new MockSceneManager;
+    scene_manager_ = new SceneManager(Renderer());
     Core::Instance().SetupTestSceneManager(scene_manager_);
+
+    // Setup dummy sprite for 'test_node' with 5 films that are need for the
+    // frame range animations in the tests.
+    TestingResourceManager::SetTestSprite(ParseProto<Sprite>(R"(
+      id: ''
+      film {} film {} film {} film {} film {})"));
   }
 
-  MockSceneManager* scene_manager_ = nullptr;
+  SceneManager* scene_manager_ = nullptr;
 };
 
 TEST_F(AnimatorScriptTest, RunScriptOnNonExistingSceneNode) {
@@ -46,9 +52,7 @@ TEST_F(AnimatorScriptTest, RunScriptWithSingleRepeatableAnimation) {
       }
     })");
   ScriptAnimator animator(script, "test_node");
-
-  auto scene_node = ParseProto<SceneNode>("id: 'test_node'");
-  scene_manager_->AddMockSceneNode(&scene_node);
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
 
   animator.Start();
   EXPECT_TRUE(animator.is_running());
@@ -56,20 +60,22 @@ TEST_F(AnimatorScriptTest, RunScriptWithSingleRepeatableAnimation) {
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_FALSE(animator.Progress(10));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 0  z:0 }
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 0  z:0 }
+                )")));
 
   EXPECT_TRUE(animator.is_running());
   EXPECT_FALSE(animator.is_finished());
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_FALSE(animator.Progress(5));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 3  y: 0  z:0 }
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 3  y: 0  z:0 }
+                )")));
 }
 
 TEST_F(AnimatorScriptTest, RunScriptWithSingleOneOffAnimation) {
@@ -82,9 +88,7 @@ TEST_F(AnimatorScriptTest, RunScriptWithSingleOneOffAnimation) {
       }
     })");
   ScriptAnimator animator(script, "test_node");
-
-  auto scene_node = ParseProto<SceneNode>("id: 'test_node'");
-  scene_manager_->AddMockSceneNode(&scene_node);
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
 
   animator.Start();
   EXPECT_TRUE(animator.is_running());
@@ -92,20 +96,22 @@ TEST_F(AnimatorScriptTest, RunScriptWithSingleOneOffAnimation) {
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_TRUE(animator.Progress(10));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 1  y: 0  z:0 }
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 1  y: 0  z:0 }
+                )")));
 
   EXPECT_FALSE(animator.is_running());
   EXPECT_TRUE(animator.is_finished());
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_TRUE(animator.Progress(10));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 1  y: 0  z:0 }
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 1  y: 0  z:0 }
+                )")));
 }
 
 TEST_F(AnimatorScriptTest, RunScriptWithSequencedAnimationThatDoesntFinish) {
@@ -125,9 +131,7 @@ TEST_F(AnimatorScriptTest, RunScriptWithSequencedAnimationThatDoesntFinish) {
       }
     })");
   ScriptAnimator animator(script, "test_node");
-
-  auto scene_node = ParseProto<SceneNode>("id: 'test_node'");
-  scene_manager_->AddMockSceneNode(&scene_node);
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
 
   animator.Start();
   EXPECT_TRUE(animator.is_running());
@@ -135,39 +139,43 @@ TEST_F(AnimatorScriptTest, RunScriptWithSequencedAnimationThatDoesntFinish) {
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_FALSE(animator.Progress(5));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 1  y: 0  z:0 }
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 1  y: 0  z:0 }
+                )")));
 
   EXPECT_FALSE(animator.Progress(5));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 0  z:0 }
-    frame_index: 0
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 0  z:0 }
+                frame_index: 0
+                )")));
 
   EXPECT_TRUE(animator.is_running());
   EXPECT_FALSE(animator.is_finished());
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_FALSE(animator.Progress(20));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 0  z:0 }
-    frame_index: 2
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 0  z:0 }
+                frame_index: 2
+                )")));
 
   EXPECT_TRUE(animator.is_running());
   EXPECT_FALSE(animator.is_finished());
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_FALSE(animator.Progress(20));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 0  z:0 }
-    frame_index: 1
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 0  z:0 }
+                frame_index: 1
+                )")));
 
   EXPECT_TRUE(animator.is_running());
   EXPECT_FALSE(animator.is_finished());
@@ -196,9 +204,7 @@ TEST_F(AnimatorScriptTest,
       }
     })");
   ScriptAnimator animator(script, "test_node");
-
-  auto scene_node = ParseProto<SceneNode>("id: 'test_node'");
-  scene_manager_->AddMockSceneNode(&scene_node);
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
 
   animator.Start();
   EXPECT_TRUE(animator.is_running());
@@ -206,39 +212,43 @@ TEST_F(AnimatorScriptTest,
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_FALSE(animator.Progress(10));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 4  z:0 }
-    frame_index: 2
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 4  z:0 }
+                frame_index: 2
+                )")));
 
   EXPECT_FALSE(animator.Progress(2));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 4  z:0 }
-    frame_index: 2
-    visible: false
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 4  z:0 }
+                frame_index: 2
+                visible: false
+                )")));
 
   EXPECT_TRUE(animator.Progress(2));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 4  z:0 }
-    frame_index: 2
-    visible: true
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 4  z:0 }
+                frame_index: 2
+                visible: true
+                )")));
 
   EXPECT_FALSE(animator.is_running());
   EXPECT_TRUE(animator.is_finished());
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_TRUE(animator.Progress(2));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 4  z:0 }
-    frame_index: 2
-    visible: true
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 4  z:0 }
+                frame_index: 2
+                visible: true
+                )")));
 
   EXPECT_FALSE(animator.is_running());
   EXPECT_TRUE(animator.is_finished());
@@ -254,9 +264,7 @@ TEST_F(AnimatorScriptTest, RunScriptAnimationAndNodeIsDeleted) {
       }
     })");
   ScriptAnimator animator(script, "test_node");
-
-  auto scene_node = ParseProto<SceneNode>("id: 'test_node'");
-  scene_manager_->AddMockSceneNode(&scene_node);
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
 
   animator.Start();
   EXPECT_TRUE(animator.is_running());
@@ -264,21 +272,20 @@ TEST_F(AnimatorScriptTest, RunScriptAnimationAndNodeIsDeleted) {
   EXPECT_FALSE(animator.is_paused());
 
   EXPECT_FALSE(animator.Progress(10));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 0  z:0 }
-    )")));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 2  y: 0  z:0 }
+                )")));
   EXPECT_TRUE(animator.is_running());
   EXPECT_FALSE(animator.is_finished());
 
-  // Remove SceneNode from the scene.
-  scene_manager_->RemoveMockSceneNode("test_node");
+  // Create a new scene manager as a hacky way to delete the 'test_node'.
+  scene_manager_ = new SceneManager(Renderer());
+  Core::Instance().SetupTestSceneManager(scene_manager_);
 
+  EXPECT_EQ(scene_manager_->GetSceneNodeById("test_node"), nullptr);
   EXPECT_TRUE(animator.Progress(10));
-  EXPECT_THAT(scene_node, EqualsProto(ParseProto<SceneNode>(R"(
-    id: 'test_node'
-    position { x: 2  y: 0  z:0 }
-    )")));
   EXPECT_FALSE(animator.is_running());
   EXPECT_TRUE(animator.is_finished());
 }

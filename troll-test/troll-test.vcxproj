@@ -46,10 +46,11 @@
     <ClCompile Include="..\animation\animator_test.cc" />
     <ClCompile Include="..\animation\performer_test.cc" />
     <ClCompile Include="..\animation\script-animator_test.cc" />
+    <ClCompile Include="..\core\collision-checker_test.cc" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\core\mock-scene-manager.h" />
     <ClInclude Include="test-util.h" />
+    <ClInclude Include="testing-resource-manager.h" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

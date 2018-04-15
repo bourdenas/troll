@@ -50,6 +50,8 @@ class ResourceManager {
   std::unordered_map<std::string, AnimationScript> scripts_;
   std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
   std::unordered_map<std::string, std::unique_ptr<Font>> fonts_;
+
+  friend class TestingResourceManager;
 };
 
 }  // namespace troll

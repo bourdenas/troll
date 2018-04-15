@@ -64,6 +64,8 @@ class CollisionChecker {
   // pair to collide. This might be a bit far-fetched but possible. Also it
   // increases unnecessarily the size of the set if many nodes get destroyed.
   std::set<std::pair<const SceneNode*, const SceneNode*>> colliding_node_pairs_;
+
+  friend class CollisionCheckerTest;
 };
 
 }  // namespace troll

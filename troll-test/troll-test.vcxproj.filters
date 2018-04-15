@@ -21,6 +21,9 @@
     <ClCompile Include="..\animation\script-animator_test.cc">
       <Filter>animation</Filter>
     </ClCompile>
+    <ClCompile Include="..\core\collision-checker_test.cc">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -29,8 +32,8 @@
     <ClInclude Include="test-util.h">
       <Filter>troll-test</Filter>
     </ClInclude>
-    <ClInclude Include="..\core\mock-scene-manager.h">
-      <Filter>core</Filter>
+    <ClInclude Include="testing-resource-manager.h">
+      <Filter>troll-test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

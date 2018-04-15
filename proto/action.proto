@@ -13,7 +13,7 @@ message Action {
     EmitAction emit = 3;
 
     ChangeSceneAction change_scene = 4;
-    
+
     SceneNodeAction create_scene_node = 5;
     SceneNodeAction destroy_scene_node = 6;
 
