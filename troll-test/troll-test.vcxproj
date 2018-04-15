@@ -48,6 +48,7 @@
     <ClCompile Include="..\animation\script-animator_test.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\core\mock-scene-manager.h" />
     <ClInclude Include="test-util.h" />
   </ItemGroup>
   <ItemDefinitionGroup />

@@ -7,6 +7,9 @@
     <Filter Include="troll-test">
       <UniqueIdentifier>{41f92f78-0579-4e8e-adf1-58a5b44540d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="core">
+      <UniqueIdentifier>{2f60f801-9edf-40b7-9bf4-44971f82dcf5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\animation\animator_test.cc">
@@ -25,6 +28,9 @@
   <ItemGroup>
     <ClInclude Include="test-util.h">
       <Filter>troll-test</Filter>
+    </ClInclude>
+    <ClInclude Include="..\core\mock-scene-manager.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

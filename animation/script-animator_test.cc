@@ -3,35 +3,13 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "core/scene-manager.h"
+#include "core/mock-scene-manager.h"
 #include "core/troll-core.h"
 #include "proto/animation.pb.h"
 #include "proto/scene-node.pb.h"
 #include "troll-test/test-util.h"
 
 namespace troll {
-
-using testing::Return;
-
-class MockSceneManager : public SceneManager {
- public:
-  MockSceneManager() : SceneManager(Renderer()) {}
-
-  SceneNode* GetSceneNodeById(const std::string& id) override {
-    const auto it = get_scene_node_by_id_cache_.find(id);
-    return it != get_scene_node_by_id_cache_.end() ? it->second : nullptr;
-  }
-
-  void Dirty(const SceneNode& scene_node) override {}
-
-  void AddMockSceneNode(const std::string& id, SceneNode* node) {
-    get_scene_node_by_id_cache_[id] = node;
-  }
-
- private:
-  // SceneNodes are not owned by this map.
-  std::unordered_map<std::string, SceneNode*> get_scene_node_by_id_cache_;
-};
 
 class AnimatorScriptTest : public testing::Test {
  protected:
