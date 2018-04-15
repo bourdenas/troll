@@ -18,8 +18,11 @@ class MockSceneManager : public SceneManager {
 
   void Dirty(const SceneNode& scene_node) override {}
 
-  void AddMockSceneNode(const std::string& id, SceneNode* node) {
-    get_scene_node_by_id_cache_[id] = node;
+  void AddMockSceneNode(SceneNode* node) {
+    get_scene_node_by_id_cache_[node->id()] = node;
+  }
+  void RemoveMockSceneNode(const std::string& id) {
+    get_scene_node_by_id_cache_.erase(id);
   }
 
  private:
