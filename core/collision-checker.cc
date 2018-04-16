@@ -27,14 +27,12 @@ void CollisionChecker::Dirty(const SceneNode& node) {
 }
 
 void CollisionChecker::CheckCollisions() {
-  const std::vector<const SceneNode*> dirty(dirty_nodes_.begin(),
-                                            dirty_nodes_.end());
-  dirty_nodes_.clear();
-  for (const auto* node : dirty) {
+  for (const auto* node : dirty_nodes_) {
     for (const auto& collision : collision_directory_) {
       CheckNodeCollision(*node, collision);
     }
   }
+  dirty_nodes_.clear();
 }
 
 void CollisionChecker::CheckNodeCollision(const SceneNode& node,

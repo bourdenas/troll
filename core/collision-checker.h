@@ -1,9 +1,8 @@
 #ifndef TROLL_CORE_COLLISION_CHECKER_H_
 #define TROLL_CORE_COLLISION_CHECKER_H_
 
+#include <set>
 #include <string>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "proto/action.pb.h"
 #include "proto/scene-node.pb.h"
@@ -51,8 +50,12 @@ class CollisionChecker {
   // Directory of registered collisions.
   std::vector<CollisionAction> collision_directory_;
 
-  // Nodes that moved during this frame and should be checked for collisions.
-  std::unordered_set<const SceneNode*> dirty_nodes_;
+  // Nodes that moved or created during this frame and should be checked for
+  // collisions.
+  // NB: Using std::set instead of std::unordered_set because insertion does not
+  // invalidate iterators on the former. New nodes may be added for collision
+  // checking as a side-effect of collision actions.
+  std::set<const SceneNode*> dirty_nodes_;
 
   // Node pairs that are in collision.
   //
@@ -64,8 +67,6 @@ class CollisionChecker {
   // pair to collide. This might be a bit far-fetched but possible. Also it
   // increases unnecessarily the size of the set if many nodes get destroyed.
   std::set<std::pair<const SceneNode*, const SceneNode*>> colliding_node_pairs_;
-
-  friend class CollisionCheckerTest;
 };
 
 }  // namespace troll
