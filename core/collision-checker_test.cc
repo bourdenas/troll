@@ -11,12 +11,11 @@
 
 namespace troll {
 
-using testing::UnorderedElementsAre;
 using testing::Pointee;
 
 class CollisionCheckerTest : public testing::Test {
  protected:
-  virtual void SetUp() {
+  void SetUp() override {
     scene_manager_ = new SceneManager(Renderer());
     Core::Instance().SetupTestSceneManager(scene_manager_);
 
@@ -42,6 +41,8 @@ class CollisionCheckerTest : public testing::Test {
     // effect of a collision is calling some action.
     ActionManager::Instance().Init();
   }
+
+  void TearDown() override { ResourceManager::Instance().CleanUp(); }
 
   SceneManager* scene_manager_ = nullptr;
 };

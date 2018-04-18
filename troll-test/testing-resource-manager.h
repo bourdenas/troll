@@ -11,6 +11,10 @@ class TestingResourceManager {
   static void SetTestSprite(const Sprite& sprite) {
     ResourceManager::Instance().sprites_[sprite.id()] = sprite;
   }
+
+  static void SetTestAnimationScript(const AnimationScript& script) {
+    ResourceManager::Instance().scripts_[script.id()] = script;
+  }
 };
 
 }  // namespace troll

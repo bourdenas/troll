@@ -34,7 +34,7 @@ void AnimatorManager::Play(const std::string& script_id,
 }
 
 void AnimatorManager::Stop(const std::string& script_id,
-                           const std::string& scene_node_id) {
+                           const std::string& scene_node_id) const {
   for (const auto& animator :
        running_scripts_ | ranges::view::filter(
                               MatchScriptSceneNode(script_id, scene_node_id))) {
@@ -43,7 +43,7 @@ void AnimatorManager::Stop(const std::string& script_id,
 }
 
 void AnimatorManager::Pause(const std::string& script_id,
-                            const std::string& scene_node_id) {
+                            const std::string& scene_node_id) const {
   for (const auto& animator :
        running_scripts_ | ranges::view::filter(
                               MatchScriptSceneNode(script_id, scene_node_id))) {
@@ -52,7 +52,7 @@ void AnimatorManager::Pause(const std::string& script_id,
 }
 
 void AnimatorManager::Resume(const std::string& script_id,
-                             const std::string& scene_node_id) {
+                             const std::string& scene_node_id) const {
   for (const auto& animator :
        running_scripts_ | ranges::view::filter(
                               MatchScriptSceneNode(script_id, scene_node_id))) {
@@ -60,8 +60,9 @@ void AnimatorManager::Resume(const std::string& script_id,
   }
 }
 
-void AnimatorManager::StopNodeAnimations(const std::string& scene_node_id) {
-  for (auto& animator :
+void AnimatorManager::StopNodeAnimations(
+    const std::string& scene_node_id) const {
+  for (const auto& animator :
        running_scripts_ | ranges::view::filter(MatchSceneNode(scene_node_id))) {
     animator->Stop();
   }

@@ -11,7 +11,7 @@ namespace troll {
 
 class PerformerTest : public testing::Test {
  protected:
-  virtual void SetUp() {}
+  void SetUp() override {}
 
   SceneNode scene_node_;
 };

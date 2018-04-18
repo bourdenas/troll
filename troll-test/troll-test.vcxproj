@@ -43,6 +43,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\animation\animator-manager_test.cc" />
     <ClCompile Include="..\animation\animator_test.cc" />
     <ClCompile Include="..\animation\performer_test.cc" />
     <ClCompile Include="..\animation\script-animator_test.cc" />

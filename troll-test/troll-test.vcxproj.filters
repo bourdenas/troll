@@ -24,6 +24,9 @@
     <ClCompile Include="..\core\collision-checker_test.cc">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="..\animation\animator-manager_test.cc">
+      <Filter>animation</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

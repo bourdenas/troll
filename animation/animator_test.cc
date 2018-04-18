@@ -11,7 +11,7 @@ namespace troll {
 
 class AnimatorTest : public testing::Test {
  protected:
-  virtual void SetUp() {
+  void SetUp() override {
     animation_ = ParseProto<Animation>(R"(
       translation {
         vec {

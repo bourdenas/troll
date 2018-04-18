@@ -13,7 +13,7 @@ namespace troll {
 
 class AnimatorScriptTest : public testing::Test {
  protected:
-  virtual void SetUp() {
+  void SetUp() override {
     scene_manager_ = new SceneManager(Renderer());
     Core::Instance().SetupTestSceneManager(scene_manager_);
 
