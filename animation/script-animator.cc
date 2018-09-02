@@ -18,7 +18,14 @@ void ScriptAnimator::Start() {
   Core::Instance().scene_manager().Dirty(*scene_node);
 }
 
-void ScriptAnimator::Stop() { state_ = State::FINISHED; }
+void ScriptAnimator::Stop() {
+  const auto* scene_node =
+      Core::Instance().scene_manager().GetSceneNodeById(scene_node_id_);
+  if (scene_node != nullptr) {
+    Core::Instance().scene_manager().Dirty(*scene_node);
+  }
+  state_ = State::FINISHED;
+}
 
 void ScriptAnimator::Pause() { state_ = State::PAUSED; }
 

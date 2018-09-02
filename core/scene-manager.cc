@@ -63,6 +63,8 @@ Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) const {
   auto bounding_box = sprite.film(node.frame_index());
   bounding_box.set_left(node.position().x());
   bounding_box.set_top(node.position().y());
+  bounding_box.set_width(bounding_box.width() + 1);
+  bounding_box.set_height(bounding_box.height() + 1);
   return bounding_box;
 }
 

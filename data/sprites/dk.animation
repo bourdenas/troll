@@ -3,7 +3,7 @@ script {
   animation {
     frame_range {
       start_frame: 2
-      end_frame: 3
+      end_frame: 4
       delay: 300
       vertical_align: BOTTOM
     }

@@ -48,6 +48,7 @@
     <ClCompile Include="..\animation\performer_test.cc" />
     <ClCompile Include="..\animation\script-animator_test.cc" />
     <ClCompile Include="..\core\collision-checker_test.cc" />
+    <ClCompile Include="..\core\scene-manager_test.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="test-util.h" />
