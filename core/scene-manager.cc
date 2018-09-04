@@ -1,6 +1,7 @@
 #include "core/scene-manager.h"
 
 #include <glog/logging.h>
+#include <range/v3/algorithm/find_if.hpp>
 
 #include "action/action-manager.h"
 #include "animation/animator-manager.h"
