@@ -69,9 +69,6 @@
     <ClInclude Include="core\collision-checker.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="core\util-lib.h">
-      <Filter>core</Filter>
-    </ClInclude>
     <ClInclude Include="core\resource-manager.h">
       <Filter>core</Filter>
     </ClInclude>
@@ -98,6 +95,9 @@
     </ClInclude>
     <ClInclude Include="animation\script-animator.h">
       <Filter>animation</Filter>
+    </ClInclude>
+    <ClInclude Include="core\geometry.h">
+      <Filter>core</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -146,9 +146,6 @@
     <ClCompile Include="core\collision-checker.cc">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="core\util-lib.cc">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="core\resource-manager.cc">
       <Filter>core</Filter>
     </ClCompile>
@@ -172,6 +169,9 @@
     </ClCompile>
     <ClCompile Include="animation\script-animator.cc">
       <Filter>animation</Filter>
+    </ClCompile>
+    <ClCompile Include="core\geometry.cc">
+      <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

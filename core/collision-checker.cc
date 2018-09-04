@@ -7,8 +7,8 @@
 #include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
+#include "core/geometry.h"
 #include "core/troll-core.h"
-#include "core/util-lib.h"
 
 namespace troll {
 
@@ -82,12 +82,8 @@ namespace {
 // Returns true if the bounding boxes of two scene nodes are overlapping.
 bool BoundingBoxesCollide(const SceneNode& left, const SceneNode& right) {
   const auto& scene = Core::Instance().scene_manager();
-  const Box left_box = scene.GetSceneNodeBoundingBox(left);
-  const Box right_box = scene.GetSceneNodeBoundingBox(right);
-  return abs(left_box.left() - right_box.left()) * 2 <=
-             left_box.width() + right_box.width() &&
-         abs(left_box.top() - right_box.top()) * 2 <=
-             left_box.height() + right_box.height();
+  return geo::Collide(scene.GetSceneNodeBoundingBox(left),
+                      scene.GetSceneNodeBoundingBox(right));
 }
 }  // namespace
 

@@ -2,7 +2,7 @@
 
 #include <glog/logging.h>
 
-#include "core/util-lib.h"
+#include "core/geometry.h"
 
 namespace troll {
 
@@ -63,8 +63,8 @@ bool FlashPerformer::Execute(SceneNode* scene_node) {
 
 void GotoPerformer::Init(SceneNode* scene_node) {
   direction_ = animation_.destination() - scene_node->position();
-  distance_ = util::VectorLength(direction_);
-  util::VectorNormalise(&direction_);
+  distance_ = geo::VectorLength(direction_);
+  geo::VectorNormalise(&direction_);
 }
 
 bool GotoPerformer::Execute(SceneNode* scene_node) {

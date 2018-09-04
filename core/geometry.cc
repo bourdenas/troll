@@ -1,4 +1,4 @@
-#include "core/util-lib.h"
+#include "core/geometry.h"
 
 #include <math.h>
 
@@ -6,7 +6,17 @@
 #include "proto/sprite.pb.h"
 
 namespace troll {
-namespace util {
+namespace geo {
+
+bool Contains(const Box& box, const Vector& v) {
+  return !((v.x() < box.left()) || (v.x() >= box.left() + box.width()) ||
+           (v.y() <= box.top()) || (v.y() > box.top() + box.height()));
+}
+
+bool Collide(const Box& lhs, const Box& rhs) {
+  return abs(lhs.left() - rhs.left()) * 2 <= lhs.width() + rhs.width() &&
+         abs(lhs.top() - rhs.top()) * 2 <= lhs.height() + rhs.height();
+}
 
 double VectorLength(const Vector& v) {
   return std::sqrt(VectorSquaredLength(v));
@@ -23,7 +33,7 @@ void VectorNormalise(Vector* v) {
   }
 }
 
-}  // namespace util
+}  // namespace geo
 
 Vector operator+(const Vector& left, const Vector& right) {
   Vector v;

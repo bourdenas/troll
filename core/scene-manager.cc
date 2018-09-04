@@ -1,13 +1,12 @@
 #include "core/scene-manager.h"
 
 #include <glog/logging.h>
-#include <range/v3/algorithm/find_if.hpp>
 
 #include "action/action-manager.h"
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
+#include "core/geometry.h"
 #include "core/resource-manager.h"
-#include "core/util-lib.h"
 
 namespace troll {
 
@@ -56,20 +55,12 @@ SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
   return it != scene_nodes_.end() ? &it->second : nullptr;
 }
 
-namespace {
-// Returns true if the point |v| falls inside |box|.
-bool Contains(const Box& box, const Vector& v) {
-  return !((v.x() < box.left()) || (v.x() >= box.left() + box.width()) ||
-           (v.y() <= box.top()) || (v.y() > box.top() + box.height()));
-}
-}  // namespace
-
 SceneNode* SceneManager::GetSceneNodeAt(const Vector& at) {
   auto nodes = scene_nodes_ | ranges::view::values;
-  auto it = std::find_if(nodes.begin(), nodes.end(),
-                         [this, &at](const SceneNode& node) {
-                           return Contains(GetSceneNodeBoundingBox(node), at);
-                         });
+  auto it = std::find_if(
+      nodes.begin(), nodes.end(), [this, &at](const SceneNode& node) {
+        return geo::Contains(GetSceneNodeBoundingBox(node), at);
+      });
   return it != nodes.end() ? &(*it) : nullptr;
 }
 
