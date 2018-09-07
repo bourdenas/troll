@@ -1,6 +1,8 @@
 #include "core/scene-manager.h"
 
 #include <glog/logging.h>
+#include <range/v3/action/push_back.hpp>
+#include <range/v3/algorithm/find.hpp>
 
 #include "action/action-manager.h"
 #include "animation/animator-manager.h"
@@ -47,7 +49,7 @@ void SceneManager::RemoveSceneNode(const std::string& id) {
       << "RemoveSceneNode() cannot find SceneNode with id='" << id << "'.";
 
   dirty_boxes_.push_back(GetSceneNodeBoundingBox(it->second));
-  dead_scene_nodes_.push_back(id);
+  dead_scene_nodes_.insert(id);
 }
 
 SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
@@ -86,24 +88,32 @@ void SceneManager::ScrollViewport(const Vector& by) {
 }
 
 void SceneManager::Render() {
-  CleanUpDeletedSceneNodes();
-
+  std::vector<const SceneNode*> dirty_nodes;
   for (const auto& box : dirty_boxes_) {
     renderer_.FillColour(scene_.bitmap_config().background_colour(), box);
+
+    dirty_nodes |= ranges::push_back(
+        scene_nodes_ | ranges::view::values |
+        ranges::view::filter([this, &box](const SceneNode& node) {
+          // Filter scene nodes that are still alive and collide with dirty box.
+          return dead_scene_nodes_.find(node.id()) == dead_scene_nodes_.end() &&
+                 geo::Collide(GetSceneNodeBoundingBox(node), box);
+        }) |
+        ranges::view::transform([](const SceneNode& node) { return &node; }));
   }
   dirty_boxes_.clear();
 
-  for (const auto* node : dirty_nodes_) {
+  for (const auto* node : dirty_nodes) {
     BlitSceneNode(*node);
   }
-  dirty_nodes_.clear();
 
   renderer_.Flip();
+
+  CleanUpDeletedSceneNodes();
 }
 
 void SceneManager::Dirty(const SceneNode& scene_node) {
   dirty_boxes_.push_back(GetSceneNodeBoundingBox(scene_node));
-  dirty_nodes_.push_back(&scene_node);
   CollisionChecker::Instance().Dirty(scene_node);
 }
 
@@ -126,13 +136,7 @@ void SceneManager::CleanUpDeletedSceneNodes() {
     LOG_IF(ERROR, it == scene_nodes_.end())
         << "CleanUpDeletedSceneNodes() SceneNode with id='" << id
         << "' was not found.";
-    AnimatorManager::Instance().StopNodeAnimations(id);
 
-    const auto dirty_it =
-        std::remove(dirty_nodes_.begin(), dirty_nodes_.end(), &it->second);
-    if (dirty_it != dirty_nodes_.end()) {
-      dirty_nodes_.erase(dirty_it, dirty_nodes_.end());
-    }
     scene_nodes_.erase(it);
   }
   dead_scene_nodes_.clear();

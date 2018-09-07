@@ -80,7 +80,7 @@ void CollisionChecker::CheckNodeCollision(const SceneNode& node,
 
 namespace {
 // Returns true if the bounding boxes of two scene nodes are overlapping.
-bool BoundingBoxesCollide(const SceneNode& left, const SceneNode& right) {
+bool SceneNodesCollide(const SceneNode& left, const SceneNode& right) {
   const auto& scene = Core::Instance().scene_manager();
   return geo::Collide(scene.GetSceneNodeBoundingBox(left),
                       scene.GetSceneNodeBoundingBox(right));
@@ -89,7 +89,7 @@ bool BoundingBoxesCollide(const SceneNode& left, const SceneNode& right) {
 
 bool CollisionChecker::NodePairTouched(const SceneNode& left,
                                        const SceneNode& right) {
-  const bool collide = BoundingBoxesCollide(left, right);
+  const bool collide = SceneNodesCollide(left, right);
   if (NodePairAlreadyCollides(left, right)) {
     if (!collide) {
       RemoveCollidingNodePair(left, right);

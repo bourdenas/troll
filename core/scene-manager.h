@@ -4,6 +4,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <range/v3/view/filter.hpp>
 #include <range/v3/view/map.hpp>
@@ -58,9 +59,8 @@ class SceneManager {
   Box viewport_;
 
   std::unordered_map<std::string, SceneNode> scene_nodes_;
-  std::vector<std::string> dead_scene_nodes_;
+  std::unordered_set<std::string> dead_scene_nodes_;
 
-  std::vector<const SceneNode*> dirty_nodes_;
   std::vector<Box> dirty_boxes_;
 };
 

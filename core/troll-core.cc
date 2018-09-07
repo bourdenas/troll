@@ -73,7 +73,6 @@ bool Core::InputHandling() {
 
 void Core::FrameStarted(int time_since_last_frame) {
   AnimatorManager::Instance().Progress(time_since_last_frame);
-  // Physics::Instance().Progress(time_since_last_frame);
   CollisionChecker::Instance().CheckCollisions();
 }
 

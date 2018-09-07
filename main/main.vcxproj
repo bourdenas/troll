@@ -99,7 +99,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>D:\dev\troll;%(AdditionalIncludeDirectories);D:\dev\vcpkg\packages\python3_x86-windows\include\python3.6</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4146</DisableSpecificWarnings>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>D:\dev\vcpkg\packages\python3_x86-windows\lib;%(AdditionalLibraryDirectories);$(OutDir)</AdditionalLibraryDirectories>
