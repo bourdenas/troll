@@ -20,11 +20,14 @@ message Animation {
   optional VectorAnimation scaling = 3;
   optional FrameRangeAnimation frame_range = 4;
   optional FrameListAnimation frame_list = 5;
-  optional FlashAnimation flash = 7;
+  optional FlashAnimation flash = 6;
 
   // Non-repeatable animations.
-  optional GotoAnimation go_to = 6;
+  optional GotoAnimation go_to = 7;
   optional TimerAnimation timer = 8;
+
+  // Composable scripts.
+  optional RunScriptAnimation run_script = 9;
 }
 
 // A vector based transformation (e.g. translation) that is a pplied on a node
@@ -91,4 +94,9 @@ message GotoAnimation {
 // in the game.
 message TimerAnimation {
   optional int32 delay = 1;
+}
+
+message RunScriptAnimation {
+  optional string script_id = 1;
+  optional int32 repeat = 2 [default = 1];
 }
