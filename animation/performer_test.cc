@@ -402,6 +402,33 @@ TEST_F(PerformerTest, Goto) {
     })")));
 }
 
+TEST_F(PerformerTest, GotoAlreadyThere) {
+  const auto goto_animation = ParseProto<GotoAnimation>(R"(
+    destination {
+      x: 10  y: 5  z: 0
+    }
+    step: 2
+    delay: 1
+    )");
+  GotoPerformer performer(goto_animation);
+
+  scene_node_ = ParseProto<SceneNode>(R"(
+    position {
+      x: 10  y: 5  z: 0
+    })");
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    position {
+      x: 10  y: 5  z: 0
+    })")));
+
+  EXPECT_TRUE(performer.Progress(2, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    position {
+      x: 10  y: 5  z: 0
+    })")));
+}
+
 TEST_F(PerformerTest, Timer) {
   const auto timer = ParseProto<TimerAnimation>(R"(
     delay: 1000
