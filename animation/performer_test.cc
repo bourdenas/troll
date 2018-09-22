@@ -25,7 +25,6 @@ TEST_F(PerformerTest, Translation) {
     })");
   TranslationPerformer performer(translation);
 
-  // Init is a noop.
   performer.Init(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
@@ -49,7 +48,6 @@ TEST_F(PerformerTest, TranslationIndefinite) {
     })");
   TranslationPerformer performer(translation);
 
-  // Init is a noop.
   performer.Init(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
@@ -83,7 +81,6 @@ TEST_F(PerformerTest, TranslationRepeatableThreeTimes) {
     })");
   TranslationPerformer performer(translation);
 
-  // Init is a noop.
   performer.Init(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
@@ -105,7 +102,6 @@ TEST_F(PerformerTest, TranslationProgressesMultipleTimesIfNeeded) {
     })");
   TranslationPerformer performer(translation);
 
-  // Init is a noop.
   performer.Init(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
@@ -125,11 +121,62 @@ TEST_F(PerformerTest, TranslationDoesntProgressMoreThanItIsAllowed) {
     })");
   TranslationPerformer performer(translation);
 
-  // Init is a noop.
   performer.Init(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_TRUE(performer.Progress(50, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    position {
+      x: 3  y: 0  z: 0
+    })")));
+}
+
+TEST_F(PerformerTest, TranslationOneOffWithoutDelay) {
+  const auto translation = ParseProto<VectorAnimation>(R"(
+    delay: 0
+    repeat: 1
+    vec {
+      x: 1
+    })");
+  TranslationPerformer performer(translation);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
+
+  EXPECT_TRUE(performer.Progress(5, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    position {
+      x: 1  y: 0  z: 0
+    })")));
+}
+
+TEST_F(PerformerTest, TranslationRepeatableWithoutDelay) {
+  // This is an odd case, where animation is applied instantly repeatadly.
+  // The expected behaviour is that the animation is applied only once per call
+  // of Progress() and not cause infinite loop. However, this is not a reliable
+  // way to apply an animation since it will not be deterministic in its
+  // effects, but will vary based on frame-rate.
+  const auto translation = ParseProto<VectorAnimation>(R"(
+    delay: 0
+    vec {
+      x: 1
+    })");
+  TranslationPerformer performer(translation);
+
+  performer.Init(&scene_node_);
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
+
+  EXPECT_FALSE(performer.Progress(5, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    position {
+      x: 1  y: 0  z: 0
+    })")));
+  EXPECT_FALSE(performer.Progress(20, &scene_node_));
+  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+    position {
+      x: 2  y: 0  z: 0
+    })")));
+  EXPECT_FALSE(performer.Progress(1, &scene_node_));
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     position {
       x: 3  y: 0  z: 0

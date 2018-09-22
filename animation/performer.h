@@ -27,11 +27,69 @@ class Performer {
   virtual bool Execute(SceneNode* scene_node) = 0;
 };
 
+// Base class for animation performers that are repeatable and have a delay.
 template <class AnimationType>
-class PerformerBase : public Performer {
+class RepeatablePerformerBase : public Performer {
  public:
-  PerformerBase(const AnimationType& animation) : animation_(animation) {}
-  ~PerformerBase() override = default;
+  RepeatablePerformerBase(const AnimationType& animation)
+      : animation_(animation) {}
+  ~RepeatablePerformerBase() override = default;
+
+  bool Progress(int time_since_last_frame, SceneNode* scene_node) override {
+    if (animation_.delay() == 0) {
+      return RepeatableExecute(scene_node);
+    }
+
+    wait_time_ += time_since_last_frame;
+    while (animation_.delay() <= wait_time_) {
+      wait_time_ -= animation_.delay();
+
+      if (RepeatableExecute(scene_node)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+ protected:
+  // Returns true if animation is finished cannot be repeated anymore.
+  bool RepeatableExecute(SceneNode* scene_node) {
+    return Execute(scene_node) && ++run_number_ == animation_.repeat();
+  }
+
+  const AnimationType& animation_;
+
+ private:
+  int wait_time_ = 0;
+  int run_number_ = 0;
+};
+
+// Base class for animation performers that are repeatable and applied
+// instantly, i.e. no delay.
+template <class AnimationType>
+class RepeatableInstantPerformerBase : public Performer {
+ public:
+  RepeatableInstantPerformerBase(const AnimationType& animation)
+      : animation_(animation) {}
+  ~RepeatableInstantPerformerBase() override = default;
+
+  bool Progress(int time_since_last_frame, SceneNode* scene_node) override {
+    return Execute(scene_node) && ++run_number_ == animation_.repeat();
+  }
+
+ protected:
+  const AnimationType& animation_;
+
+ private:
+  int run_number_ = 0;
+};
+
+// Base class for animation performers that are not repeatable.
+template <class AnimationType>
+class OneOffPerformerBase : public Performer {
+ public:
+  OneOffPerformerBase(const AnimationType& animation) : animation_(animation) {}
+  ~OneOffPerformerBase() override = default;
 
   bool Progress(int time_since_last_frame, SceneNode* scene_node) override {
     wait_time_ += time_since_last_frame;
@@ -50,33 +108,6 @@ class PerformerBase : public Performer {
 
  private:
   int wait_time_ = 0;
-};
-
-template <class AnimationType>
-class RepeatablePerformerBase : public Performer {
- public:
-  RepeatablePerformerBase(const AnimationType& animation)
-      : animation_(animation) {}
-  ~RepeatablePerformerBase() override = default;
-
-  bool Progress(int time_since_last_frame, SceneNode* scene_node) override {
-    wait_time_ += time_since_last_frame;
-    while (animation_.delay() <= wait_time_) {
-      wait_time_ -= animation_.delay();
-
-      if (Execute(scene_node) && ++run_number_ == animation_.repeat()) {
-        return true;
-      }
-    }
-    return false;
-  }
-
- protected:
-  const AnimationType& animation_;
-
- private:
-  int wait_time_ = 0;
-  int run_number_ = 0;
 };
 
 class TranslationPerformer : public RepeatablePerformerBase<VectorAnimation> {
@@ -148,10 +179,10 @@ class FlashPerformer : public RepeatablePerformerBase<FlashAnimation> {
   bool visible_ = true;
 };
 
-class GotoPerformer : public PerformerBase<GotoAnimation> {
+class GotoPerformer : public OneOffPerformerBase<GotoAnimation> {
  public:
   GotoPerformer(const GotoAnimation& animation)
-      : PerformerBase<GotoAnimation>(animation) {}
+      : OneOffPerformerBase<GotoAnimation>(animation) {}
 
   void Init(SceneNode* scene_node) override;
 
@@ -166,10 +197,10 @@ class GotoPerformer : public PerformerBase<GotoAnimation> {
   double distance_;
 };
 
-class TimerPerformer : public PerformerBase<TimerAnimation> {
+class TimerPerformer : public OneOffPerformerBase<TimerAnimation> {
  public:
   TimerPerformer(const TimerAnimation& animation)
-      : PerformerBase<TimerAnimation>(animation) {}
+      : OneOffPerformerBase<TimerAnimation>(animation) {}
 
  protected:
   bool Execute(SceneNode* _unused) override;

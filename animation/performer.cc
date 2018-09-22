@@ -2,6 +2,7 @@
 
 #include <glog/logging.h>
 
+#include "animation/animator-manager.h"
 #include "core/geometry.h"
 
 namespace troll {
