@@ -10,6 +10,8 @@
 namespace troll {
 
 namespace {
+// Returns lambda that returns true if input animator matches script and scene
+// node ids of this function.
 auto MatchScriptSceneNode(const std::string& script_id,
                           const std::string& scene_node_id) {
   return [&](const std::unique_ptr<ScriptAnimator>& animator) {
@@ -18,6 +20,8 @@ auto MatchScriptSceneNode(const std::string& script_id,
   };
 }
 
+// Returns lambda that returns true if input animator matches scene node id of
+// this function.
 auto MatchSceneNode(const std::string& scene_node_id) {
   return [&](const std::unique_ptr<ScriptAnimator>& animator) {
     return animator->scene_node_id() == scene_node_id;
@@ -77,12 +81,15 @@ void AnimatorManager::ResumeAll() { paused_ = false; }
 void AnimatorManager::Progress(int time_since_last_frame) {
   if (paused_) return;
 
-  const auto it =
-      std::remove_if(running_scripts_.begin(), running_scripts_.end(),
-                     [time_since_last_frame](auto& animator) {
-                       animator->Progress(time_since_last_frame);
-                       return animator->is_finished();
-                     });
+  // Use index based iteration because new scripts might be added during
+  // iteration as side effects.
+  for (int i = 0; i < running_scripts_.size(); ++i) {
+    running_scripts_[i]->Progress(time_since_last_frame);
+  }
+
+  const auto it = std::remove_if(
+      running_scripts_.begin(), running_scripts_.end(),
+      [time_since_last_frame](auto& script) { return script->is_finished(); });
   running_scripts_.erase(it, running_scripts_.end());
 }
 
