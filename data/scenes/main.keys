@@ -54,6 +54,23 @@ context {
   }
 
   interaction {
+    display_name: 'Jump'
+    key_combo {
+      key_code: 'SPACE'
+    }
+
+    trigger {
+      state: PRESSED
+      action {
+        play_animation_script {
+          script_id: 'mario_jump'
+          scene_node_id: 'mario'
+        }
+      }
+    }
+  }
+
+  interaction {
     display_name: 'Quit'
     key_combo {
       key_code: 'q'
