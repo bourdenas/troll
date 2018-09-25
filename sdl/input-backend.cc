@@ -100,6 +100,8 @@ void InputBackend::Init() {
   input.AddKeyMapping("DOWN", SDLK_DOWN);
   input.AddKeyMapping("RIGHT", SDLK_RIGHT);
   input.AddKeyMapping("LEFT", SDLK_LEFT);
+  input.AddKeyMapping("SPACE", SDLK_SPACE);
+  input.AddKeyMapping("RETURN", SDLK_RETURN);
   input.AddKeyMapping("INSERT", SDLK_INSERT);
   input.AddKeyMapping("HOME", SDLK_HOME);
   input.AddKeyMapping("END", SDLK_END);
