@@ -3,6 +3,8 @@
 #include <glog/logging.h>
 
 #include "animation/animator-manager.h"
+#include "core/event-dispatcher.h"
+#include "core/events.h"
 #include "core/geometry.h"
 
 namespace troll {
@@ -81,5 +83,15 @@ bool GotoPerformer::Execute(SceneNode* scene_node) {
 }
 
 bool TimerPerformer::Execute(SceneNode* _unused) { return true; }
+
+void RunScriptPerformer::Init(SceneNode* scene_node) {
+  AnimatorManager::Instance().Play(animation_.script_id(), scene_node->id());
+  EventDispatcher::Instance().Register(
+      Events::OnAnimationScriptTermination(scene_node->id(),
+                                           animation_.script_id()),
+      [this]() { finished_ = true; });
+}
+
+bool RunScriptPerformer::Execute(SceneNode* scene_node) { return finished_; }
 
 }  // namespace troll

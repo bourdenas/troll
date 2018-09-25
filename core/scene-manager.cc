@@ -5,7 +5,6 @@
 #include <range/v3/algorithm/find.hpp>
 
 #include "action/action-manager.h"
-#include "animation/animator-manager.h"
 #include "core/collision-checker.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"

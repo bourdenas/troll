@@ -64,26 +64,6 @@ class RepeatablePerformerBase : public Performer {
   int run_number_ = 0;
 };
 
-// Base class for animation performers that are repeatable and applied
-// instantly, i.e. no delay.
-template <class AnimationType>
-class RepeatableInstantPerformerBase : public Performer {
- public:
-  RepeatableInstantPerformerBase(const AnimationType& animation)
-      : animation_(animation) {}
-  ~RepeatableInstantPerformerBase() override = default;
-
-  bool Progress(int time_since_last_frame, SceneNode* scene_node) override {
-    return Execute(scene_node) && ++run_number_ == animation_.repeat();
-  }
-
- protected:
-  const AnimationType& animation_;
-
- private:
-  int run_number_ = 0;
-};
-
 // Base class for animation performers that are not repeatable.
 template <class AnimationType>
 class OneOffPerformerBase : public Performer {
@@ -108,6 +88,22 @@ class OneOffPerformerBase : public Performer {
 
  private:
   int wait_time_ = 0;
+};
+
+// Base class for animation performers that are applied instantly, no delay.
+template <class AnimationType>
+class InstantPerformerBase : public Performer {
+ public:
+  InstantPerformerBase(const AnimationType& animation)
+      : animation_(animation) {}
+  ~InstantPerformerBase() override = default;
+
+  bool Progress(int time_since_last_frame, SceneNode* scene_node) override {
+    return Execute(scene_node);
+  }
+
+ protected:
+  const AnimationType& animation_;
 };
 
 class TranslationPerformer : public RepeatablePerformerBase<VectorAnimation> {
@@ -204,6 +200,20 @@ class TimerPerformer : public OneOffPerformerBase<TimerAnimation> {
 
  protected:
   bool Execute(SceneNode* _unused) override;
+};
+
+class RunScriptPerformer : public InstantPerformerBase<RunScriptAnimation> {
+ public:
+  RunScriptPerformer(const RunScriptAnimation& animation)
+      : InstantPerformerBase<RunScriptAnimation>(animation) {}
+
+  void Init(SceneNode* scene_node) override;
+
+ protected:
+  bool Execute(SceneNode* scene_node) override;
+
+ private:
+  bool finished_ = false;
 };
 
 }  // namespace troll
