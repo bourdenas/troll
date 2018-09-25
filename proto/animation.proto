@@ -4,15 +4,24 @@ import "proto/primitives.proto";
 
 package troll;
 
+// Animations for a sprite.
 message SpriteAnimation {
   repeated AnimationScript script = 1;
 }
 
+// A composition of animations that make a logical sequence.
 message AnimationScript {
   optional string id = 1;
+
+  // Animations that are part of the script. Animations are performed
+  // sequentially, one after the other.
   repeated Animation animation = 2;
+
+  // Number of times the script will be performed.
+  optional int32 repeat = 3 [default = 1];
 }
 
+// All animations that are instantiated in this proto are performed on parallel.
 message Animation {
   // Repeatable animations.
   optional VectorAnimation translation = 1;
@@ -96,7 +105,8 @@ message TimerAnimation {
   optional int32 delay = 1;
 }
 
+// Executes an script referenced by its id. This can be used for composing more
+// copmlex animations from simpler ones.
 message RunScriptAnimation {
   optional string script_id = 1;
-  optional int32 repeat = 2 [default = 1];
 }

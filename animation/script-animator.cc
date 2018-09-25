@@ -51,8 +51,13 @@ bool ScriptAnimator::Progress(int time_since_last_frame) {
 
 bool ScriptAnimator::MoveToNextAnimation(SceneNode* scene_node) {
   if (scene_node == nullptr ||
-      next_animation_index_ == script_.animation().size()) {
+      (next_animation_index_ == script_.animation().size() &&
+       ++run_number_ == script_.repeat())) {
     return false;
+  }
+
+  if (next_animation_index_ == script_.animation().size()) {
+    next_animation_index_ = 0;
   }
 
   current_animator_ =

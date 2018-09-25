@@ -50,6 +50,7 @@ class ScriptAnimator {
   State state_ = State::INIT;
   std::unique_ptr<Animator> current_animator_;
   int next_animation_index_ = 0;
+  int run_number_ = 0;
 };
 
 }  // namespace troll

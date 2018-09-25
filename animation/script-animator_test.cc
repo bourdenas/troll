@@ -255,6 +255,63 @@ TEST_F(AnimatorScriptTest,
   EXPECT_FALSE(animator.is_paused());
 }
 
+TEST_F(AnimatorScriptTest, RunRepeatedScript) {
+  // Frame range animation is not repeatable, but the script itself is repeated
+  // twice.
+  const auto script = ParseProto<AnimationScript>(R"(
+    repeat: 2
+    animation {
+      translation {
+        vec { x: 1  y: 2 }
+        delay: 10
+        repeat: 3
+      }
+    })");
+  ScriptAnimator animator(script, "test_node");
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
+
+  animator.Start();
+  EXPECT_TRUE(animator.is_running());
+  EXPECT_FALSE(animator.is_finished());
+  EXPECT_FALSE(animator.is_paused());
+
+  EXPECT_FALSE(animator.Progress(10));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 1  y: 2  z: 0}
+                )")));
+
+  EXPECT_FALSE(animator.Progress(20));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 3  y: 6  z: 0}
+                )")));
+
+  EXPECT_TRUE(animator.Progress(30));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 6  y: 12  z: 0}
+                )")));
+
+  EXPECT_FALSE(animator.is_running());
+  EXPECT_TRUE(animator.is_finished());
+  EXPECT_FALSE(animator.is_paused());
+
+  EXPECT_TRUE(animator.Progress(10));
+  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
+              EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'test_node'
+                position { x: 6  y: 12  z: 0}
+                )")));
+
+  EXPECT_FALSE(animator.is_running());
+  EXPECT_TRUE(animator.is_finished());
+  EXPECT_FALSE(animator.is_paused());
+}
+
 TEST_F(AnimatorScriptTest, RunScriptAnimationAndNodeIsDeleted) {
   const auto script = ParseProto<AnimationScript>(R"(
     animation {
