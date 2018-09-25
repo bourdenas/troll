@@ -37,3 +37,5 @@ data/resources/
 *_pb2.py
 
 *.pyc
+
+\.vscode/
