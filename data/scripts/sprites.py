@@ -1,19 +1,19 @@
 import troll_element
 
 
-class Mario(troll_element.TrollElement):
+class Mario(troll_element.Sprite):
     def __init__(self, id):
-        troll_element.TrollElement.__init__(self, id, 'mario')
+        troll_element.Sprite.__init__(self, id, 'mario')
 
 
-class DonkeyKong(troll_element.TrollElement):
+class DonkeyKong(troll_element.Sprite):
     def __init__(self, id):
-        troll_element.TrollElement.__init__(self, id, 'dk')
+        troll_element.Sprite.__init__(self, id, 'dk')
 
 
-class PlatformPiece(troll_element.TrollElement):
+class PlatformPiece(troll_element.Sprite):
     def __init__(self, id):
-        troll_element.TrollElement.__init__(self, id, 'platform')
+        troll_element.Sprite.__init__(self, id, 'platform')
 
 
 class Platform(object):

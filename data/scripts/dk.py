@@ -1,24 +1,17 @@
-import proto.action_pb2
+import actions
 import sprites
 import troll
 
+mario2 = sprites.Mario('mario2')
+mario2.Create(0, (300, 60))
+
+
+def foo():
+    mario2.PlayAnimation('mario_patrol')
+    print('foo')
+
 
 def init():
-    objects = [
-        sprites.Mario('mario'), sprites.Mario('mario_clone'),
-        sprites.Mario('third_mario'),
-    ]
-
-    objects[0].Create(15, (100, 120))
-    objects[0].PlayAnimation('mario_walk_right')
-    objects[1].Create(0, (300, 60))
-    objects[2].Create(0, (500, 120))
-    objects[2].PlayAnimation('mario_patrol')
-
-    dk = sprites.DonkeyKong('dk')
-    dk.Create(0, (100, 200))
-    dk.PlayAnimation('dk_taunt')
-
     platform_sizes = [3, 13, 13, 13, 13, 13, 14]
     platforms = [sprites.Platform('platform_' + str(i), size)
                  for i, size in enumerate(platform_sizes)]
@@ -30,9 +23,25 @@ def init():
     for platform, position in zip(platforms, platform_positions):
         platform.Create(position)
 
-    action = proto.action_pb2.Action()
-    action.on_collision.scene_node_id.extend(['mario'])
-    action.on_collision.sprite_id.extend(['mario'])
-    action.on_collision.action.extend([dk.StopAnimationAction('dk_taunt')])
-    action.on_collision.action.extend([dk.DestroyAction()])
-    troll.execute(action.SerializeToString())
+    mario = sprites.Mario('mario')
+    mario.Create(15, (100, 120))
+    mario.PlayAnimation('mario_walk_right')
+
+    mario3 = sprites.Mario('third_mario')
+    mario3.Create(0, (500, 120))
+    mario3.PlayAnimation('mario_patrol')
+
+    dk = sprites.DonkeyKong('dk')
+    dk.Create(0, (100, 200))
+    dk.PlayAnimation('dk_taunt')
+
+    collision = actions.OnCollision(['mario'], ['mario'], [
+        actions.StopAnimation(dk.id, 'dk_taunt', packed=False),
+        actions.Destroy(dk.id, packed=False),
+    ])
+    troll.execute(collision)
+
+    collision = actions.OnCollision(['mario'], ['mario'], [
+        actions.Call(foo, packed=False),
+    ])
+    troll.execute(collision)
