@@ -23,6 +23,61 @@ script {
 }
 
 script {
+  id: 'mario_patrol'
+  repeat: 0
+  animation {
+    run_script {
+      script_id: 'mario_go_left'
+    }
+  }
+  animation {
+    run_script {
+      script_id: 'mario_go_right'
+    }
+  }
+}
+
+script {
+  id: 'mario_go_left'
+  animation {
+    frame_range {
+      start_frame: 0
+      end_frame: 2
+      delay: 90
+      vertical_align: BOTTOM
+    }
+    go_to {
+      destination {
+        x: 300
+        y: 120
+      }
+      step: 2
+      delay: 20
+    }
+  }
+}
+script {
+  id: 'mario_go_right'
+  animation {
+    frame_range {
+      start_frame: 15
+      end_frame: 17
+      delay: 90
+      horizontal_align: RIGHT
+      vertical_align: BOTTOM
+    }
+    go_to {
+      destination {
+        x: 500
+        y: 120
+      }
+      step: 2
+      delay: 20
+    }
+  }
+}
+
+script {
   id: 'mario_walk_left'
   animation {
     frame_range {
