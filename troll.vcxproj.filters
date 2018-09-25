@@ -99,6 +99,12 @@
     <ClInclude Include="core\geometry.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="core\event-dispatcher.h">
+      <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="core\events.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -171,6 +177,21 @@
       <Filter>animation</Filter>
     </ClCompile>
     <ClCompile Include="core\geometry.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\collision-checker_test.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\event-dispatcher.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\main.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\scene-manager_test.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\events.cc">
       <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>

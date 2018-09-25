@@ -112,6 +112,8 @@
     <ClInclude Include="animation\performer.h" />
     <ClInclude Include="animation\script-animator.h" />
     <ClInclude Include="core\collision-checker.h" />
+    <ClInclude Include="core\event-dispatcher.h" />
+    <ClInclude Include="core\events.h" />
     <ClInclude Include="core\geometry.h" />
     <ClInclude Include="core\resource-manager.h" />
     <ClInclude Include="core\scene-manager.h" />
@@ -139,9 +141,14 @@
     <ClCompile Include="animation\performer.cc" />
     <ClCompile Include="animation\script-animator.cc" />
     <ClCompile Include="core\collision-checker.cc" />
+    <ClCompile Include="core\collision-checker_test.cc" />
+    <ClCompile Include="core\event-dispatcher.cc" />
+    <ClCompile Include="core\events.cc" />
     <ClCompile Include="core\geometry.cc" />
+    <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\resource-manager.cc" />
     <ClCompile Include="core\scene-manager.cc" />
+    <ClCompile Include="core\scene-manager_test.cc" />
     <ClCompile Include="core\troll-core.cc" />
     <ClCompile Include="input\input-manager.cc" />
     <ClCompile Include="proto\action.pb.cc" />
