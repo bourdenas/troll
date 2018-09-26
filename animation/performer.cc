@@ -27,18 +27,22 @@ bool ScalingPerformer::Execute(SceneNode* scene_node) {
 
 void FrameRangePerformer::Init(SceneNode* scene_node) {
   current_frame_ = animation_.start_frame();
-  scene_node->set_frame_index(current_frame_++);
+  step_ = animation_.start_frame() < animation_.end_frame() ? 1 : -1;
+  scene_node->set_frame_index(current_frame_);
+  current_frame_ += step_;
 }
 
 bool FrameRangePerformer::Execute(SceneNode* scene_node) {
   // TODO: handle sprite alignment.
   if (current_frame_ == animation_.end_frame()) {
     current_frame_ = animation_.start_frame();
-    scene_node->set_frame_index(current_frame_++);
+    scene_node->set_frame_index(current_frame_);
+    current_frame_ += step_;
     return current_frame_ == animation_.end_frame();
   }
 
-  scene_node->set_frame_index(current_frame_++);
+  scene_node->set_frame_index(current_frame_);
+  current_frame_ += step_;
   return current_frame_ == animation_.end_frame();
 }
 

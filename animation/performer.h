@@ -147,6 +147,7 @@ class FrameRangePerformer
 
  private:
   int current_frame_ = 0;
+  int step_ = 0;
 };
 
 class FrameListPerformer : public RepeatablePerformerBase<FrameListAnimation> {
