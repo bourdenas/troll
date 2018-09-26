@@ -9,13 +9,16 @@ namespace troll {
 void ScriptAnimator::Start() {
   auto* scene_node =
       Core::Instance().scene_manager().GetSceneNodeById(scene_node_id_);
+  if (scene_node != nullptr) {
+    Core::Instance().scene_manager().Dirty(*scene_node);
+  }
+
   if (!MoveToNextAnimation(scene_node)) {
     Stop();
     return;
   }
 
   state_ = State::RUNNING;
-  Core::Instance().scene_manager().Dirty(*scene_node);
 }
 
 void ScriptAnimator::Stop() {
