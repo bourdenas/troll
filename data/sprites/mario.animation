@@ -1,50 +1,23 @@
-script {
-  id: 'mario_look_left'
-  animation {
-    frame_list {
-      frame: 0
-      delay: 0
-      repeat: 1
-      vertical_align: BOTTOM
-    }
-  }
-}
-
-script {
-  id: 'mario_look_right'
-  animation {
-    frame_list {
-      frame: 15
-      delay: 0
-      repeat: 1
-      vertical_align: BOTTOM
-    }
-  }
-}
 
 script {
   id: 'mario_patrol'
   repeat: 0
   animation {
     run_script {
-      script_id: 'mario_go_left'
+      script_id: 'mario_goto_left'
     }
   }
   animation {
     run_script {
-      script_id: 'mario_go_right'
+      script_id: 'mario_goto_right'
     }
   }
 }
-
 script {
-  id: 'mario_go_left'
+  id: 'mario_goto_left'
   animation {
-    frame_range {
-      start_frame: 0
-      end_frame: 2
-      delay: 90
-      vertical_align: BOTTOM
+    run_script {
+      script_id: 'mario_walk_left'
     }
     go_to {
       destination {
@@ -57,14 +30,10 @@ script {
   }
 }
 script {
-  id: 'mario_go_right'
+  id: 'mario_goto_right'
   animation {
-    frame_range {
-      start_frame: 15
-      end_frame: 17
-      delay: 90
-      horizontal_align: RIGHT
-      vertical_align: BOTTOM
+    run_script {
+      script_id: 'mario_walk_right'
     }
     go_to {
       destination {
@@ -78,13 +47,10 @@ script {
 }
 
 script {
-  id: 'mario_walk_left'
+  id: 'mario_move_left'
   animation {
-    frame_range {
-      start_frame: 0
-      end_frame: 2
-      delay: 90
-      vertical_align: BOTTOM
+    run_script {
+      script_id: 'mario_walk_left'
     }
     translation {
       vec {
@@ -94,20 +60,48 @@ script {
     }
   }
 }
-
 script {
-  id: 'mario_walk_right'
+  id: 'mario_move_right'
   animation {
-    frame_range {
-      start_frame: 15
-      end_frame: 17
-      delay: 90
-      horizontal_align: RIGHT
-      vertical_align: BOTTOM
+    run_script {
+      script_id: 'mario_walk_right'
     }
     translation {
       vec {
         x: 1
+      }
+      delay: 10
+    }
+  }
+}
+
+script {
+  id: 'mario_climb_up'
+  animation {
+    frame_list {
+      frame: [3, 7]
+      delay: 180
+      vertical_align: BOTTOM
+    }
+    translation {
+      vec {
+        y: -1
+      }
+      delay: 10
+    }
+  }
+}
+script {
+  id: 'mario_climb_down'
+  animation {
+    frame_list {
+      frame: [7, 3]
+      delay: 180
+      vertical_align: BOTTOM
+    }
+    translation {
+      vec {
+        y: 1
       }
       delay: 10
     }
@@ -125,7 +119,7 @@ script {
       repeat: 25
     }
     frame_list {
-      frame: 1
+      frame: 0
       delay: 0
       vertical_align: BOTTOM
     }
@@ -139,8 +133,55 @@ script {
       repeat: 25
     }
     frame_list {
-      frame: 16
+      frame: 1
       delay: 0
+      vertical_align: BOTTOM
+    }
+  }
+}
+
+script {
+  id: 'mario_walk_left'
+  animation {
+    frame_range {
+      start_frame: 0
+      end_frame: 3
+      delay: 120
+      vertical_align: BOTTOM
+    }
+  }
+}
+script {
+  id: 'mario_walk_right'
+  animation {
+    frame_range {
+      start_frame: 15
+      end_frame: 18
+      delay: 120
+      horizontal_align: RIGHT
+      vertical_align: BOTTOM
+    }
+  }
+}
+
+script {
+  id: 'mario_look_left'
+  animation {
+    frame_list {
+      frame: 0
+      delay: 0
+      repeat: 1
+      vertical_align: BOTTOM
+    }
+  }
+}
+script {
+  id: 'mario_look_right'
+  animation {
+    frame_list {
+      frame: 15
+      delay: 0
+      repeat: 1
       vertical_align: BOTTOM
     }
   }
@@ -154,38 +195,6 @@ script {
       delay: 90
       repeat: 1
       vertical_align: BOTTOM
-    }
-  }
-}
-
-script {
-  id: 'mario_climb_up'
-  animation {
-    translation {
-      vec {
-        y: -1
-      }
-      delay: 15
-    }
-    frame_list {
-      frame: [3, 7]
-      delay: 200
-    }
-  }
-}
-
-script {
-  id: 'mario_climb_down'
-  animation {
-    translation {
-      vec {
-        y: 1
-      }
-      delay: 15
-    }
-    frame_list {
-      frame: [7, 3]
-      delay: 200
     }
   }
 }
