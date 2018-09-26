@@ -11,7 +11,7 @@ context {
       state: HOLD
       action {
         play_animation_script {
-          script_id: 'mario_walk_left'
+          script_id: 'mario_move_left'
           scene_node_id: 'mario'
         }
       }
@@ -37,7 +37,7 @@ context {
       state: HOLD
       action {
         play_animation_script {
-          script_id: 'mario_walk_right'
+          script_id: 'mario_move_right'
           scene_node_id: 'mario'
         }
       }
@@ -47,6 +47,40 @@ context {
       action {
         play_animation_script {
           script_id: 'mario_look_right'
+          scene_node_id: 'mario'
+        }
+      }
+    }
+  }
+
+  interaction {
+    display_name: 'Climb Up'
+    key_combo {
+      key_code: 'UP'
+    }
+
+    trigger {
+      state: HOLD
+      action {
+        play_animation_script {
+          script_id: 'mario_climb_up'
+          scene_node_id: 'mario'
+        }
+      }
+    }
+  }
+
+  interaction {
+    display_name: 'Climb Down'
+    key_combo {
+      key_code: 'DOWN'
+    }
+
+    trigger {
+      state: HOLD
+      action {
+        play_animation_script {
+          script_id: 'mario_climb_down'
           scene_node_id: 'mario'
         }
       }
