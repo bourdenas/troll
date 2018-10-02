@@ -63,9 +63,9 @@ bool ScriptAnimator::MoveToNextAnimation(SceneNode* scene_node) {
     next_animation_index_ = 0;
   }
 
-  current_animator_ =
-      std::make_unique<Animator>(script_.animation(next_animation_index_++));
-  current_animator_->Start(scene_node);
+  current_animator_ = std::make_unique<Animator>();
+  current_animator_->Start(script_.animation(next_animation_index_++),
+                           scene_node);
   return true;
 }
 

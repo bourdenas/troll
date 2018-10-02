@@ -14,17 +14,13 @@ namespace troll {
 // scene node. See also, "proto/animation.proto".
 class Animator {
  public:
-  Animator(const Animation& animation) : animation_(animation) {}
-
   // Initialises the animator state.
-  void Start(SceneNode* scene_node);
+  void Start(const Animation& animation, SceneNode* scene_node);
 
   // Returns true if the Animator finished.
   bool Progress(int time_since_last_frame, SceneNode* scene_node);
 
  private:
-  const Animation& animation_;
-
   std::vector<std::unique_ptr<Performer>> performers_;
 };
 

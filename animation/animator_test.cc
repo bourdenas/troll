@@ -37,8 +37,9 @@ TEST_F(AnimatorTest, CompositeAnimationTerminatesWhenAnyPartTerminates) {
       delay: 10
       repeat: 2
     })");
-  Animator animator(composite_animation);
-  animator.Start(&scene_node_);
+
+  Animator animator;
+  animator.Start(composite_animation, &scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     frame_index: 0
     )")));
@@ -73,8 +74,9 @@ TEST_F(AnimatorTest, NonRepeatableAnimationTerminatesCompositeAnimation) {
     timer {
      delay: 25 
     })");
-  Animator animator(composite_animation);
-  animator.Start(&scene_node_);
+
+  Animator animator;
+  animator.Start(composite_animation, &scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     frame_index: 0
     )")));

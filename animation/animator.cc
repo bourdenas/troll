@@ -4,39 +4,39 @@
 
 namespace troll {
 
-void Animator::Start(SceneNode* scene_node) {
-  if (animation_.has_translation()) {
+void Animator::Start(const Animation& animation, SceneNode* scene_node) {
+  if (animation.has_translation()) {
     performers_.push_back(
-        std::make_unique<TranslationPerformer>(animation_.translation()));
+        std::make_unique<TranslationPerformer>(animation.translation()));
   }
-  if (animation_.has_rotation()) {
+  if (animation.has_rotation()) {
     performers_.push_back(
-        std::make_unique<RotationPerformer>(animation_.rotation()));
+        std::make_unique<RotationPerformer>(animation.rotation()));
   }
-  if (animation_.has_scaling()) {
+  if (animation.has_scaling()) {
     performers_.push_back(
-        std::make_unique<ScalingPerformer>(animation_.scaling()));
+        std::make_unique<ScalingPerformer>(animation.scaling()));
   }
-  if (animation_.has_frame_range()) {
+  if (animation.has_frame_range()) {
     performers_.push_back(
-        std::make_unique<FrameRangePerformer>(animation_.frame_range()));
+        std::make_unique<FrameRangePerformer>(animation.frame_range()));
   }
-  if (animation_.has_frame_list()) {
+  if (animation.has_frame_list()) {
     performers_.push_back(
-        std::make_unique<FrameListPerformer>(animation_.frame_list()));
+        std::make_unique<FrameListPerformer>(animation.frame_list()));
   }
-  if (animation_.has_flash()) {
-    performers_.push_back(std::make_unique<FlashPerformer>(animation_.flash()));
+  if (animation.has_flash()) {
+    performers_.push_back(std::make_unique<FlashPerformer>(animation.flash()));
   }
-  if (animation_.has_go_to()) {
-    performers_.push_back(std::make_unique<GotoPerformer>(animation_.go_to()));
+  if (animation.has_go_to()) {
+    performers_.push_back(std::make_unique<GotoPerformer>(animation.go_to()));
   }
-  if (animation_.has_timer()) {
-    performers_.push_back(std::make_unique<TimerPerformer>(animation_.timer()));
+  if (animation.has_timer()) {
+    performers_.push_back(std::make_unique<TimerPerformer>(animation.timer()));
   }
-  if (animation_.has_run_script()) {
+  if (animation.has_run_script()) {
     performers_.push_back(
-        std::make_unique<RunScriptPerformer>(animation_.run_script()));
+        std::make_unique<RunScriptPerformer>(animation.run_script()));
   }
 
   for (auto& performer : performers_) {
