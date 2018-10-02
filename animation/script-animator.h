@@ -22,8 +22,7 @@ class ScriptAnimator {
   void Pause();
   void Resume();
 
-  // Returns true if the script finished.
-  bool Progress(int time_since_last_frame);
+  void Progress(int time_since_last_frame);
 
   bool is_running() const { return state_ == State::RUNNING; }
   bool is_finished() const { return state_ == State::FINISHED; }
