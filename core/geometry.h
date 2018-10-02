@@ -7,11 +7,15 @@
 namespace troll {
 namespace geo {
 
-// Returns true if |box| contains point |v|.
+// Returns true if |box| contains point |v|. Border points are not contained.
 bool Contains(const Box& box, const Vector& v);
 
 // Returns true if the two input boxes overlap or touch.
 bool Collide(const Box& lhs, const Box& rhs);
+
+// Returns the box defined by the intersection of input boxes. If the boxes do
+// not overlap, the returned box is invalid.
+Box Intersection(const Box& lhs, const Box& rhs);
 
 double VectorLength(const Vector& v);
 double VectorSquaredLength(const Vector& v);

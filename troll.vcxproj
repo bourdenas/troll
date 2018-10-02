@@ -141,14 +141,12 @@
     <ClCompile Include="animation\performer.cc" />
     <ClCompile Include="animation\script-animator.cc" />
     <ClCompile Include="core\collision-checker.cc" />
-    <ClCompile Include="core\collision-checker_test.cc" />
     <ClCompile Include="core\event-dispatcher.cc" />
     <ClCompile Include="core\events.cc" />
     <ClCompile Include="core\geometry.cc" />
     <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\resource-manager.cc" />
     <ClCompile Include="core\scene-manager.cc" />
-    <ClCompile Include="core\scene-manager_test.cc" />
     <ClCompile Include="core\troll-core.cc" />
     <ClCompile Include="input\input-manager.cc" />
     <ClCompile Include="proto\action.pb.cc" />

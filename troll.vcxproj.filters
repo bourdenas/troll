@@ -179,16 +179,10 @@
     <ClCompile Include="core\geometry.cc">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="core\collision-checker_test.cc">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="core\event-dispatcher.cc">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\main.cc">
-      <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="core\scene-manager_test.cc">
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\events.cc">
