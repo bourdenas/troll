@@ -25,7 +25,7 @@ bool ScalingPerformer::Execute(SceneNode* scene_node) {
   return true;
 }
 
-void FrameRangePerformer::Init(SceneNode* scene_node) {
+void FrameRangePerformer::Start(SceneNode* scene_node) {
   current_frame_ = animation_.start_frame();
   step_ = animation_.start_frame() < animation_.end_frame() ? 1 : -1;
   scene_node->set_frame_index(current_frame_);
@@ -46,7 +46,7 @@ bool FrameRangePerformer::Execute(SceneNode* scene_node) {
   return current_frame_ == animation_.end_frame();
 }
 
-void FrameListPerformer::Init(SceneNode* scene_node) {
+void FrameListPerformer::Start(SceneNode* scene_node) {
   scene_node->set_frame_index(animation_.frame(current_frame_index_++));
 }
 
@@ -68,7 +68,7 @@ bool FlashPerformer::Execute(SceneNode* scene_node) {
   return true;
 }
 
-void GotoPerformer::Init(SceneNode* scene_node) {
+void GotoPerformer::Start(SceneNode* scene_node) {
   direction_ = animation_.destination() - scene_node->position();
   distance_ = geo::VectorLength(direction_);
   geo::VectorNormalise(&direction_);
@@ -88,12 +88,16 @@ bool GotoPerformer::Execute(SceneNode* scene_node) {
 
 bool TimerPerformer::Execute(SceneNode* _unused) { return true; }
 
-void RunScriptPerformer::Init(SceneNode* scene_node) {
+void RunScriptPerformer::Start(SceneNode* scene_node) {
   AnimatorManager::Instance().Play(animation_.script_id(), scene_node->id());
   EventDispatcher::Instance().Register(
       Events::OnAnimationScriptTermination(scene_node->id(),
                                            animation_.script_id()),
       [this]() { finished_ = true; });
+}
+
+void RunScriptPerformer::Stop(const SceneNode& scene_node) {
+  AnimatorManager::Instance().Stop(animation_.script_id(), scene_node.id());
 }
 
 bool RunScriptPerformer::Execute(SceneNode* scene_node) { return finished_; }

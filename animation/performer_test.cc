@@ -25,7 +25,7 @@ TEST_F(PerformerTest, Translation) {
     })");
   TranslationPerformer performer(translation);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   // Not enough time for translation.
@@ -48,7 +48,7 @@ TEST_F(PerformerTest, TranslationIndefinite) {
     })");
   TranslationPerformer performer(translation);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   // Not enough time for translation.
@@ -81,7 +81,7 @@ TEST_F(PerformerTest, TranslationRepeatableThreeTimes) {
     })");
   TranslationPerformer performer(translation);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_FALSE(performer.Progress(5, &scene_node_));
@@ -102,7 +102,7 @@ TEST_F(PerformerTest, TranslationProgressesMultipleTimesIfNeeded) {
     })");
   TranslationPerformer performer(translation);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_TRUE(performer.Progress(15, &scene_node_));
@@ -121,7 +121,7 @@ TEST_F(PerformerTest, TranslationDoesntProgressMoreThanItIsAllowed) {
     })");
   TranslationPerformer performer(translation);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_TRUE(performer.Progress(50, &scene_node_));
@@ -140,7 +140,7 @@ TEST_F(PerformerTest, TranslationOneOffWithoutDelay) {
     })");
   TranslationPerformer performer(translation);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_TRUE(performer.Progress(5, &scene_node_));
@@ -163,7 +163,7 @@ TEST_F(PerformerTest, TranslationRepeatableWithoutDelay) {
     })");
   TranslationPerformer performer(translation);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_FALSE(performer.Progress(5, &scene_node_));
@@ -192,7 +192,7 @@ TEST_F(PerformerTest, FrameRange) {
     )");
   FrameRangePerformer performer(frame_range);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     frame_index: 0
     )")));
@@ -223,7 +223,7 @@ TEST_F(PerformerTest, FrameRangeWithSingleFrame) {
     )");
   FrameRangePerformer performer(frame_range);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     frame_index: 0
     )")));
@@ -243,7 +243,7 @@ TEST_F(PerformerTest, FrameRangeRewindsOnRepeat) {
     )");
   FrameRangePerformer performer(frame_range);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     frame_index: 0
     )")));
@@ -272,7 +272,7 @@ TEST_F(PerformerTest, FrameList) {
     )");
   FrameListPerformer performer(frame_list);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     frame_index: 0
     )")));
@@ -296,7 +296,7 @@ TEST_F(PerformerTest, FrameListWithSingleFrame) {
     )");
   FrameListPerformer performer(frame_list);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     frame_index: 0
     )")));
@@ -315,7 +315,7 @@ TEST_F(PerformerTest, FrameListRewindsOnRepeat) {
     )");
   FrameListPerformer performer(frame_list);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     frame_index: 0
     )")));
@@ -348,7 +348,7 @@ TEST_F(PerformerTest, Flash) {
     )");
   FlashPerformer performer(flash);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_TRUE(performer.Progress(5, &scene_node_));
@@ -364,7 +364,7 @@ TEST_F(PerformerTest, FlashRepeats) {
     )");
   FlashPerformer performer(flash);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_TRUE(performer.Progress(15, &scene_node_));
@@ -383,7 +383,7 @@ TEST_F(PerformerTest, Goto) {
     )");
   GotoPerformer performer(goto_animation);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   // Math with double is hard! Not easy to check intermediate progress of
@@ -416,7 +416,7 @@ TEST_F(PerformerTest, GotoAlreadyThere) {
     position {
       x: 10  y: 5  z: 0
     })");
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
     position {
       x: 10  y: 5  z: 0
@@ -435,7 +435,7 @@ TEST_F(PerformerTest, Timer) {
     )");
   TimerPerformer performer(timer);
 
-  performer.Init(&scene_node_);
+  performer.Start(&scene_node_);
   EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>("")));
 
   EXPECT_FALSE(performer.Progress(500, &scene_node_));

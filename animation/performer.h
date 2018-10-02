@@ -15,8 +15,11 @@ class Performer {
   Performer() = default;
   virtual ~Performer() = default;
 
-  // Override if performer needs state initialisation.
-  virtual void Init(SceneNode* scene_node) {}
+  // Override if performer needs initialisation.
+  virtual void Start(SceneNode* scene_node) {}
+
+  // Override if performer needs to clean-up.
+  virtual void Stop(const SceneNode& scene_node) {}
 
   // Returns true if the Animation was executed to end.
   virtual bool Progress(int time_since_last_frame, SceneNode* scene_node) = 0;
@@ -140,7 +143,7 @@ class FrameRangePerformer
       : RepeatablePerformerBase<FrameRangeAnimation>(animation),
         current_frame_(animation.start_frame()) {}
 
-  void Init(SceneNode* scene_node) override;
+  void Start(SceneNode* scene_node) override;
 
  protected:
   bool Execute(SceneNode* scene_node) override;
@@ -155,7 +158,7 @@ class FrameListPerformer : public RepeatablePerformerBase<FrameListAnimation> {
   FrameListPerformer(const FrameListAnimation& animation)
       : RepeatablePerformerBase<FrameListAnimation>(animation) {}
 
-  void Init(SceneNode* scene_node) override;
+  void Start(SceneNode* scene_node) override;
 
  protected:
   bool Execute(SceneNode* scene_node) override;
@@ -181,7 +184,7 @@ class GotoPerformer : public OneOffPerformerBase<GotoAnimation> {
   GotoPerformer(const GotoAnimation& animation)
       : OneOffPerformerBase<GotoAnimation>(animation) {}
 
-  void Init(SceneNode* scene_node) override;
+  void Start(SceneNode* scene_node) override;
 
  protected:
   bool Execute(SceneNode* scene_node) override;
@@ -208,7 +211,8 @@ class RunScriptPerformer : public InstantPerformerBase<RunScriptAnimation> {
   RunScriptPerformer(const RunScriptAnimation& animation)
       : InstantPerformerBase<RunScriptAnimation>(animation) {}
 
-  void Init(SceneNode* scene_node) override;
+  void Start(SceneNode* scene_node) override;
+  void Stop(const SceneNode& scene_node) override;
 
  protected:
   bool Execute(SceneNode* scene_node) override;

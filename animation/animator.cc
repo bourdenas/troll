@@ -40,7 +40,7 @@ void Animator::Start(const Animation& animation, SceneNode* scene_node) {
   }
 
   for (auto& performer : performers_) {
-    performer->Init(scene_node);
+    performer->Start(scene_node);
   }
 }
 
