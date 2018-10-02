@@ -12,21 +12,21 @@
 namespace troll {
 
 namespace {
-// Returns lambda that returns true if input animator matches script and scene
-// node ids of this function.
+// Returns lambda that returns true if input script matches script id and
+// scene node ids of this function.
 auto MatchScriptSceneNode(const std::string& script_id,
                           const std::string& scene_node_id) {
-  return [&](const std::unique_ptr<ScriptAnimator>& animator) {
-    return animator->script_id() == script_id &&
-           animator->scene_node_id() == scene_node_id;
+  return [&](const std::unique_ptr<ScriptAnimator>& script) {
+    return script->script_id() == script_id &&
+           script->scene_node_id() == scene_node_id;
   };
 }
 
-// Returns lambda that returns true if input animator matches scene node id of
+// Returns lambda that returns true if input script matches scene node id of
 // this function.
 auto MatchSceneNode(const std::string& scene_node_id) {
-  return [&](const std::unique_ptr<ScriptAnimator>& animator) {
-    return animator->scene_node_id() == scene_node_id;
+  return [&](const std::unique_ptr<ScriptAnimator>& script) {
+    return script->scene_node_id() == scene_node_id;
   };
 }
 }  // namespace
@@ -41,36 +41,36 @@ void AnimatorManager::Play(const std::string& script_id,
 
 void AnimatorManager::Stop(const std::string& script_id,
                            const std::string& scene_node_id) const {
-  for (const auto& animator :
+  for (const auto& script :
        running_scripts_ | ranges::view::filter(
                               MatchScriptSceneNode(script_id, scene_node_id))) {
-    animator->Stop();
+    script->Stop();
   }
 }
 
 void AnimatorManager::Pause(const std::string& script_id,
                             const std::string& scene_node_id) const {
-  for (const auto& animator :
+  for (const auto& script :
        running_scripts_ | ranges::view::filter(
                               MatchScriptSceneNode(script_id, scene_node_id))) {
-    animator->Pause();
+    script->Pause();
   }
 }
 
 void AnimatorManager::Resume(const std::string& script_id,
                              const std::string& scene_node_id) const {
-  for (const auto& animator :
+  for (const auto& script :
        running_scripts_ | ranges::view::filter(
                               MatchScriptSceneNode(script_id, scene_node_id))) {
-    animator->Resume();
+    script->Resume();
   }
 }
 
 void AnimatorManager::StopNodeAnimations(
     const std::string& scene_node_id) const {
-  for (const auto& animator :
+  for (const auto& script :
        running_scripts_ | ranges::view::filter(MatchSceneNode(scene_node_id))) {
-    animator->Stop();
+    script->Stop();
   }
 }
 
