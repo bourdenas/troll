@@ -44,12 +44,23 @@ void Animator::Start(const Animation& animation, SceneNode* scene_node) {
   }
 }
 
+void Animator::Stop(const SceneNode& scene_node) {
+  for (auto& performer : performers_) {
+    performer->Stop(scene_node);
+  }
+}
+
 bool Animator::Progress(int time_since_last_frame, SceneNode* scene_node) {
-  return ranges::any_of(
+  const bool finished = ranges::any_of(
       performers_, [time_since_last_frame,
                     scene_node](const std::unique_ptr<Performer>& performer) {
         return performer->Progress(time_since_last_frame, scene_node);
       });
+
+  if (finished) {
+    Stop(*scene_node);
+  }
+  return finished;
 }
 
 }  // namespace troll

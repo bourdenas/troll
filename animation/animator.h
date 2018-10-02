@@ -17,6 +17,9 @@ class Animator {
   // Initialises the animator state.
   void Start(const Animation& animation, SceneNode* scene_node);
 
+  // Stops all performers of this animation.
+  void Stop(const SceneNode& scene_node);
+
   // Returns true if the Animator finished.
   bool Progress(int time_since_last_frame, SceneNode* scene_node);
 

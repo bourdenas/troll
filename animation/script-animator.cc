@@ -25,6 +25,7 @@ void ScriptAnimator::Stop() {
   const auto* scene_node =
       Core::Instance().scene_manager().GetSceneNodeById(scene_node_id_);
   if (scene_node != nullptr) {
+    current_animator_->Stop(*scene_node);
     Core::Instance().scene_manager().Dirty(*scene_node);
   }
   state_ = State::FINISHED;
