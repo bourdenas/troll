@@ -1,6 +1,11 @@
 id: 'mario'
 resource: 'dkarcade.png'
-colour_key: '0x000000'
+
+colour_key {
+  red: 0
+  green: 0
+  blue: 0
+}
 
 film {
   left: 32

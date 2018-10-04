@@ -13,7 +13,7 @@ message Sprite {
   optional string resource = 2;
   
   // Colour key for the sprite.
-  optional string colour_key = 3;
+  optional RGBa colour_key = 3;
 
   // Bounding boxes for key frame of the sprite in the resource image.
   repeated Box film = 4;
