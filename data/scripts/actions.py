@@ -8,6 +8,7 @@ def Create(node_id, sprite_id, frame_index, position, packed=True):
     action.create_scene_node.scene_node.frame_index = frame_index
     action.create_scene_node.scene_node.position.x = position[0]
     action.create_scene_node.scene_node.position.y = position[1]
+    action.create_scene_node.scene_node.position.z = position[2]
     return action.SerializeToString() if packed else action
 
 

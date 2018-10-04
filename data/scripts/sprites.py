@@ -23,4 +23,5 @@ class Platform(object):
     def Create(self, position):
         platform_width = 32
         for i, piece in enumerate(self.pieces):
-            piece.Create(0, (position[0] + i * platform_width, position[1]))
+            piece.Create(0, (
+                position[0] + i * platform_width, position[1], position[2]))
