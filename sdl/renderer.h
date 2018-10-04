@@ -18,7 +18,8 @@ class Renderer {
   void CleanUp();
 
   // Load an image file into a texture.
-  std::unique_ptr<Texture> LoadTexture(const std::string& filename) const;
+  std::unique_ptr<Texture> LoadTexture(const std::string& filename,
+                                       const RGBa& colour_key) const;
   std::unique_ptr<Font> LoadFont(const std::string& filename,
                                  int font_size) const;
 

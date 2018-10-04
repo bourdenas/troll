@@ -42,14 +42,23 @@ void Renderer::CleanUp() {
   SDL_Quit();
 }
 
-std::unique_ptr<Texture> Renderer::LoadTexture(
-    const std::string& filename) const {
+std::unique_ptr<Texture> Renderer::LoadTexture(const std::string& filename,
+                                               const RGBa& colour_key) const {
   constexpr char* kResourcePath = "../data/resources/";
-  SDL_Texture* texture =
-      IMG_LoadTexture(sdl_renderer_, (kResourcePath + filename).c_str());
+  SDL_Surface* surface = IMG_Load((kResourcePath + filename).c_str());
+  if (surface == nullptr) {
+    LOG(ERROR) << SDL_GetError();
+  }
+  SDL_SetColorKey(surface, SDL_TRUE,
+                  SDL_MapRGB(surface->format, colour_key.red(),
+                             colour_key.green(), colour_key.blue()));
+
+  SDL_Texture* texture = SDL_CreateTextureFromSurface(sdl_renderer_, surface);
   if (texture == nullptr) {
     LOG(ERROR) << SDL_GetError();
   }
+  SDL_FreeSurface(surface);
+
   return std::make_unique<Texture>(texture);
 }
 

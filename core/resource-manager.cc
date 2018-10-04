@@ -7,7 +7,6 @@
 #include <google/protobuf/text_format.h>
 #include <boost/filesystem.hpp>
 #include <range/v3/action/insert.hpp>
-#include <range/v3/action/sort.hpp>
 #include <range/v3/view/filter.hpp>
 #include <range/v3/view/map.hpp>
 #include <range/v3/view/transform.hpp>
@@ -134,16 +133,22 @@ void ResourceManager::LoadAnimations() {
 }
 
 void ResourceManager::LoadTextures(const Renderer& renderer) {
-  std::vector<std::string> resources;
-  std::transform(sprites_.begin(), sprites_.end(),
-                 std::back_inserter(resources),
-                 [](const auto& kv) { return kv.second.resource(); });
+  std::vector<std::pair<std::string, std::string>> resources =
+      sprites_ | ranges::view::values |
+      ranges::view::transform([](const Sprite& sprite) {
+        return std::make_pair(sprite.resource(),
+                              sprite.colour_key().SerializeAsString());
+      });
   std::sort(resources.begin(), resources.end());
 
-  textures_ = resources | ranges::view::unique |
-              ranges::view::transform([&renderer](const std::string& resource) {
-                return std::make_pair(resource, renderer.LoadTexture(resource));
-              });
+  textures_ =
+      resources | ranges::view::unique |
+      ranges::view::transform([&renderer](const auto& resource) {
+        RGBa colour_key;
+        colour_key.ParseFromString(resource.second);
+        return std::make_pair(resource.first,
+                              renderer.LoadTexture(resource.first, colour_key));
+      });
 }
 
 constexpr char kDefaultFont[] = "fonts/times.ttf";
