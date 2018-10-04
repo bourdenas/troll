@@ -1,8 +1,8 @@
 #include "core/scene-manager.h"
 
 #include <glog/logging.h>
+#include <range/v3/action/insert.hpp>
 #include <range/v3/action/push_back.hpp>
-#include <range/v3/algorithm/find.hpp>
 
 #include "action/action-manager.h"
 #include "core/collision-checker.h"
@@ -87,22 +87,36 @@ void SceneManager::ScrollViewport(const Vector& by) {
 }
 
 void SceneManager::Render() {
-  std::vector<const SceneNode*> dirty_nodes;
+  // Collect scene nodes that overlap with dirty bounding boxes.
+  std::unordered_set<const SceneNode*> dirty_nodes;
+  for (int i = 0; i < dirty_boxes_.size(); ++i) {
+    auto& overlap_nodes =
+        scene_nodes_ | ranges::view::values |
+        ranges::view::filter([&dirty_nodes](const SceneNode& node) {
+          return dirty_nodes.find(&node) == dirty_nodes.end();
+        }) |
+        ranges::view::filter([this, i](const SceneNode& node) {
+          return geo::Collide(dirty_boxes_[i], GetSceneNodeBoundingBox(node));
+        }) |
+        ranges::view::transform([](const SceneNode& node) { return &node; });
+
+    ranges::insert(dirty_nodes, overlap_nodes);
+    ranges::push_back(
+        dirty_boxes_,
+        overlap_nodes | ranges::view::transform([this](const SceneNode* node) {
+          return GetSceneNodeBoundingBox(*node);
+        }));
+  }
+
+  // Render behind bounding boxes.
   for (const auto& box : dirty_boxes_) {
     renderer_.FillColour(scene_.bitmap_config().background_colour(), box);
-
-    dirty_nodes |= ranges::push_back(
-        scene_nodes_ | ranges::view::values |
-        ranges::view::filter([this, &box](const SceneNode& node) {
-          // Filter scene nodes that are still alive and collide with dirty box.
-          return dead_scene_nodes_.find(node.id()) == dead_scene_nodes_.end() &&
-                 geo::Collide(GetSceneNodeBoundingBox(node), box);
-        }) |
-        ranges::view::transform([](const SceneNode& node) { return &node; }));
   }
   dirty_boxes_.clear();
 
+  // Render dirty nodes.
   for (const auto* node : dirty_nodes) {
+    if (dead_scene_nodes_.find(node->id()) != dead_scene_nodes_.end()) continue;
     BlitSceneNode(*node);
   }
 
