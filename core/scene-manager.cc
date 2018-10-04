@@ -1,8 +1,7 @@
 #include "core/scene-manager.h"
 
 #include <glog/logging.h>
-#include <range/v3/action/insert.hpp>
-#include <range/v3/action/push_back.hpp>
+#include <range/v3/action/sort.hpp>
 
 #include "action/action-manager.h"
 #include "core/collision-checker.h"
@@ -97,15 +96,12 @@ void SceneManager::Render() {
         }) |
         ranges::view::filter([this, i](const SceneNode& node) {
           return geo::Collide(dirty_boxes_[i], GetSceneNodeBoundingBox(node));
-        }) |
-        ranges::view::transform([](const SceneNode& node) { return &node; });
+        });
 
-    ranges::insert(dirty_nodes, overlap_nodes);
-    ranges::push_back(
-        dirty_boxes_,
-        overlap_nodes | ranges::view::transform([this](const SceneNode* node) {
-          return GetSceneNodeBoundingBox(*node);
-        }));
+    for (const auto& node : overlap_nodes) {
+      dirty_nodes.insert(&node);
+      dirty_boxes_.push_back(GetSceneNodeBoundingBox(node));
+    }
   }
 
   // Render behind bounding boxes.
@@ -115,8 +111,15 @@ void SceneManager::Render() {
   dirty_boxes_.clear();
 
   // Render dirty nodes.
-  for (const auto* node : dirty_nodes) {
-    if (dead_scene_nodes_.find(node->id()) != dead_scene_nodes_.end()) continue;
+  std::vector<const SceneNode*> z_ordered_nodes =
+      dirty_nodes | ranges::view::filter([this](const SceneNode* node) {
+        return dead_scene_nodes_.find(node->id()) == dead_scene_nodes_.end();
+      });
+  z_ordered_nodes |=
+      ranges::action::sort([](const SceneNode* lhs, const SceneNode* rhs) {
+        return lhs->position().z() < rhs->position().z();
+      });
+  for (const auto* node : z_ordered_nodes) {
     BlitSceneNode(*node);
   }
 
