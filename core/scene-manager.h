@@ -29,8 +29,11 @@ class SceneManager {
 
   Box GetSceneNodeBoundingBox(const SceneNode& node) const;
 
+  // Returns a view of active SceneNodes.
+  auto GetSceneNodes() const { return scene_nodes_ | ranges::view::values; }
+
   // Returns a view of active SceneNodes of a specific sprite.
-  auto GetSceneNodesBySprite(const std::string& sprite_id) const {
+  auto GetSceneNodesBySpriteId(const std::string& sprite_id) const {
     return scene_nodes_ | ranges::view::values |
            ranges::view::filter([&sprite_id](const SceneNode& node) {
              return node.sprite_id() == sprite_id;

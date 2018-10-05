@@ -2,6 +2,7 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <range/v3/algorithm/count_if.hpp>
 
 #include "action/action-manager.h"
 #include "core/troll-core.h"
@@ -216,7 +217,6 @@ TEST_F(CollisionCheckerTest, MultiNodeCollisionsExecutePerPair) {
     action {
       create_scene_node {
         scene_node { 
-          id: 'created_node'
           sprite_id: 'sprite_c'
         }
       }
@@ -237,19 +237,19 @@ TEST_F(CollisionCheckerTest, MultiNodeCollisionsExecutePerPair) {
     sprite_id: 'sprite_c'
     position { x: 3  y: 3 })"));
 
+  auto count_all = [](const auto&) { return true; };
+  EXPECT_EQ(
+      1, ranges::count_if(scene_manager_->GetSceneNodesBySpriteId("sprite_c"),
+                          count_all));
+
   CollisionChecker::Instance().CheckCollisions();
 
   // All three nodes collide together. A overlaps with B, B overlaps with C and
   // C is also fully inside A. The action will be executed 3 times, once for
-  // each pair.
-  // TODO(bourdenas): create_scene_node is not a repeatable action because ids
-  // are colliding, so this creates only one scene node. Need to find a
-  // repeatable action to test here.
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("created_node"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                                    id: 'created_node'
-                                    sprite_id: 'sprite_c'
-                                    )"))));
+  // each pair, resulting to 3 new nodes of sprite_c.
+  EXPECT_EQ(
+      4, ranges::count_if(scene_manager_->GetSceneNodesBySpriteId("sprite_c"),
+                          count_all));
 }
 
 TEST_F(CollisionCheckerTest, SpriteBasedCollisions) {
@@ -407,6 +407,162 @@ TEST_F(CollisionCheckerTest, NodeAndSpritesCanBeCombinedForCollisions) {
                                     sprite_id: 'sprite_c')"))));
 }
 
+TEST_F(CollisionCheckerTest,
+       CollidingNodesDontTriggerActionsAgainUnlessDetachFirst) {
+  CollisionChecker::Instance().RegisterCollision(ParseProto<CollisionAction>(R"(
+    scene_node_id: [ 'node_a', 'node_b' ]
+    action {
+      create_scene_node {
+        scene_node { 
+          sprite_id: 'sprite_c'
+        }
+      }
+    })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_a'
+    sprite_id: 'sprite_a'
+    position { x: 0  y: 0 })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_b'
+    sprite_id: 'sprite_b'
+    position { x: 5  y: 5 })"));
+
+  auto count_all = [](const auto&) { return true; };
+  EXPECT_EQ(
+      0, ranges::count_if(scene_manager_->GetSceneNodesBySpriteId("sprite_c"),
+                          count_all));
+
+  // First collision creates a new scene_node.
+  CollisionChecker::Instance().CheckCollisions();
+  EXPECT_EQ(
+      1, ranges::count_if(scene_manager_->GetSceneNodesBySpriteId("sprite_c"),
+                          count_all));
+
+  // Break constness rules locally, to allow modify node's position for testing.
+  SceneNode* node_a =
+      const_cast<SceneNode*>(scene_manager_->GetSceneNodeById("node_a"));
+
+  // Nodes still collide but don't create a new scene_node.
+  CollisionChecker::Instance().Dirty(*node_a);
+  CollisionChecker::Instance().CheckCollisions();
+  EXPECT_EQ(
+      1, ranges::count_if(scene_manager_->GetSceneNodesBySpriteId("sprite_c"),
+                          count_all));
+
+  // Move node_a away (50,0) and rerun collision checking. Nodes no longer
+  // collide. No new sprite_c node is created.
+  node_a->mutable_position()->set_x(50);
+  CollisionChecker::Instance().Dirty(*node_a);
+  CollisionChecker::Instance().CheckCollisions();
+  EXPECT_EQ(
+      1, ranges::count_if(scene_manager_->GetSceneNodesBySpriteId("sprite_c"),
+                          count_all));
+
+  // Bring back node_a to its original positon (0,0) and rerun collision
+  // checking. Nodes a and bcollide creating a new sprite_c node.
+  node_a->mutable_position()->set_x(0);
+  CollisionChecker::Instance().Dirty(*node_a);
+  CollisionChecker::Instance().CheckCollisions();
+  EXPECT_EQ(
+      2, ranges::count_if(scene_manager_->GetSceneNodesBySpriteId("sprite_c"),
+                          count_all));
+}
+
+TEST_F(CollisionCheckerTest, MultipleCollisionActionsForSameNodePair) {
+  CollisionChecker::Instance().RegisterCollision(ParseProto<CollisionAction>(R"(
+    scene_node_id: [ 'node_a', 'node_b' ]
+    action {
+      create_scene_node {
+        scene_node { 
+          id: 'node_c'
+          sprite_id: 'sprite_c'
+        }
+      }
+    })"));
+  CollisionChecker::Instance().RegisterCollision(ParseProto<CollisionAction>(R"(
+    scene_node_id: 'node_a'
+    sprite_id: 'sprite_b'
+    action {
+      create_scene_node {
+        scene_node { 
+          id: 'node_d'
+          sprite_id: 'sprite_c'
+        }
+      }
+    })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_a'
+    sprite_id: 'sprite_a'
+    position { x: 0  y: 0 })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_b'
+    sprite_id: 'sprite_b'
+    position { x: 5  y: 5 })"));
+
+  CollisionChecker::Instance().CheckCollisions();
+
+  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_c"),
+              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
+                                    id: 'node_c'
+                                    sprite_id: 'sprite_c')"))));
+  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_d"),
+              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
+                                    id: 'node_d'
+                                    sprite_id: 'sprite_c')"))));
+}
+
+TEST_F(CollisionCheckerTest,
+       CollisionResultsToNewNodeWhichAlsoTriggersCollision) {
+  CollisionChecker::Instance().RegisterCollision(ParseProto<CollisionAction>(R"(
+    scene_node_id: [ 'node_a', 'node_b' ]
+    action {
+      create_scene_node {
+        scene_node { 
+          id: 'node_c'
+          sprite_id: 'sprite_c'
+        }
+      }
+    })"));
+  CollisionChecker::Instance().RegisterCollision(ParseProto<CollisionAction>(R"(
+    scene_node_id: 'node_a'
+    sprite_id: 'sprite_c'
+    action {
+      create_scene_node {
+        scene_node { 
+          id: 'node_d'
+          sprite_id: 'sprite_a'
+          position { x: 50  y: 50 }
+        }
+      }
+    })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_a'
+    sprite_id: 'sprite_a'
+    position { x: 0  y: 0 })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_b'
+    sprite_id: 'sprite_b'
+    position { x: 5  y: 5 })"));
+
+  CollisionChecker::Instance().CheckCollisions();
+
+  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_c"),
+              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
+                                    id: 'node_c'
+                                    sprite_id: 'sprite_c')"))));
+  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_d"),
+              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
+                                    id: 'node_d'
+                                    sprite_id: 'sprite_a'
+                                    position { x: 50  y: 50 })"))));
+}
+
 TEST_F(CollisionCheckerTest, SingleSpriteCollisionsAllowed) {
   CollisionChecker::Instance().RegisterCollision(ParseProto<CollisionAction>(R"(
     sprite_id: [ 'sprite_a' ]
@@ -431,8 +587,36 @@ TEST_F(CollisionCheckerTest, SingleSpriteCollisionsAllowed) {
 
   CollisionChecker::Instance().CheckCollisions();
 
-  // Both node_a and node_b are of same sprite and collide triggering the
-  // action.
+  EXPECT_THAT(scene_manager_->GetSceneNodeById("created_node"),
+              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
+                                    id: 'created_node'
+                                    sprite_id: 'sprite_c')"))));
+}
+
+TEST_F(CollisionCheckerTest, SameSpriteCollisionsAllowed) {
+  CollisionChecker::Instance().RegisterCollision(ParseProto<CollisionAction>(R"(
+    sprite_id: [ 'sprite_a', 'sprite_a' ]
+    action {
+      create_scene_node {
+        scene_node { 
+          id: 'created_node'
+          sprite_id: 'sprite_c'
+        }
+      }
+    })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_a'
+    sprite_id: 'sprite_a'
+    position { x: 0  y: 0 })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_b'
+    sprite_id: 'sprite_a'
+    position { x: 5  y: 5 })"));
+
+  CollisionChecker::Instance().CheckCollisions();
+
   EXPECT_THAT(scene_manager_->GetSceneNodeById("created_node"),
               Pointee(EqualsProto(ParseProto<SceneNode>(R"(
                                     id: 'created_node'

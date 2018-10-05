@@ -20,7 +20,7 @@ class CollisionChecker {
 
   void RegisterCollision(const CollisionAction& collision);
 
-  // Marks a scene node that needs to be queued for rendering during this frame.
+  // Add this node in the checking for collisions during this frame.
   void Dirty(const SceneNode& node);
 
   // Checks SceneNodes which were marked as dirty for collisions and applies
@@ -32,41 +32,30 @@ class CollisionChecker {
   CollisionChecker(const CollisionChecker&) = delete;
   ~CollisionChecker() = default;
 
-  // Checks is a node is affected by collision definition.
-  void CheckNodeCollision(const SceneNode& node,
-                          const CollisionAction& collision);
+  // Triggers actions associated with collision of input nodes.
+  void TriggerCollision(const SceneNode& lhs, const SceneNode& rhs) const;
 
-  // Returns true if the node pair touched in this frame while they were not
-  // touching before.
-  bool NodePairTouched(const SceneNode& left, const SceneNode& right);
+  // Returns true if node is part of the CollisionAction description directly
+  // (i.e. by scene_node_id) or indirectly (i.e. by sprite_id).
+  bool NodeInCollision(const SceneNode& node,
+                       const CollisionAction& collision) const;
 
-  // Functions for keeping track of colliding nodes to avoid triggering
-  // collision constantly. The intent is to trigger the collision only when the
-  // event happens.
-  void AddCollidingNodePair(const SceneNode& left, const SceneNode& right);
-  void RemoveCollidingNodePair(const SceneNode& left, const SceneNode& right);
-  bool NodePairAlreadyCollides(const SceneNode& left, const SceneNode& right);
+  // Collision cache interface.
+  void AddInCollisionCache(const SceneNode& left, const SceneNode& right);
+  void RemoveFromCollisionCache(const SceneNode& left, const SceneNode& right);
+  bool NodesInCollisionCache(const SceneNode& left,
+                             const SceneNode& right) const;
 
   // Directory of registered collisions.
   std::vector<CollisionAction> collision_directory_;
 
   // Nodes that moved or created during this frame and should be checked for
   // collisions.
-  // NB: Using std::set instead of std::unordered_set because insertion does not
-  // invalidate iterators on the former. New nodes may be added for collision
-  // checking as a side-effect of collision actions.
-  std::set<const SceneNode*> dirty_nodes_;
+  std::vector<const SceneNode*> dirty_nodes_;
 
-  // Node pairs that are in collision.
-  //
-  // NB: It is possible that ptrs in the set might end up to be dangling ptrs.
-  // For instance, a SceneNode is destroyed in collision. There is not problem
-  // of dereferencing these pointers. They are only used for identifying
-  // SceneNodes (like fingerprints). One possible bug could be, that the same
-  // address gets reallocated to a different node. This could prevent the new
-  // pair to collide. This might be a bit far-fetched but possible. Also it
-  // increases unnecessarily the size of the set if many nodes get destroyed.
-  std::set<std::pair<const SceneNode*, const SceneNode*>> colliding_node_pairs_;
+  // Collision cache to remember what nodes were already colliding before this
+  // frame started.
+  std::set<std::pair<const SceneNode*, const SceneNode*>> collision_cache_;
 };
 
 }  // namespace troll
