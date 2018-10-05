@@ -1,5 +1,6 @@
 #include "action/executor.h"
 
+#include <absl/strings/str_cat.h>
 #include <glog/logging.h>
 
 #include "animation/animator-manager.h"
@@ -30,8 +31,15 @@ void ChangeSceneExecutor::Execute(const Action& action) const {
 }
 
 void CreateSceneNodeExecutor::Execute(const Action& action) const {
-  Core::Instance().scene_manager().AddSceneNode(
-      action.create_scene_node().scene_node());
+  if (action.create_scene_node().scene_node().id().empty()) {
+    static int i = 0;
+    auto node = action.create_scene_node().scene_node();
+    node.set_id(absl::StrCat("node_id#", i++));
+    Core::Instance().scene_manager().AddSceneNode(node);
+  } else {
+    Core::Instance().scene_manager().AddSceneNode(
+        action.create_scene_node().scene_node());
+  }
 }
 
 void DestroySceneNodeExecutor::Execute(const Action& action) const {
