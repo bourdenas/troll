@@ -6,6 +6,8 @@
 #include "core/event-dispatcher.h"
 #include "core/events.h"
 #include "core/geometry.h"
+#include "core/scene-manager.h"
+#include "core/troll-core.h"
 
 namespace troll {
 
@@ -25,40 +27,76 @@ bool ScalingPerformer::Execute(SceneNode* scene_node) {
   return true;
 }
 
+namespace {
+// Handles key frame changes on nodes taking care of sprite film alignments.
+void SetSceneNodeFrame(int frame_index, VerticalAlign v_align,
+                       HorizontalAlign h_align, SceneNode* node) {
+  const auto prev_aabb =
+      Core::Instance().scene_manager().GetSceneNodeBoundingBox(*node);
+  node->set_frame_index(frame_index);
+  const auto next_aabb =
+      Core::Instance().scene_manager().GetSceneNodeBoundingBox(*node);
+
+  if (h_align == HorizontalAlign::RIGHT) {
+    node->mutable_position()->set_x(node->position().x() + prev_aabb.width() -
+                                    next_aabb.width());
+  } else if (h_align == HorizontalAlign::HCENTRE) {
+    node->mutable_position()->set_x(
+        node->position().x() + (prev_aabb.width() - next_aabb.width()) / 2);
+  }
+
+  if (v_align == VerticalAlign::BOTTOM) {
+    node->mutable_position()->set_y(node->position().y() + prev_aabb.height() -
+                                    next_aabb.height());
+  } else if (v_align == VerticalAlign::VCENTRE) {
+    node->mutable_position()->set_y(
+        node->position().y() + (prev_aabb.height() - next_aabb.height()) / 2);
+  }
+}
+}  // namespace
+
 void FrameRangePerformer::Start(SceneNode* scene_node) {
   current_frame_ = animation_.start_frame();
   step_ = animation_.start_frame() < animation_.end_frame() ? 1 : -1;
-  scene_node->set_frame_index(current_frame_);
+
+  SetSceneNodeFrame(current_frame_, animation_.vertical_align(),
+                    animation_.horizontal_align(), scene_node);
   current_frame_ += step_;
 }
 
 bool FrameRangePerformer::Execute(SceneNode* scene_node) {
-  // TODO: handle sprite alignment.
   if (current_frame_ == animation_.end_frame()) {
     current_frame_ = animation_.start_frame();
-    scene_node->set_frame_index(current_frame_);
+    SetSceneNodeFrame(current_frame_, animation_.vertical_align(),
+                      animation_.horizontal_align(), scene_node);
     current_frame_ += step_;
     return current_frame_ == animation_.end_frame();
   }
 
-  scene_node->set_frame_index(current_frame_);
+  SetSceneNodeFrame(current_frame_, animation_.vertical_align(),
+                    animation_.horizontal_align(), scene_node);
   current_frame_ += step_;
   return current_frame_ == animation_.end_frame();
 }
 
 void FrameListPerformer::Start(SceneNode* scene_node) {
-  scene_node->set_frame_index(animation_.frame(current_frame_index_++));
+  SetSceneNodeFrame(animation_.frame(current_frame_index_++),
+                    animation_.vertical_align(), animation_.horizontal_align(),
+                    scene_node);
 }
 
 bool FrameListPerformer::Execute(SceneNode* scene_node) {
-  // TODO: handle sprite alignment.
   if (current_frame_index_ == animation_.frame_size()) {
     current_frame_index_ = 0;
-    scene_node->set_frame_index(animation_.frame(current_frame_index_++));
+    SetSceneNodeFrame(animation_.frame(current_frame_index_++),
+                      animation_.vertical_align(),
+                      animation_.horizontal_align(), scene_node);
     return current_frame_index_ == animation_.frame_size();
   }
 
-  scene_node->set_frame_index(animation_.frame(current_frame_index_++));
+  SetSceneNodeFrame(animation_.frame(current_frame_index_++),
+                    animation_.vertical_align(), animation_.horizontal_align(),
+                    scene_node);
   return current_frame_index_ == animation_.frame_size();
 }
 

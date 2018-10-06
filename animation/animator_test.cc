@@ -3,15 +3,25 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "core/scene-manager.h"
+#include "core/troll-core.h"
 #include "proto/animation.pb.h"
 #include "proto/scene-node.pb.h"
 #include "troll-test/test-util.h"
+#include "troll-test/testing-resource-manager.h"
 
 namespace troll {
 
 class AnimatorTest : public testing::Test {
  protected:
   void SetUp() override {
+    scene_manager_ = new SceneManager(Renderer());
+    Core::Instance().SetupTestSceneManager(scene_manager_);
+
+    TestingResourceManager::SetTestSprite(ParseProto<Sprite>(R"(
+      id: ''
+      film{} film{} film{})"));
+
     animation_ = ParseProto<Animation>(R"(
       translation {
         vec {
@@ -21,8 +31,11 @@ class AnimatorTest : public testing::Test {
       })");
   }
 
+  void TearDown() override { ResourceManager::Instance().CleanUp(); }
+
   Animation animation_;
   SceneNode scene_node_;
+  SceneManager* scene_manager_ = nullptr;
 };
 
 TEST_F(AnimatorTest, CompositeAnimationTerminatesWhenAnyPartTerminates) {
