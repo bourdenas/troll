@@ -5,8 +5,10 @@
 #include <string>
 
 #include <SDL2/SDL.h>
+#include <boost/dynamic_bitset.hpp>
 
 #include "proto/primitives.pb.h"
+#include "proto/sprite.pb.h"
 #include "sdl/texture.h"
 
 namespace troll {
@@ -22,6 +24,11 @@ class Renderer {
                                        const RGBa& colour_key) const;
   std::unique_ptr<Font> LoadFont(const std::string& filename,
                                  int font_size) const;
+
+  // Returns collision masks for each film in the sprite. Masks are auto-
+  // generated from the sprite's image and colour key
+  std::vector<boost::dynamic_bitset<>> GenerateCollisionMasks(
+      const Sprite& sprite) const;
 
   // Create a texture of the input size and colour.
   std::unique_ptr<Texture> CreateTexture(const RGBa& colour, int width,

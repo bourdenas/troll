@@ -1,14 +1,19 @@
 #include "sdl/renderer.h"
 
-#include <glog/logging.h>
+#include <bitset>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <glog/logging.h>
 
 #include "sdl/texture.h"
 
 namespace troll {
+
+namespace {
+constexpr char* kResourcePath = "../data/resources/";
+}  // namespace
 
 void Renderer::Init(int width, int height) {
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -44,7 +49,6 @@ void Renderer::CleanUp() {
 
 std::unique_ptr<Texture> Renderer::LoadTexture(const std::string& filename,
                                                const RGBa& colour_key) const {
-  constexpr char* kResourcePath = "../data/resources/";
   SDL_Surface* surface = IMG_Load((kResourcePath + filename).c_str());
   if (surface == nullptr) {
     LOG(ERROR) << SDL_GetError();
@@ -64,13 +68,61 @@ std::unique_ptr<Texture> Renderer::LoadTexture(const std::string& filename,
 
 std::unique_ptr<Font> Renderer::LoadFont(const std::string& filename,
                                          int font_size) const {
-  constexpr char* kResourcePath = "../data/resources/";
-
   TTF_Font* font = TTF_OpenFont((kResourcePath + filename).c_str(), font_size);
   if (font == nullptr) {
     LOG(ERROR) << SDL_GetError();
   }
   return std::make_unique<Font>(font);
+}
+
+std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
+    const Sprite& sprite) const {
+  SDL_Surface* sprite_surface =
+      IMG_Load((kResourcePath + sprite.resource()).c_str());
+  if (sprite_surface == nullptr) {
+    LOG(ERROR) << SDL_GetError();
+  }
+
+  SDL_Surface* surface = SDL_ConvertSurfaceFormat(
+      sprite_surface, SDL_GetWindowPixelFormat(window_), NULL);
+  SDL_FreeSurface(sprite_surface);
+
+  const int bpp = surface->format->BytesPerPixel;
+  LOG_IF(FATAL, bpp != 4)
+      << "Surface format should be 4 bytes per pixel. Format is " << bpp
+      << " bytes per pixels instead.";
+
+  const Uint32 format = SDL_GetWindowPixelFormat(window_);
+  SDL_PixelFormat* mapping_format = SDL_AllocFormat(format);
+  const Uint32 colour_key =
+      SDL_MapRGB(mapping_format, sprite.colour_key().red(),
+                 sprite.colour_key().green(), sprite.colour_key().blue());
+  SDL_FreeFormat(mapping_format);
+
+  const int surface_width = surface->pitch / bpp;
+
+  std::vector<boost::dynamic_bitset<>> collision_masks;
+  SDL_LockSurface(surface);
+  for (const auto& film : sprite.film()) {
+    collision_masks.push_back(
+        boost::dynamic_bitset<>(film.width() * film.height()));
+    auto& collision_mask = collision_masks.back();
+
+    const Uint32* pixels = static_cast<const Uint32*>(surface->pixels);
+    for (int i = film.top(); i < film.top() + film.height(); ++i) {
+      for (int j = film.left(); j < film.left() + film.width(); ++j) {
+        const int surface_index = i * surface_width + j;
+        const int mask_index =
+            (i - film.top()) * film.width() + (j - film.left());
+        collision_mask[mask_index] =
+            pixels[surface_index] == colour_key ? 0 : 1;
+      }
+    }
+  }
+  SDL_UnlockSurface(surface);
+
+  SDL_FreeSurface(surface);
+  return collision_masks;
 }
 
 std::unique_ptr<Texture> Renderer::CreateTexture(const RGBa& colour, int width,

@@ -51,9 +51,9 @@ std::vector<Message> LoadTextProtoFromPath(const std::string& path,
 }  // namespace
 
 void ResourceManager::LoadResources(const Renderer& renderer) {
-  LoadSprites();
   LoadAnimations();
   LoadKeyBindings();
+  LoadSprites(renderer);
   LoadTextures(renderer);
   LoadFonts(renderer);
 }
@@ -80,6 +80,18 @@ const Sprite& ResourceManager::GetSprite(const std::string& sprite_id) const {
   return it->second;
 }
 
+const boost::dynamic_bitset<>& ResourceManager::GetSpriteCollisionMask(
+    const std::string& sprite_id, int frame_index) const {
+  const auto it = sprite_collision_masks_.find(sprite_id);
+  LOG_IF(FATAL, it == sprite_collision_masks_.end())
+      << "Sprite collision mask with id='" << sprite_id << "' was not found.";
+
+  LOG_IF(FATAL, frame_index >= it->second.size())
+      << "Frame index " << frame_index << " out of bounds for sprite '"
+      << sprite_id << "'.";
+  return it->second[frame_index];
+}
+
 const AnimationScript& ResourceManager::GetAnimationScript(
     const std::string& script_id) const {
   const auto it = scripts_.find(script_id);
@@ -103,23 +115,6 @@ const Font& ResourceManager::GetFont(const std::string& font_id) const {
   return *it->second;
 }
 
-void ResourceManager::LoadKeyBindings() {
-  const auto key_bindings =
-      LoadTextProtoFromPath<KeyBindings>("../data/scenes/", ".keys");
-  for (const auto& keys : key_bindings) {
-    key_bindings_.MergeFrom(keys);
-  }
-}
-
-void ResourceManager::LoadSprites() {
-  const auto sprites =
-      LoadTextProtoFromPath<Sprite>("../data/sprites/", ".sprite");
-
-  sprites_ = sprites | ranges::view::transform([](const Sprite& sprite) {
-               return std::make_pair(sprite.id(), sprite);
-             });
-}
-
 void ResourceManager::LoadAnimations() {
   const auto animations =
       LoadTextProtoFromPath<SpriteAnimation>("../data/sprites/", ".animation");
@@ -130,6 +125,29 @@ void ResourceManager::LoadAnimations() {
                     return std::make_pair(script.id(), script);
                   }));
   }
+}
+
+void ResourceManager::LoadKeyBindings() {
+  const auto key_bindings =
+      LoadTextProtoFromPath<KeyBindings>("../data/scenes/", ".keys");
+  for (const auto& keys : key_bindings) {
+    key_bindings_.MergeFrom(keys);
+  }
+}
+
+void ResourceManager::LoadSprites(const Renderer& renderer) {
+  const auto sprites =
+      LoadTextProtoFromPath<Sprite>("../data/sprites/", ".sprite");
+
+  sprites_ = sprites | ranges::view::transform([](const Sprite& sprite) {
+               return std::make_pair(sprite.id(), sprite);
+             });
+  sprite_collision_masks_ =
+      sprites_ | ranges::view::values |
+      ranges::view::transform([&renderer](const Sprite& sprite) {
+        return std::make_pair(sprite.id(),
+                              renderer.GenerateCollisionMasks(sprite));
+      });
 }
 
 void ResourceManager::LoadTextures(const Renderer& renderer) {
