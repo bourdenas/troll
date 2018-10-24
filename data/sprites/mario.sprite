@@ -8,146 +8,146 @@ colour_key {
 }
 
 film {
-  left: 32
-  top: 408
-  width: 23
-  height: 32
+  left: 31
+  top: 407
+  width: 26
+  height: 34
 }
 film {
-  left: 64
-  top: 408
-  width: 30
-  height: 32
+  left: 63
+  top: 407
+  width: 32
+  height: 34
 }
 film {
-  left: 104
-  top: 408
-  width: 30
-  height: 30
+  left: 103
+  top: 407
+  width: 32
+  height: 32
 }
 film {
   left: 145
-  top: 410
-  width: 27
+  top: 409
+  width: 28
+  height: 34
+}
+film {
+  left: 177
+  top: 411
+  width: 30
   height: 32
 }
 film {
-  left: 178
+  left: 215
+  top: 417
+  width: 36
+  height: 26
+}
+film {
+  left: 261
   top: 411
-  width: 28
-  height: 31
-}
-film {
-  left: 216
-  top: 418
   width: 34
-  height: 24
+  height: 32
 }
 film {
-  left: 262
-  top: 412
+  left: 305
+  top: 409
+  width: 28
+  height: 34
+}
+film {
+  left: 347
+  top: 417
+  width: 46
+  height: 26
+}
+film {
+  left: 29
+  top: 471
+  width: 26
+  height: 52
+}
+film {
+  left: 65
+  top: 489
+  width: 64
+  height: 34
+}
+film {
+  left: 141
+  top: 471
+  width: 28
+  height: 52
+}
+film {
+  left: 179
+  top: 487
+  width: 64
+  height: 34
+}
+film {
+  left: 249
+  top: 469
   width: 32
+  height: 52
+}
+film {
+  left: 289
+  top: 487
+  width: 66
   height: 30
 }
 film {
-  left: 306
-  top: 409
-  width: 26
-  height: 33
-}
-film {
-  left: 348
-  top: 418
-  width: 45
-  height: 23
-}
-film {
-  left: 30
-  top: 490
-  width: 23
-  height: 32
-}
-film {
-  left: 100
-  top: 490
-  width: 27
-  height: 32
-}
-film {
-  left: 142
-  top: 490
-  width: 26
-  height: 32
-}
-film {
-  left: 212
-  top: 488
-  width: 30
-  height: 32
-}
-film {
-  left: 250
-  top: 488
-  width: 30
-  height: 32
-}
-film {
-  left: 322
-  top: 488
-  width: 32
-  height: 29
-}
-film {
-  left: 362
+  left: 361
   top: 484
-  width: 24
-  height: 33
+  width: 26
+  height: 34
 }
 film {
   left: 392
   top: 484
-  width: 31
-  height: 33
-}
-film {
-  left: 433
-  top: 484
-  width: 30
-  height: 31
-}
-film {
-  left: 35
-  top: 695
   width: 32
-  height: 29
+  height: 34
 }
 film {
-  left: 109
-  top: 696
-  width: 30
+  left: 432
+  top: 484
+  width: 32
   height: 32
 }
 film {
-  left: 147
-  top: 696
-  width: 30
-  height: 32
+  left: 34
+  top: 695
+  width: 66
+  height: 30
 }
 film {
-  left: 221
-  top: 698
+  left: 108
+  top: 677
+  width: 32
+  height: 52
+}
+film {
+  left: 146
+  top: 695
+  width: 64
+  height: 34
+}
+film {
+  left: 220
+  top: 679
+  width: 28
+  height: 52
+}
+film {
+  left: 260
+  top: 697
+  width: 62
+  height: 35
+}
+film {
+  left: 334
+  top: 679
   width: 26
-  height: 32
-}
-film {
-  left: 262
-  top: 698
-  width: 27
-  height: 32
-}
-film {
-  left: 335
-  top: 698
-  width: 24
-  height: 32
+  height: 52
 }
