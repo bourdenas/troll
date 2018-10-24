@@ -20,8 +20,8 @@ bool Collide(const Box& lhs, const Box& rhs) {
   auto rhs_x_centre = rhs.left() + (rhs.width() >> 1);
   auto rhs_y_centre = rhs.top() + (rhs.height() >> 1);
 
-  return abs(lhs_x_centre - rhs_x_centre) * 2 <= lhs.width() + rhs.width() &&
-         abs(lhs_y_centre - rhs_y_centre) * 2 <= lhs.height() + rhs.height();
+  return abs(lhs_x_centre - rhs_x_centre) * 2 < lhs.width() + rhs.width() &&
+         abs(lhs_y_centre - rhs_y_centre) * 2 < lhs.height() + rhs.height();
 }
 
 Box Intersection(const Box& lhs, const Box& rhs) {

@@ -108,8 +108,8 @@ TEST_F(GeometryTest, CollidesBoxesTouchOnSides) {
   const auto rhs = ParseProto<Box>(R"(
     left: 10  top: 0  width: 10  height: 10)");
 
-  EXPECT_TRUE(Collide(lhs, rhs));
-  EXPECT_TRUE(Collide(rhs, lhs));
+  EXPECT_FALSE(Collide(lhs, rhs));
+  EXPECT_FALSE(Collide(rhs, lhs));
 }
 
 TEST_F(GeometryTest, CollidesBoxesTouchOnCorners) {
@@ -118,8 +118,8 @@ TEST_F(GeometryTest, CollidesBoxesTouchOnCorners) {
   const auto rhs = ParseProto<Box>(R"(
     left: 10  top: 10  width: 10  height: 10)");
 
-  EXPECT_TRUE(Collide(lhs, rhs));
-  EXPECT_TRUE(Collide(rhs, lhs));
+  EXPECT_FALSE(Collide(lhs, rhs));
+  EXPECT_FALSE(Collide(rhs, lhs));
 }
 
 TEST_F(GeometryTest, CollidesBoxesOneIncludesTheOther) {
