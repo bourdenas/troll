@@ -1,5 +1,6 @@
 #include "core/collision-checker.h"
 
+#include <glog/logging.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <range/v3/algorithm/count_if.hpp>
@@ -33,7 +34,7 @@ class CollisionCheckerTest : public testing::Test {
     TestingResourceManager::SetTestSprite(ParseProto<Sprite>(R"(
       id: 'sprite_c'
       film {
-        width: 2  height: 2
+        width: 3  height: 3
       })"));
 
     CollisionChecker::Instance().Init();
@@ -162,16 +163,13 @@ TEST_F(CollisionCheckerTest, NodesTouchingTriggersCollision) {
   scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
     id: 'node_b'
     sprite_id: 'sprite_b'
-    position { x: 5  y: 5 })"));
+    position { x: 10  y: 0 })"));
 
   CollisionChecker::Instance().CheckCollisions();
 
-  // Nodes A and B only touch theirs bounding box edges. Touching is collision.
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("created_node"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                                    id: 'created_node'
-                                    sprite_id: 'sprite_c'
-                                    )"))));
+  // Nodes A and B only touch theirs bounding box edges. Touching is not a
+  // collision.
+  EXPECT_THAT(scene_manager_->GetSceneNodeById("created_node"), nullptr);
 }
 
 TEST_F(CollisionCheckerTest, MultiNodeCollisionsArePairwise) {
@@ -645,6 +643,67 @@ TEST_F(CollisionCheckerTest, NodesCannotCollideByThemselves) {
 
   // Even though node_a is of sprite_a it cannot collide by itself.
   EXPECT_EQ(scene_manager_->GetSceneNodeById("created_node"), nullptr);
+}
+
+class PixelCollisionTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    //  LHS  -  RHS
+    // 10000   11000
+    // 10011   01100
+    // 11110   11111
+    std::string tmp = "100001001111110";
+    lhs_mask_ = boost::dynamic_bitset<>(std::string(tmp.rbegin(), tmp.rend()));
+    tmp = "110000110011111";
+    rhs_mask_ = boost::dynamic_bitset<>(std::string(tmp.rbegin(), tmp.rend()));
+  }
+
+  boost::dynamic_bitset<> lhs_mask_;
+  boost::dynamic_bitset<> rhs_mask_;
+};
+
+TEST_F(PixelCollisionTest, SpritesNextToEachOtherNoCollision) {
+  Box lhs = ParseProto<Box>("left: 0  top: 0  width: 5  height: 3");
+  Box rhs = ParseProto<Box>("left: 5  top: 0  width: 5  height: 3");
+  EXPECT_FALSE(
+      internal::SceneNodePixelsCollide(lhs, rhs, lhs_mask_, rhs_mask_));
+}
+
+TEST_F(PixelCollisionTest, SpriteFitsInsideTheOtherNoCollision) {
+  Box lhs = ParseProto<Box>("left: 0  top: 0  width: 5  height: 3");
+  Box rhs = ParseProto<Box>("left: 4  top: 0  width: 5  height: 3");
+  EXPECT_FALSE(
+      internal::SceneNodePixelsCollide(lhs, rhs, lhs_mask_, rhs_mask_));
+}
+
+TEST_F(PixelCollisionTest, SpritesCollide) {
+  Box lhs = ParseProto<Box>("left: 0  top: 0  width: 5  height: 3");
+  Box rhs = ParseProto<Box>("left: 3  top: 0  width: 5  height: 3");
+  EXPECT_TRUE(internal::SceneNodePixelsCollide(lhs, rhs, lhs_mask_, rhs_mask_));
+}
+
+TEST_F(PixelCollisionTest, BoxesOverlapFromTopButPixelsDontCollide) {
+  Box lhs = ParseProto<Box>("left: 4  top: 2  width: 5  height: 3");
+  Box rhs = ParseProto<Box>("left: 5  top: 0  width: 5  height: 3");
+  EXPECT_FALSE(
+      internal::SceneNodePixelsCollide(lhs, rhs, lhs_mask_, rhs_mask_));
+
+  // Moving lhs one pixel to the right causes a collision.
+  lhs = ParseProto<Box>("left: 5  top: 2  width: 5  height: 3");
+  EXPECT_TRUE(internal::SceneNodePixelsCollide(lhs, rhs, lhs_mask_, rhs_mask_));
+}
+
+TEST_F(PixelCollisionTest, SpritesWithNegativePositionsThatDontCollide) {
+  Box lhs = ParseProto<Box>("left: -2  top: -2  width: 5  height: 3");
+  Box rhs = ParseProto<Box>("left: 5  top: 0  width: 5  height: 3");
+  EXPECT_FALSE(
+      internal::SceneNodePixelsCollide(lhs, rhs, lhs_mask_, rhs_mask_));
+}
+
+TEST_F(PixelCollisionTest, SpritesWithNegativePositionsThatCollide) {
+  Box lhs = ParseProto<Box>("left: -1  top: -2  width: 5  height: 3");
+  Box rhs = ParseProto<Box>("left: 1  top: 0  width: 5  height: 3");
+  EXPECT_TRUE(internal::SceneNodePixelsCollide(lhs, rhs, lhs_mask_, rhs_mask_));
 }
 
 }  // namespace troll

@@ -4,6 +4,8 @@
 #include <set>
 #include <string>
 
+#include <boost/dynamic_bitset.hpp>
+
 #include "proto/action.pb.h"
 #include "proto/scene-node.pb.h"
 
@@ -57,6 +59,14 @@ class CollisionChecker {
   // frame started.
   std::set<std::pair<const SceneNode*, const SceneNode*>> collision_cache_;
 };
+
+namespace internal {
+// Returns true if the input bounding boxes actaully collide based on supplied
+// collision masks.
+bool SceneNodePixelsCollide(const Box& lhs_aabb, const Box& rhs_aabb,
+                            const boost::dynamic_bitset<>& lhs_collision_mask,
+                            const boost::dynamic_bitset<>& rhs_collision_mask);
+}  // namespace internal
 
 }  // namespace troll
 
