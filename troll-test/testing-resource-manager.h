@@ -10,6 +10,12 @@ class TestingResourceManager {
  public:
   static void SetTestSprite(const Sprite& sprite) {
     ResourceManager::Instance().sprites_[sprite.id()] = sprite;
+    auto& masks =
+        ResourceManager::Instance().sprite_collision_masks_[sprite.id()];
+    for (const auto& film : sprite.film()) {
+      masks.push_back(
+          boost::dynamic_bitset<>(film.width() * film.height()).set());
+    }
   }
 
   static void SetTestAnimationScript(const AnimationScript& script) {
