@@ -59,6 +59,10 @@ void OnCollisionExecutor::Execute(const Action& action) const {
   CollisionChecker::Instance().RegisterCollision(action.on_collision());
 }
 
+void OnDetachingExecutor::Execute(const Action& action) const {
+  CollisionChecker::Instance().RegisterDetachment(action.on_detaching());
+}
+
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {
   const auto& scene_node_id = action.play_animation_script().scene_node_id();
   if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==

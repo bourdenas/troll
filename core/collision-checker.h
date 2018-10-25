@@ -21,6 +21,7 @@ class CollisionChecker {
   void Init();
 
   void RegisterCollision(const CollisionAction& collision);
+  void RegisterDetachment(const CollisionAction& detaching);
 
   // Add this node in the checking for collisions during this frame.
   void Dirty(const SceneNode& node);
@@ -34,8 +35,9 @@ class CollisionChecker {
   CollisionChecker(const CollisionChecker&) = delete;
   ~CollisionChecker() = default;
 
-  // Triggers actions associated with collision of input nodes.
-  void TriggerCollision(const SceneNode& lhs, const SceneNode& rhs) const;
+  // Triggers actions associated with collision/detaching of input nodes.
+  void TriggerCollisionAction(const SceneNode& lhs, const SceneNode& rhs) const;
+  void TriggerDetachingAction(const SceneNode& lhs, const SceneNode& rhs) const;
 
   // Returns true if node is part of the CollisionAction description directly
   // (i.e. by scene_node_id) or indirectly (i.e. by sprite_id).
@@ -50,6 +52,9 @@ class CollisionChecker {
 
   // Directory of registered collisions.
   std::vector<CollisionAction> collision_directory_;
+
+  // Directory of registered detachments.
+  std::vector<CollisionAction> detachment_directory_;
 
   // Nodes that moved or created during this frame and should be checked for
   // collisions.

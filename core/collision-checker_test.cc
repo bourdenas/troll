@@ -143,7 +143,7 @@ TEST_F(CollisionCheckerTest, NodesOverlapExecutingTheirAction) {
                                     )"))));
 }
 
-TEST_F(CollisionCheckerTest, NodesTouchingTriggersCollision) {
+TEST_F(CollisionCheckerTest, NodesTouchingDontTriggerCollision) {
   CollisionChecker::Instance().RegisterCollision(ParseProto<CollisionAction>(R"(
     scene_node_id: [ 'node_a', 'node_b' ]
     action {
@@ -466,6 +466,56 @@ TEST_F(CollisionCheckerTest,
   EXPECT_EQ(
       2, ranges::count_if(scene_manager_->GetSceneNodesBySpriteId("sprite_c"),
                           count_all));
+}
+
+TEST_F(CollisionCheckerTest, NodesDetachingExecutingTheirAction) {
+  CollisionChecker::Instance().RegisterDetachment(
+      ParseProto<CollisionAction>(R"(
+        scene_node_id: [ 'node_a', 'node_b' ]
+        action {
+          create_scene_node {
+            scene_node { 
+              id: 'created_node'
+              sprite_id: 'sprite_c'
+            }
+          }
+        })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_a'
+    sprite_id: 'sprite_a'
+    position { x: 0  y: 0 })"));
+
+  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
+    id: 'node_b'
+    sprite_id: 'sprite_b'
+    position { x: 5  y: 5 })"));
+
+  CollisionChecker::Instance().CheckCollisions();
+
+  // Node collision has no registered action no node is created.
+  EXPECT_EQ(scene_manager_->GetSceneNodeById("created_node"), nullptr);
+
+  // Break constness rules locally, to allow modify node's position for testing.
+  SceneNode* node_a =
+      const_cast<SceneNode*>(scene_manager_->GetSceneNodeById("node_a"));
+
+  CollisionChecker::Instance().Dirty(*node_a);
+  CollisionChecker::Instance().CheckCollisions();
+
+  // Nodes still collide and still don't create a new scene_node.
+  EXPECT_EQ(scene_manager_->GetSceneNodeById("created_node"), nullptr);
+
+  node_a->mutable_position()->set_x(50);
+  CollisionChecker::Instance().Dirty(*node_a);
+  CollisionChecker::Instance().CheckCollisions();
+
+  // Nodes detached causing creation of new node.
+  EXPECT_THAT(scene_manager_->GetSceneNodeById("created_node"),
+              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
+                                    id: 'created_node'
+                                    sprite_id: 'sprite_c'
+                                    )"))));
 }
 
 TEST_F(CollisionCheckerTest, MultipleCollisionActionsForSameNodePair) {

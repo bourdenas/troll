@@ -19,6 +19,8 @@ void ActionManager::Init() {
 
   executors_.emplace(Action::kOnCollision,
                      std::make_unique<OnCollisionExecutor>());
+  executors_.emplace(Action::kOnDetaching,
+                     std::make_unique<OnDetachingExecutor>());
 
   executors_.emplace(Action::kPlayAnimationScript,
                      std::make_unique<PlayAnimationScriptExecutor>());

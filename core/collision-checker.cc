@@ -24,6 +24,10 @@ void CollisionChecker::RegisterCollision(const CollisionAction& collision) {
   collision_directory_.push_back(collision);
 }
 
+void CollisionChecker::RegisterDetachment(const CollisionAction& detaching) {
+  detachment_directory_.push_back(detaching);
+}
+
 void CollisionChecker::Dirty(const SceneNode& node) {
   dirty_nodes_.push_back(&node);
 }
@@ -65,23 +69,36 @@ void CollisionChecker::CheckCollisions() {
       if (NodesInCollisionCache(lhs, rhs)) {
         if (!collision) {
           RemoveFromCollisionCache(lhs, rhs);
+          TriggerDetachingAction(lhs, rhs);
         }
       } else if (collision) {
         AddInCollisionCache(lhs, rhs);
-        TriggerCollision(lhs, rhs);
+        TriggerCollisionAction(lhs, rhs);
       }
     }
   }
   dirty_nodes_.clear();
 }
 
-void CollisionChecker::TriggerCollision(const SceneNode& lhs,
-                                        const SceneNode& rhs) const {
+void CollisionChecker::TriggerCollisionAction(const SceneNode& lhs,
+                                              const SceneNode& rhs) const {
   for (const auto& collision : collision_directory_) {
     if (!NodeInCollision(lhs, collision) || !NodeInCollision(rhs, collision)) {
       continue;
     }
     for (const auto& action : collision.action()) {
+      ActionManager::Instance().Execute(action);
+    }
+  }
+}
+
+void CollisionChecker::TriggerDetachingAction(const SceneNode& lhs,
+                                              const SceneNode& rhs) const {
+  for (const auto& detaching : detachment_directory_) {
+    if (!NodeInCollision(lhs, detaching) || !NodeInCollision(rhs, detaching)) {
+      continue;
+    }
+    for (const auto& action : detaching.action()) {
       ActionManager::Instance().Execute(action);
     }
   }
