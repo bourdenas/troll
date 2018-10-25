@@ -18,15 +18,16 @@ message Action {
     SceneNodeAction destroy_scene_node = 6;
 
     CollisionAction on_collision = 7;
+    CollisionAction on_detaching = 8;
 
-    AnimationScriptAction play_animation_script = 8;
-    AnimationScriptAction stop_animation_script = 9;
-    AnimationScriptAction pause_animation_script = 10;
+    AnimationScriptAction play_animation_script = 9;
+    AnimationScriptAction stop_animation_script = 10;
+    AnimationScriptAction pause_animation_script = 11;
 
-    DisplayTextAction display_text = 11;
+    DisplayTextAction display_text = 12;
 
-    ScriptAction import_module = 12;
-    ScriptAction call = 13;
+    ScriptAction import_module = 13;
+    ScriptAction call = 14;
   }
 }
 
