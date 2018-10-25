@@ -1,4 +1,3 @@
-
 script {
   id: 'mario_patrol'
   repeat: 0

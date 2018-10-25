@@ -25,6 +25,6 @@ on_init {
 on_init {
   call {
     module: 'dk'
-    function: 'init'
+    function: 'intro'
   }
 }

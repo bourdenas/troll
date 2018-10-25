@@ -7,7 +7,7 @@ class Sprite:
         self.id = id
         self.sprite_id = sprite_id
 
-    def Create(self, frame_index, position):
+    def Create(self, position, frame_index=0):
         troll.execute(actions.Create(
             self.id, self.sprite_id, frame_index, position))
 
