@@ -49,6 +49,16 @@ def OnCollision(node_ids, sprite_ids, actions, packed=True):
     return action.SerializeToString() if packed else action
 
 
+def OnDetaching(node_ids, sprite_ids, actions, packed=True):
+    action = proto.action_pb2.Action()
+    if node_ids:
+        action.on_detaching.scene_node_id.extend(node_ids)
+    if sprite_ids:
+        action.on_detaching.sprite_id.extend(sprite_ids)
+    action.on_detaching.action.extend(actions)
+    return action.SerializeToString() if packed else action
+
+
 def Call(module, function, packed=True):
     action = proto.action_pb2.Action()
     action.call.module = module
