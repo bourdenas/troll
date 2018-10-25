@@ -17,7 +17,7 @@ void Core::Init() {
   ActionManager::Instance().Init();
 
   renderer_ = std::make_unique<Renderer>();
-  renderer_->Init(800, 600);
+  renderer_->Init(640, 480);
 
   ResourceManager::Instance().LoadResources(*renderer_);
   LoadScene("main.scene");
