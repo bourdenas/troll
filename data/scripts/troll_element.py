@@ -14,6 +14,18 @@ class Sprite:
     def Destroy(self):
         troll.execute(actions.Destroy(self.id))
 
+    def OnCollision(self, node_id='', sprite_id='', on_collide=[]):
+        troll.execute(actions.OnCollision(
+            [self.id, node_id] if node_id else [self.id],
+            [sprite_id] if sprite_id else [],
+            on_collide))
+
+    def OnDetaching(self, node_id='', sprite_id='', on_detach=[]):
+        troll.execute(actions.OnDetaching(
+            [self.id, node_id] if node_id else [self.id],
+            [sprite_id] if sprite_id else [],
+            on_detach))
+
     def PlayAnimation(self, script_id):
         troll.execute(actions.PlayAnimation(self.id, script_id))
 
