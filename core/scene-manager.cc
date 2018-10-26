@@ -50,27 +50,19 @@ void SceneManager::RemoveSceneNode(const std::string& id) {
   dead_scene_nodes_.insert(id);
 }
 
+void SceneManager::Dirty(const SceneNode& scene_node) {
+  dirty_boxes_.push_back(GetSceneNodeBoundingBox(scene_node));
+  CollisionChecker::Instance().Dirty(scene_node);
+}
+
 SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
   const auto it = scene_nodes_.find(id);
   return it != scene_nodes_.end() ? &it->second : nullptr;
 }
 
-SceneNode* SceneManager::GetSceneNodeAt(const Vector& at) {
-  auto nodes = scene_nodes_ | ranges::view::values;
-  auto it = std::find_if(
-      nodes.begin(), nodes.end(), [this, &at](const SceneNode& node) {
-        return geo::Contains(GetSceneNodeBoundingBox(node), at);
-      });
-  return it != nodes.end() ? &(*it) : nullptr;
-}
-
-Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) const {
-  const auto& sprite = ResourceManager::Instance().GetSprite(node.sprite_id());
-
-  auto bounding_box = sprite.film(node.frame_index());
-  bounding_box.set_left(node.position().x());
-  bounding_box.set_top(node.position().y());
-  return bounding_box;
+const SceneNode* SceneManager::GetSceneNodeById(const std::string& id) const {
+  const auto it = scene_nodes_.find(id);
+  return it != scene_nodes_.end() ? &it->second : nullptr;
 }
 
 void SceneManager::SetViewport(const Box& view) {
@@ -126,9 +118,13 @@ void SceneManager::Render() {
   CleanUpDeletedSceneNodes();
 }
 
-void SceneManager::Dirty(const SceneNode& scene_node) {
-  dirty_boxes_.push_back(GetSceneNodeBoundingBox(scene_node));
-  CollisionChecker::Instance().Dirty(scene_node);
+Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) {
+  const auto& sprite = ResourceManager::Instance().GetSprite(node.sprite_id());
+
+  auto bounding_box = sprite.film(node.frame_index());
+  bounding_box.set_left(node.position().x());
+  bounding_box.set_top(node.position().y());
+  return bounding_box;
 }
 
 void SceneManager::BlitSceneNode(const SceneNode& node) const {
@@ -154,6 +150,22 @@ void SceneManager::CleanUpDeletedSceneNodes() {
     scene_nodes_.erase(it);
   }
   dead_scene_nodes_.clear();
+}
+
+bool SceneManager::NodePatternMatching(const SceneNode& pattern,
+                                       const SceneNode& node) {
+  if (pattern.has_id() && node.id() != pattern.id()) return false;
+  if (pattern.has_sprite_id() && node.sprite_id() != pattern.sprite_id()) {
+    return false;
+  }
+  if (pattern.has_frame_index() &&
+      node.frame_index() != pattern.frame_index()) {
+    return false;
+  }
+  if (pattern.has_visible() && node.visible() != pattern.visible()) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace troll
