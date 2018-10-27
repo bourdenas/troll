@@ -1,6 +1,7 @@
 #include "core/scene-manager.h"
 
 #include <glog/logging.h>
+#include <range/v3/action/push_back.hpp>
 #include <range/v3/action/sort.hpp>
 
 #include "action/action-manager.h"
@@ -55,14 +56,65 @@ void SceneManager::Dirty(const SceneNode& scene_node) {
   CollisionChecker::Instance().Dirty(scene_node);
 }
 
-SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
+const SceneNode* SceneManager::GetSceneNodeById(const std::string& id) const {
   const auto it = scene_nodes_.find(id);
   return it != scene_nodes_.end() ? &it->second : nullptr;
 }
 
-const SceneNode* SceneManager::GetSceneNodeById(const std::string& id) const {
-  const auto it = scene_nodes_.find(id);
-  return it != scene_nodes_.end() ? &it->second : nullptr;
+SceneNode* SceneManager::GetSceneNodeById(const std::string& id) {
+  return const_cast<SceneNode*>(
+      static_cast<const SceneManager*>(this)->GetSceneNodeById(id));
+}
+
+std::vector<std::string> SceneManager::GetSceneNodesAt(const Vector& at) const {
+  std::vector<std::string> filtered_nodes;
+  filtered_nodes |= ranges::push_back(
+      scene_nodes_ | ranges::view::values |
+      ranges::view::filter([&at](const SceneNode& node) {
+        return geo::Contains(SceneManager::GetSceneNodeBoundingBox(node), at);
+      }) |
+      ranges::view::transform([](const SceneNode& node) { return node.id(); }));
+  return filtered_nodes;
+}
+
+std::vector<std::string> SceneManager::GetSceneNodesBySpriteId(
+    const std::string& sprite_id) const {
+  std::vector<std::string> filtered_nodes;
+  filtered_nodes |= ranges::push_back(
+      scene_nodes_ | ranges::view::values |
+      ranges::view::filter([&sprite_id](const SceneNode& node) {
+        return node.sprite_id() == sprite_id;
+      }) |
+      ranges::view::transform([](const SceneNode& node) { return node.id(); }));
+  return filtered_nodes;
+}
+
+std::vector<std::string> SceneManager::GetSceneNodesByPattern(
+    const SceneNode& pattern) const {
+  std::vector<std::string> filtered_nodes;
+  filtered_nodes |= ranges::push_back(
+      scene_nodes_ | ranges::view::values |
+      ranges::view::filter([pattern](const SceneNode& node) {
+        return SceneManager::NodePatternMatching(pattern, node);
+      }) |
+      ranges::view::transform([](const SceneNode& node) { return node.id(); }));
+  return filtered_nodes;
+}
+
+std::vector<std::string> SceneManager::GetSceneNodesByPattern(
+    const SceneNode& pattern, const std::vector<std::string>& node_ids) const {
+  std::vector<std::string> filtered_nodes;
+  filtered_nodes |= ranges::push_back(
+      node_ids | ranges::view::transform([this](const std::string& id) {
+        return GetSceneNodeById(id);
+      }) |
+      ranges::view::filter([pattern](const SceneNode* node) {
+        return node != nullptr &&
+               SceneManager::NodePatternMatching(pattern, *node);
+      }) |
+      ranges::view::transform(
+          [](const SceneNode* node) { return node->id(); }));
+  return filtered_nodes;
 }
 
 void SceneManager::SetViewport(const Box& view) {
