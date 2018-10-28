@@ -5,6 +5,8 @@
 
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
+#include "core/execution-context.h"
+#include "core/scene-node-query.h"
 #include "core/troll-core.h"
 #include "scripting/script-manager.h"
 
@@ -42,17 +44,43 @@ void CreateSceneNodeExecutor::Execute(const Action& action) const {
   }
 }
 
-void DestroySceneNodeExecutor::Execute(const Action& action) const {
-  const auto& scene_node_id = action.destroy_scene_node().scene_node().id();
-  if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
-      nullptr) {
-    LOG(WARNING)
-        << "DestroySceneNodeExecutor: Cannot destroy SceneNode with id='"
-        << scene_node_id << "' that does not exist.";
-    return;
+namespace {
+// Returns all scene node ids described by a node expression in an action.
+std::vector<std::string> ResolveSceneNodes(const std::string& node_expression) {
+  std::vector<std::string> node_ids;
+  if (!node_expression.empty() && node_expression[0] == '$') {
+    SceneNodeQuery query;
+    if (!query.Parse(node_expression)) return node_ids;
+
+    if (query.mode == SceneNodeQuery::RetrievalMode::GLOBAL) {
+      node_ids = Core::Instance().scene_manager().GetSceneNodesByPattern(
+          query.pattern);
+    } else if (query.mode == SceneNodeQuery::RetrievalMode::LOCAL) {
+      auto&& context_nodes = ExecutionContext::Instance().scene_nodes();
+      node_ids = Core::Instance().scene_manager().GetSceneNodesByPattern(
+          query.pattern, context_nodes);
+    }
+  } else {
+    node_ids.push_back(node_expression);
   }
 
-  Core::Instance().scene_manager().RemoveSceneNode(scene_node_id);
+  return node_ids;
+}
+}  // namespace
+
+void DestroySceneNodeExecutor::Execute(const Action& action) const {
+  auto&& node_ids =
+      ResolveSceneNodes(action.destroy_scene_node().scene_node().id());
+
+  for (const auto& id : node_ids) {
+    if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
+      LOG(WARNING)
+          << "DestroySceneNodeExecutor: Cannot destroy SceneNode with id='"
+          << id << "' that does not exist.";
+      return;
+    }
+    Core::Instance().scene_manager().RemoveSceneNode(id);
+  }
 }
 
 void OnCollisionExecutor::Execute(const Action& action) const {
@@ -64,19 +92,21 @@ void OnDetachingExecutor::Execute(const Action& action) const {
 }
 
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {
-  const auto& scene_node_id = action.play_animation_script().scene_node_id();
-  if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
-      nullptr) {
-    LOG(WARNING)
-        << "PlayAnimationScriptExecutor: Cannot apply animation script '"
-        << action.play_animation_script().script_id()
-        << "' on SceneNode with id='" << scene_node_id
-        << "' that does not exist.";
-    return;
-  }
+  auto&& node_ids =
+      ResolveSceneNodes(action.play_animation_script().scene_node().id());
 
-  AnimatorManager::Instance().Play(action.play_animation_script().script_id(),
-                                   scene_node_id);
+  for (const auto& id : node_ids) {
+    if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
+      LOG(WARNING)
+          << "PlayAnimationScriptExecutor: Cannot apply animation script '"
+          << action.play_animation_script().script_id()
+          << "' on SceneNode with id='" << id << "' that does not exist.";
+      return;
+    }
+
+    AnimatorManager::Instance().Play(action.play_animation_script().script_id(),
+                                     id);
+  }
 }
 
 Action PlayAnimationScriptExecutor::Reverse(const Action& action) const {
@@ -86,19 +116,21 @@ Action PlayAnimationScriptExecutor::Reverse(const Action& action) const {
 }
 
 void StopAnimationScriptExecutor::Execute(const Action& action) const {
-  const auto& scene_node_id = action.stop_animation_script().scene_node_id();
-  if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
-      nullptr) {
-    LOG(WARNING)
-        << "StopAnimationScriptExecutor: Cannot stop animation script '"
-        << action.stop_animation_script().script_id()
-        << "' on SceneNode with id='" << scene_node_id
-        << "' that does not exist.";
-    return;
-  }
+  auto&& node_ids =
+      ResolveSceneNodes(action.stop_animation_script().scene_node().id());
 
-  AnimatorManager::Instance().Stop(action.stop_animation_script().script_id(),
-                                   scene_node_id);
+  for (const auto& id : node_ids) {
+    if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
+      LOG(WARNING)
+          << "StopAnimationScriptExecutor: Cannot stop animation script '"
+          << action.stop_animation_script().script_id()
+          << "' on SceneNode with id='" << id << "' that does not exist.";
+      return;
+    }
+
+    AnimatorManager::Instance().Stop(action.stop_animation_script().script_id(),
+                                     id);
+  }
 }
 
 Action StopAnimationScriptExecutor::Reverse(const Action& action) const {
@@ -108,19 +140,21 @@ Action StopAnimationScriptExecutor::Reverse(const Action& action) const {
 }
 
 void PauseAnimationScriptExecutor::Execute(const Action& action) const {
-  const auto& scene_node_id = action.pause_animation_script().scene_node_id();
-  if (Core::Instance().scene_manager().GetSceneNodeById(scene_node_id) ==
-      nullptr) {
-    LOG(WARNING)
-        << "PauseAnimationScriptExecutor: Cannot pause animation script '"
-        << action.pause_animation_script().script_id()
-        << "' on SceneNode with id='" << scene_node_id
-        << "' that does not exist.";
-    return;
-  }
+  auto&& node_ids =
+      ResolveSceneNodes(action.pause_animation_script().scene_node().id());
 
-  AnimatorManager::Instance().Pause(action.pause_animation_script().script_id(),
-                                    scene_node_id);
+  for (const auto& id : node_ids) {
+    if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
+      LOG(WARNING)
+          << "PauseAnimationScriptExecutor: Cannot pause animation script '"
+          << action.pause_animation_script().script_id()
+          << "' on SceneNode with id='" << id << "' that does not exist.";
+      return;
+    }
+
+    AnimatorManager::Instance().Pause(
+        action.pause_animation_script().script_id(), id);
+  }
 }
 
 void DisplayTextExecutor::Execute(const Action& action) const {
