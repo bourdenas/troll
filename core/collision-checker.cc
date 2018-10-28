@@ -8,6 +8,7 @@
 #include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
+#include "core/execution-context.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"
 #include "core/troll-core.h"
@@ -69,20 +70,22 @@ void CollisionChecker::CheckCollisions() {
       if (NodesInCollisionCache(lhs, rhs)) {
         if (!collision) {
           RemoveFromCollisionCache(lhs, rhs);
-          TriggerDetachingAction(lhs, rhs);
+          TriggerCollisionAction(lhs, rhs, detachment_directory_);
         }
       } else if (collision) {
         AddInCollisionCache(lhs, rhs);
-        TriggerCollisionAction(lhs, rhs);
+        TriggerCollisionAction(lhs, rhs, collision_directory_);
       }
     }
   }
   dirty_nodes_.clear();
 }
 
-void CollisionChecker::TriggerCollisionAction(const SceneNode& lhs,
-                                              const SceneNode& rhs) const {
-  for (const auto& collision : collision_directory_) {
+void CollisionChecker::TriggerCollisionAction(
+    const SceneNode& lhs, const SceneNode& rhs,
+    const std::vector<CollisionAction>& collision_directory) const {
+  ExecutionContext::Instance().AddSceneNodes({lhs.id(), rhs.id()});
+  for (const auto& collision : collision_directory) {
     if (!NodeInCollision(lhs, collision) || !NodeInCollision(rhs, collision)) {
       continue;
     }
@@ -90,18 +93,7 @@ void CollisionChecker::TriggerCollisionAction(const SceneNode& lhs,
       ActionManager::Instance().Execute(action);
     }
   }
-}
-
-void CollisionChecker::TriggerDetachingAction(const SceneNode& lhs,
-                                              const SceneNode& rhs) const {
-  for (const auto& detaching : detachment_directory_) {
-    if (!NodeInCollision(lhs, detaching) || !NodeInCollision(rhs, detaching)) {
-      continue;
-    }
-    for (const auto& action : detaching.action()) {
-      ActionManager::Instance().Execute(action);
-    }
-  }
+  ExecutionContext::Instance().ClearSceneNodes();
 }
 
 bool CollisionChecker::NodeInCollision(const SceneNode& node,

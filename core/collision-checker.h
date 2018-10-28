@@ -36,8 +36,9 @@ class CollisionChecker {
   ~CollisionChecker() = default;
 
   // Triggers actions associated with collision/detaching of input nodes.
-  void TriggerCollisionAction(const SceneNode& lhs, const SceneNode& rhs) const;
-  void TriggerDetachingAction(const SceneNode& lhs, const SceneNode& rhs) const;
+  void TriggerCollisionAction(
+      const SceneNode& lhs, const SceneNode& rhs,
+      const std::vector<CollisionAction>& collision_directory) const;
 
   // Returns true if node is part of the CollisionAction description directly
   // (i.e. by scene_node_id) or indirectly (i.e. by sprite_id).
