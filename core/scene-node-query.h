@@ -8,7 +8,7 @@
 namespace troll {
 
 struct SceneNodeQuery {
-  bool Parse(const std::string& pattern);
+  bool Parse(const std::string& pattern_str);
 
   enum class RetrievalMode {
     INVALID,

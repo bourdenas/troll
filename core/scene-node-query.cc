@@ -7,29 +7,29 @@
 
 namespace troll {
 
-bool SceneNodeQuery::Parse(const std::string& pattern) {
+bool SceneNodeQuery::Parse(const std::string& pattern_str) {
   static const std::regex re(
-      R"(\$(ctx)?\.\{(.*)\})", std::regex::optimize);
+      R"(\$(this)?\.\{(.*)\})", std::regex::optimize);
 
   std::smatch match;
-  if (!std::regex_match(pattern, match, re)) {
-    mode = SceneNodeQuery::INVALID;
+  if (!std::regex_match(pattern_str, match, re)) {
+    mode = RetrievalMode::INVALID;
     return false;
   }
 
   LOG_IF(ERROR, match.size() != 3) << "Invalid node search pattern: '"
-                                   << pattern << "'";
+                                   << pattern_str << "'";
 
-  if (match[1].empty()) {
-    mode = SceneNodeQuery::GLOBAL;
-  } else if (match[2] == "ctx") {
-    mode = SceneNodeQuery::LOCAL;
+  if (match[1].length() == 0) {
+    mode = RetrievalMode::GLOBAL;
+  } else if (match[1] == "this") {
+    mode = RetrievalMode::LOCAL;
   } else {
-    mode = SceneNodeQuery::INVALID;
+    mode = RetrievalMode::INVALID;
   }
 
   if (!google::protobuf::TextFormat::ParseFromString(match[2], &pattern)) {
-    mode = SceneNodeQuery::INVALID;
+    mode = RetrievalMode::INVALID;
     return false;
   }
   return true;

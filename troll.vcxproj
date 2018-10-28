@@ -117,6 +117,7 @@
     <ClInclude Include="core\geometry.h" />
     <ClInclude Include="core\resource-manager.h" />
     <ClInclude Include="core\scene-manager.h" />
+    <ClInclude Include="core\scene-node-query.h" />
     <ClInclude Include="core\troll-core.h" />
     <ClInclude Include="input\input-event.h" />
     <ClInclude Include="input\input-manager.h" />
@@ -147,6 +148,7 @@
     <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\resource-manager.cc" />
     <ClCompile Include="core\scene-manager.cc" />
+    <ClCompile Include="core\scene-node-query.cc" />
     <ClCompile Include="core\troll-core.cc" />
     <ClCompile Include="input\input-manager.cc" />
     <ClCompile Include="proto\action.pb.cc" />
