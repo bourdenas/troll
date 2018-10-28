@@ -93,7 +93,7 @@ void OnDetachingExecutor::Execute(const Action& action) const {
 
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {
   auto&& node_ids =
-      ResolveSceneNodes(action.play_animation_script().scene_node().id());
+      ResolveSceneNodes(action.play_animation_script().scene_node_id());
 
   for (const auto& id : node_ids) {
     if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
@@ -117,7 +117,7 @@ Action PlayAnimationScriptExecutor::Reverse(const Action& action) const {
 
 void StopAnimationScriptExecutor::Execute(const Action& action) const {
   auto&& node_ids =
-      ResolveSceneNodes(action.stop_animation_script().scene_node().id());
+      ResolveSceneNodes(action.stop_animation_script().scene_node_id());
 
   for (const auto& id : node_ids) {
     if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
@@ -141,7 +141,7 @@ Action StopAnimationScriptExecutor::Reverse(const Action& action) const {
 
 void PauseAnimationScriptExecutor::Execute(const Action& action) const {
   auto&& node_ids =
-      ResolveSceneNodes(action.pause_animation_script().scene_node().id());
+      ResolveSceneNodes(action.pause_animation_script().scene_node_id());
 
   for (const auto& id : node_ids) {
     if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
