@@ -108,6 +108,9 @@
     <ClInclude Include="core\scene-node-query.h">
       <Filter>core</Filter>
     </ClInclude>
+    <ClInclude Include="core\execution-context.h">
+      <Filter>core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="proto\scene.pb.cc">
@@ -192,6 +195,9 @@
       <Filter>core</Filter>
     </ClCompile>
     <ClCompile Include="core\scene-node-query.cc">
+      <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="core\execution-context.cc">
       <Filter>core</Filter>
     </ClCompile>
   </ItemGroup>
