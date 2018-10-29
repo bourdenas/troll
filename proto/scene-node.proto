@@ -13,7 +13,7 @@ message SceneNode {
   optional int32 frame_index = 3;
 
   optional Vector position = 4;
-  optional bool visible = 5;
+  optional bool visible = 5 [default = true];
 
   repeated SceneNode scene_node = 6;
 }

@@ -155,6 +155,9 @@ void SceneManager::Render() {
   // Render dirty nodes.
   std::vector<const SceneNode*> z_ordered_nodes =
       dirty_nodes | ranges::view::filter([this](const SceneNode* node) {
+        return node->visible();
+      }) |
+      ranges::view::filter([this](const SceneNode* node) {
         return dead_scene_nodes_.find(node->id()) == dead_scene_nodes_.end();
       });
   z_ordered_nodes |=
