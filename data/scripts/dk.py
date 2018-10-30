@@ -29,7 +29,7 @@ def intro():
 
     dk = sprites.DonkeyKong('dk')
     dk.Create((300, 382, 0), frame_index=4)
-    dk.PlayAnimation('dk_climb')
+    dk.PlayAnimationScript(dk.IntroCutscene())
 
 
 def level1():
