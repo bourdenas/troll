@@ -1,5 +1,6 @@
 syntax = "proto2";
 
+import "proto/animation.proto";
 import "proto/event.proto";
 import "proto/primitives.proto";
 import "proto/scene-node.proto";
@@ -54,8 +55,13 @@ message CollisionAction {
 }
 
 message AnimationScriptAction {
-  optional string script_id = 1;
-  optional string scene_node_id = 2;
+  // Fields script and script_id are mutually exclusive. If a script exists the
+  // script_id is ignored for playing a new animation. For stop/pause animations
+  // only the script_id field is relevant.
+  optional AnimationScript script = 1;
+  optional string script_id = 2;
+  
+  optional string scene_node_id = 3;
 }
 
 message DisplayTextAction {

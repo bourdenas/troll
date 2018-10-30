@@ -104,8 +104,13 @@ void PlayAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    AnimatorManager::Instance().Play(action.play_animation_script().script_id(),
-                                     id);
+    if (action.play_animation_script().has_script()) {
+      AnimatorManager::Instance().Play(action.play_animation_script().script(),
+                                       id);
+    } else {
+      AnimatorManager::Instance().Play(
+          action.play_animation_script().script_id(), id);
+    }
   }
 }
 
