@@ -43,7 +43,7 @@ class ScriptAnimator {
     FINISHED,
   };
 
-  const AnimationScript& script_;
+  const AnimationScript script_;
   std::string scene_node_id_;
 
   State state_ = State::INIT;
