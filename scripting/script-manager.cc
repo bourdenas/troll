@@ -1,8 +1,10 @@
 #include "scripting/script-manager.h"
 
 #include <glog/logging.h>
+#include <pybind11/functional.h>
 
 #include "action/action-manager.h"
+#include "core/event-dispatcher.h"
 
 namespace troll {
 
@@ -12,6 +14,11 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
     action.ParseFromString(encoded_action);
     ActionManager::Instance().Execute(action);
   });
+
+  m.def("on_event",
+        [](const std::string& event_id, const std::function<void()>& handler) {
+          EventDispatcher::Instance().Register(event_id, handler);
+        });
 }
 
 void ScriptManager::Init() {}
