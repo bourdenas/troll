@@ -1,19 +1,19 @@
-import troll_element
+import pytroll.sprite
 
 
-class Mario(troll_element.Sprite):
+class Mario(pytroll.sprite.Sprite):
     def __init__(self, id=''):
-        troll_element.Sprite.__init__(self, id, 'mario')
+        pytroll.sprite.Sprite.__init__(self, id, 'mario')
 
 
-class DonkeyKong(troll_element.Sprite):
+class DonkeyKong(pytroll.sprite.Sprite):
     def __init__(self, id=''):
-        troll_element.Sprite.__init__(self, id, 'dk')
+        pytroll.sprite.Sprite.__init__(self, id, 'dk')
 
 
-class PlatformPiece(troll_element.Sprite):
+class PlatformPiece(pytroll.sprite.Sprite):
     def __init__(self, id=''):
-        troll_element.Sprite.__init__(self, id, 'platform')
+        pytroll.sprite.Sprite.__init__(self, id, 'platform')
 
 
 class Platform(object):
@@ -27,6 +27,6 @@ class Platform(object):
                 (position[0] + i * platform_width, position[1], position[2]))
 
 
-class Ladder(troll_element.Sprite):
+class Ladder(pytroll.sprite.Sprite):
     def __init__(self, id=''):
-        troll_element.Sprite.__init__(self, id, 'ladder')
+        pytroll.sprite.Sprite.__init__(self, id, 'ladder')

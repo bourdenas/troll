@@ -1,6 +1,4 @@
-import actions
 import sprites
-import troll
 
 
 def intro():
@@ -44,8 +42,3 @@ def level1():
     ]
     for pos in ladder_positions:
         sprites.Ladder().Create(pos, frame_index=0)
-
-
-# collision = actions.OnCollision(['mario'], ['mario'], [
-#     actions.Create(dk.id, dk.sprite_id, 0, (100, 200, 0), packed=False)])
-# troll.execute(collision)

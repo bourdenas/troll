@@ -18,6 +18,13 @@ def Destroy(node_id):
     return action
 
 
+def PlayAnimationScript(node_id, script):
+    action = proto.action_pb2.Action()
+    action.play_animation_script.scene_node_id = node_id
+    action.play_animation_script.script_id = script
+    return action
+
+
 def PlayAnimation(node_id, script_id):
     action = proto.action_pb2.Action()
     action.play_animation_script.scene_node_id = node_id
