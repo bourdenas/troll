@@ -94,16 +94,24 @@ void AnimatorManager::Progress(int time_since_last_frame) {
     running_scripts_[i]->Progress(time_since_last_frame);
   }
 
-  // Clean up finished scripts.
-  const auto it = std::remove_if(
-      running_scripts_.begin(), running_scripts_.end(), [](auto& script) {
-        if (script->is_finished()) {
-          EventDispatcher::Instance().Emit(Events::OnAnimationScriptTermination(
-              script->scene_node_id(), script->script_id()));
-        }
-        return script->is_finished();
-      });
+  // Clean up finished scripts and fire events.
+  std::vector<std::string> events;
+  const auto it =
+      std::remove_if(running_scripts_.begin(), running_scripts_.end(),
+                     [&events](auto& script) {
+                       if (script->is_finished()) {
+                         events.push_back(Events::OnAnimationScriptTermination(
+                             script->scene_node_id(), script->script_id()));
+                       }
+                       return script->is_finished();
+                     });
   running_scripts_.erase(it, running_scripts_.end());
+
+  // Firing events outside running script iteration as events might cause
+  // scripts to be modified.
+  for (const auto& event_id : events) {
+    EventDispatcher::Instance().Emit(event_id);
+  }
 }
 
 }  // namespace troll
