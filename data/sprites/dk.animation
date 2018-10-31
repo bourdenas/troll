@@ -32,7 +32,6 @@ script {
 
 script {
   id: 'dk_jump'
-  repeat: 0
   animation {
     translation {
       vec {
@@ -54,17 +53,7 @@ script {
 }
 
 script {
-  id: 'dk_intro'
-  animation {
-    run_script {
-      script_id: 'dk_climb'
-    }
-  }
-  animation {
-    timer {
-      delay: 1000
-    }
-  }
+  id: 'dk_landing'
   animation {
     frame_list {
       frame: 5
@@ -91,34 +80,6 @@ script {
       }
       step: 2
       delay: 20
-    }
-  }
-  animation {
-    timer {
-      delay: 300
-    }
-  }
-  animation {
-    go_to {
-      destination {
-        x: 130
-        y: 90
-      }
-      step: 1
-      delay: 17
-    }
-    run_script {
-      script_id: 'dk_jump'
-    }
-  }
-  animation {
-    timer {
-      delay: 300
-    }
-  }
-  animation {
-    run_script {
-      script_id: 'dk_taunt'
     }
   }
 }

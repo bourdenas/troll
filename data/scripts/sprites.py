@@ -1,5 +1,6 @@
 import pytroll.sprite
 import proto.animation_pb2
+import troll
 
 
 class Mario(pytroll.sprite.Sprite):
@@ -16,31 +17,25 @@ class DonkeyKong(pytroll.sprite.Sprite):
 
         script.animation.add().run_script.script_id = 'dk_climb'
         script.animation.add().timer.delay = 1000
-
-        thrusting = script.animation.add()
-        thrusting.frame_list.frame.extend([5])
-        thrusting.frame_list.vertical_align = proto.animation_pb2.BOTTOM
-        thrusting.go_to.destination.x = 300
-        thrusting.go_to.destination.y = 70
-        thrusting.go_to.step = 2
-        thrusting.go_to.delay = 20
-
-        landing = script.animation.add()
-        landing.frame_list.frame.extend([0])
-        landing.frame_list.vertical_align = proto.animation_pb2.BOTTOM
-        landing.go_to.destination.x = 300
-        landing.go_to.destination.y = 90
-        landing.go_to.step = 2
-        landing.go_to.delay = 20
-
+        script.animation.add().run_script.script_id = 'dk_landing'
         script.animation.add().timer.delay = 300
 
         destroy_platforms = script.animation.add()
+        destroy_platforms.termination = proto.animation_pb2.Animation.ALL
         destroy_platforms.go_to.destination.x = 130
         destroy_platforms.go_to.destination.y = 90
         destroy_platforms.go_to.step = 1
-        destroy_platforms.go_to.delay = 17
+        destroy_platforms.go_to.delay = 18
         destroy_platforms.run_script.script_id = 'dk_jump'
+
+        def destroy_platform(dk, index):
+            if index == 4:
+                return
+            dk.PlayAnimation(
+                'dk_jump', lambda: destroy_platform(dk, index + 1))
+
+        troll.on_event('.'.join((self.id, 'dk_jump', 'done')),
+                       lambda: destroy_platform(self, 0))
 
         script.animation.add().timer.delay = 300
         script.animation.add().run_script.script_id = 'dk_taunt'
