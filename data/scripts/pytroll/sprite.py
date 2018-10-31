@@ -17,14 +17,6 @@ class Sprite:
         action = pytroll.actions.Destroy(self.id)
         troll.execute(action.SerializeToString())
 
-    def Position(self, position):
-        action = pytroll.actions.Position(self.id, position)
-        troll.execute(action.SerializeToString())
-
-    def Move(self, vec):
-        action = pytroll.actions.Move(self.id, vec)
-        troll.execute(action.SerializeToString())
-
     def OnCollision(self, node_id='', sprite_id='', on_collide=[]):
         action = pytroll.actions.OnCollision(
             [self.id, node_id] if node_id else [self.id],

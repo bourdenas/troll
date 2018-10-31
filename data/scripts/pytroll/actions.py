@@ -1,16 +1,14 @@
 import proto.action_pb2
 
 
-def __assign_vec(proto_vec, py_tuple):
-    proto_vec.x, proto_vec.y, proto_vec.z = py_tuple
-
-
 def Create(node_id, sprite_id, frame_index, position):
     action = proto.action_pb2.Action()
     action.create_scene_node.scene_node.id = node_id
     action.create_scene_node.scene_node.sprite_id = sprite_id
     action.create_scene_node.scene_node.frame_index = frame_index
-    __assign_vec(action.create_scene_node.scene_node.position, position)
+    action.create_scene_node.scene_node.position.x = position[0]
+    action.create_scene_node.scene_node.position.y = position[1]
+    action.create_scene_node.scene_node.position.z = position[2]
     return action
 
 
