@@ -24,6 +24,16 @@ class Animator {
   bool Progress(int time_since_last_frame, SceneNode* scene_node);
 
  private:
+  // Returns true if any of the performers finished during progress.
+  bool ProgressAny(int time_since_last_frame, SceneNode* scene_node);
+
+  // Returns true iff all the performers finished during progress.
+  bool ProgressAll(int time_since_last_frame, SceneNode* scene_node);
+
+  // If true, the animator finishes when all performers are finished. Otherwise,
+  // the animator is finished when any performer is finished.
+  bool wait_for_all_ = false;
+
   std::vector<std::unique_ptr<Performer>> performers_;
 };
 

@@ -23,20 +23,30 @@ message AnimationScript {
 
 // All animations that are instantiated in this proto are performed on parallel.
 message Animation {
+  enum TerminationCondition {
+    ANY = 0;
+    ALL = 1;
+  }
+  // If termination is ANY then a composite animation finishes if any of its
+  // parts finishe. If the termination is ALL the animation finishes when all of
+  // its parts are done. When termination is ALL finished parts do not continue
+  // to execute while the unfinished are still running.
+  optional TerminationCondition termination = 1 [default = ANY];
+
   // Repeatable animations.
-  optional VectorAnimation translation = 1;
-  optional VectorAnimation rotation = 2;
-  optional VectorAnimation scaling = 3;
-  optional FrameRangeAnimation frame_range = 4;
-  optional FrameListAnimation frame_list = 5;
-  optional FlashAnimation flash = 6;
+  optional VectorAnimation translation = 2;
+  optional VectorAnimation rotation = 3;
+  optional VectorAnimation scaling = 4;
+  optional FrameRangeAnimation frame_range = 5;
+  optional FrameListAnimation frame_list = 6;
+  optional FlashAnimation flash = 7;
 
   // Non-repeatable animations.
-  optional GotoAnimation go_to = 7;
-  optional TimerAnimation timer = 8;
+  optional GotoAnimation go_to = 8;
+  optional TimerAnimation timer = 9;
 
   // Composable scripts.
-  optional RunScriptAnimation run_script = 9;
+  optional RunScriptAnimation run_script = 10;
 }
 
 // A vector based transformation (e.g. translation) that is a pplied on a node

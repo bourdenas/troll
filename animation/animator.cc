@@ -1,10 +1,13 @@
 #include "animation/animator.h"
 
 #include <range/v3/algorithm/any_of.hpp>
+#include <range/v3/algorithm/remove_if.hpp>
 
 namespace troll {
 
 void Animator::Start(const Animation& animation, SceneNode* scene_node) {
+  wait_for_all_ = animation.termination() == Animation::ALL;
+
   if (animation.has_translation()) {
     performers_.push_back(
         std::make_unique<TranslationPerformer>(animation.translation()));
@@ -51,16 +54,32 @@ void Animator::Stop(const SceneNode& scene_node) {
 }
 
 bool Animator::Progress(int time_since_last_frame, SceneNode* scene_node) {
-  const bool finished = ranges::any_of(
-      performers_, [time_since_last_frame,
-                    scene_node](const std::unique_ptr<Performer>& performer) {
-        return performer->Progress(time_since_last_frame, scene_node);
-      });
-
+  const bool finished = wait_for_all_
+                            ? ProgressAll(time_since_last_frame, scene_node)
+                            : ProgressAny(time_since_last_frame, scene_node);
   if (finished) {
     Stop(*scene_node);
   }
   return finished;
+}
+
+bool Animator::ProgressAny(int time_since_last_frame, SceneNode* scene_node) {
+  return ranges::any_of(
+      performers_, [time_since_last_frame,
+                    scene_node](const std::unique_ptr<Performer>& performer) {
+        return performer->Progress(time_since_last_frame, scene_node);
+      });
+}
+
+bool Animator::ProgressAll(int time_since_last_frame, SceneNode* scene_node) {
+  const auto it = std::remove_if(
+      performers_.begin(), performers_.end(),
+      [time_since_last_frame,
+       scene_node](const std::unique_ptr<Performer>& performer) {
+        return performer->Progress(time_since_last_frame, scene_node);
+      });
+  performers_.erase(it, performers_.end());
+  return performers_.empty();
 }
 
 }  // namespace troll
