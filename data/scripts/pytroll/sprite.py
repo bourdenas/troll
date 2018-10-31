@@ -30,13 +30,17 @@ class Sprite:
             on_detach)
         troll.execute(action.SerializeToString())
 
-    def PlayAnimationScript(self, script):
+    def PlayAnimationScript(self, script, on_done=None):
         action = pytroll.actions.PlayAnimationScript(self.id, script)
         troll.execute(action.SerializeToString())
+        if on_done:
+            troll.on_event('.'.join((self.id, script.id, 'done')), on_done)
 
-    def PlayAnimation(self, script_id):
+    def PlayAnimation(self, script_id, on_done=None):
         action = pytroll.actions.PlayAnimation(self.id, script_id)
         troll.execute(action.SerializeToString())
+        if on_done:
+            troll.on_event('.'.join((self.id, script_id, 'done')), on_done)
 
     def StopAnimation(self, script_id=""):
         action = pytroll.actions.StopAnimation(self.id, script_id)
