@@ -1,20 +1,36 @@
 import proto.action_pb2
 
 
+def __assign_vec(proto_vec, py_tuple):
+    proto_vec.x, proto_vec.y, proto_vec.z = py_tuple
+
+
 def Create(node_id, sprite_id, frame_index, position):
     action = proto.action_pb2.Action()
     action.create_scene_node.scene_node.id = node_id
     action.create_scene_node.scene_node.sprite_id = sprite_id
     action.create_scene_node.scene_node.frame_index = frame_index
-    action.create_scene_node.scene_node.position.x = position[0]
-    action.create_scene_node.scene_node.position.y = position[1]
-    action.create_scene_node.scene_node.position.z = position[2]
+    __assign_vec(action.create_scene_node.scene_node.position, position)
     return action
 
 
 def Destroy(node_id):
     action = proto.action_pb2.Action()
     action.destroy_scene_node.scene_node.id = node_id
+    return action
+
+
+def Position(node_id, position):
+    action = proto.action_pb2.Action()
+    action.position_scene_node.scene_node_id = node_id
+    __assign_vec(action.position_scene_node.vec, position)
+    return action
+
+
+def Move(node_id, vec):
+    action = proto.action_pb2.Action()
+    action.move_scene_node.scene_node_id = node_id
+    __assign_vec(action.move_scene_node.vec, vec)
     return action
 
 
