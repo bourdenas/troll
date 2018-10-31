@@ -17,6 +17,11 @@ void ActionManager::Init() {
   executors_.emplace(Action::kDestroySceneNode,
                      std::make_unique<DestroySceneNodeExecutor>());
 
+  executors_.emplace(Action::kPositionSceneNode,
+                     std::make_unique<PositionSceneNodeExecutor>());
+  executors_.emplace(Action::kMoveSceneNode,
+                     std::make_unique<MoveSceneNodeExecutor>());
+
   executors_.emplace(Action::kOnCollision,
                      std::make_unique<OnCollisionExecutor>());
   executors_.emplace(Action::kOnDetaching,

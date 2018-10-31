@@ -83,6 +83,55 @@ void DestroySceneNodeExecutor::Execute(const Action& action) const {
   }
 }
 
+void PositionSceneNodeExecutor::Execute(const Action& action) const {
+  auto&& node_ids =
+      ResolveSceneNodes(action.position_scene_node().scene_node_id());
+
+  for (const auto& id : node_ids) {
+    auto* node = Core::Instance().scene_manager().GetSceneNodeById(id);
+    if (node == nullptr) {
+      LOG(WARNING) << "PositionSceneNodeExecutor: Cannot set position for "
+                      "SceneNode with id='"
+                   << id << "', because it does not exist.";
+      return;
+    }
+
+    Core::Instance().scene_manager().Dirty(*node);
+    *node->mutable_position() = action.position_scene_node().vec();
+  }
+}
+
+void MoveSceneNodeExecutor::Execute(const Action& action) const {
+  auto&& node_ids = ResolveSceneNodes(action.move_scene_node().scene_node_id());
+
+  for (const auto& id : node_ids) {
+    auto* node = Core::Instance().scene_manager().GetSceneNodeById(id);
+    if (node == nullptr) {
+      LOG(WARNING) << "MoveSceneNodeExecutor: Cannot move SceneNode with id='"
+                   << id << "' that does not exist.";
+      return;
+    }
+
+    Core::Instance().scene_manager().Dirty(*node);
+    auto* pos = node->mutable_position();
+    const auto& move = action.move_scene_node().vec();
+    pos->set_x(pos->x() + move.x());
+    pos->set_y(pos->y() + move.y());
+    pos->set_z(pos->z() + move.z());
+  }
+}
+
+Action MoveSceneNodeExecutor::Reverse(const Action& action) const {
+  auto vec = action.move_scene_node().vec();
+  if (vec.has_x()) vec.set_x(-vec.x());
+  if (vec.has_y()) vec.set_y(-vec.y());
+  if (vec.has_z()) vec.set_z(-vec.z());
+
+  Action reverse;
+  *reverse.mutable_move_scene_node()->mutable_vec() = vec;
+  return reverse;
+}
+
 void OnCollisionExecutor::Execute(const Action& action) const {
   CollisionChecker::Instance().RegisterCollision(action.on_collision());
 }

@@ -18,17 +18,20 @@ message Action {
     SceneNodeAction create_scene_node = 5;
     SceneNodeAction destroy_scene_node = 6;
 
-    CollisionAction on_collision = 7;
-    CollisionAction on_detaching = 8;
+    SceneNodeVectorAction position_scene_node = 7;
+    SceneNodeVectorAction move_scene_node = 8;
 
-    AnimationScriptAction play_animation_script = 9;
-    AnimationScriptAction stop_animation_script = 10;
-    AnimationScriptAction pause_animation_script = 11;
+    CollisionAction on_collision = 9;
+    CollisionAction on_detaching = 10;
 
-    DisplayTextAction display_text = 12;
+    AnimationScriptAction play_animation_script = 11;
+    AnimationScriptAction stop_animation_script = 12;
+    AnimationScriptAction pause_animation_script = 13;
 
-    ScriptAction import_module = 13;
-    ScriptAction call = 14;
+    DisplayTextAction display_text = 14;
+
+    ScriptAction import_module = 15;
+    ScriptAction call = 16;
   }
 }
 
@@ -46,6 +49,11 @@ message ChangeSceneAction {
 
 message SceneNodeAction {
   optional SceneNode scene_node = 1;
+}
+
+message SceneNodeVectorAction {
+  optional string scene_node_id = 1;
+  optional Vector vec = 2;
 }
 
 message CollisionAction {
