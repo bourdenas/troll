@@ -4,7 +4,7 @@ script {
     frame_list {
       frame: [0, 2, 3, 2, 3, 2, 3, 0]
       delay: 300
-      repeat: 0
+      repeat: 1
       horizontal_align: HCENTRE
     }
   }

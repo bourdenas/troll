@@ -1,4 +1,53 @@
+import proto.animation_pb2
+import pytroll.events
 import sprites
+
+
+def cutscene(dk, platforms, ladders):
+    script = proto.animation_pb2.AnimationScript()
+    script.animation.add().run_script.script_id = 'dk_climb'
+    script.animation.add().timer.delay = 1000
+    script.animation.add().run_script.script_id = 'dk_landing'
+    script.animation.add().timer.delay = 300
+
+    destroy_platforms = script.animation.add()
+    destroy_platforms.termination = proto.animation_pb2.Animation.ALL
+    goto = destroy_platforms.go_to
+    goto.destination.x, goto.destination.y = 130, 90
+    goto.step = 1
+    goto.delay = 18
+    destroy_platforms.run_script.script_id = 'dk_jump'
+
+    script.animation.add().timer.delay = 300
+    script.animation.add().run_script.script_id = 'dk_taunt'
+    dk.PlayAnimationScript(script)
+
+    def LandingHandler():
+        princess = sprites.Princess()
+        princess.Create((270, 50, -1), frame_index=1)
+        platforms[1].Collapse()
+        for i in range(4, 7):
+            ladders[-(1 + i*2)].Destroy()
+            ladders[-(2 + i*2)].Destroy()
+    pytroll.events.OnEvent(
+        pytroll.events.AnimationDone(dk.id, 'dk_landing'),
+        lambda: LandingHandler())
+
+    def DestroyPlatform(index):
+        platforms[index].Collapse()
+        if index < 6:
+            dk.PlayAnimation(
+                'dk_jump', lambda: DestroyPlatform(index + 1))
+    pytroll.events.OnEvent(
+        pytroll.events.AnimationDone(dk.id, 'dk_jump'),
+        lambda: DestroyPlatform(2))
+
+    script = proto.animation_pb2.AnimationScript()
+    script.animation.add().flash.repeat = 1
+    for i in range(4):
+        script.animation[0].flash.delay = 1000 * (i+1)
+        ladders[-(1 + i*2)].PlayAnimationScript(script)
+        ladders[-(2 + i*2)].PlayAnimationScript(script)
 
 
 def intro():
@@ -24,12 +73,12 @@ def intro():
         (305, 370, -1), (338, 370, -1),
         (305, 410, -1), (338, 410, -1),
     ]
-    for pos in ladder_positions:
-        sprites.Ladder().Create(pos, frame_index=0)
+    ladders = [sprites.Ladder(i).Create(pos, frame_index=0)
+               for i, pos in enumerate(ladder_positions)]
 
     dk = sprites.DonkeyKong('dk')
     dk.Create((300, 382, 0), frame_index=4)
-    dk.PlayAnimationScript(dk.IntroCutscene(platforms))
+    cutscene(dk, platforms, ladders)
 
 
 def level1():
