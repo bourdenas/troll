@@ -11,6 +11,7 @@ class Sprite:
         action = pytroll.actions.Create(
             self.id, self.sprite_id, frame_index, position)
         troll.execute(action.SerializeToString())
+        return self
 
     def Destroy(self):
         action = pytroll.actions.Destroy(self.id)
