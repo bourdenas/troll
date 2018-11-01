@@ -8,6 +8,18 @@
 
 namespace troll {
 
+namespace {
+// Wraps python callbacks with a try/catch block for displaying run-time errors
+// that happen during python execution.
+void PythonCallbackWrapper(const std::function<void()>& python_handler) {
+  try {
+    python_handler();
+  } catch (pybind11::error_already_set& e) {
+    LOG(ERROR) << "Python run-time error:\n" << e.what();
+  }
+}
+}  // namespace
+
 PYBIND11_EMBEDDED_MODULE(troll, m) {
   m.def("execute", [](const std::string& encoded_action) {
     Action action;
@@ -17,7 +29,8 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
 
   m.def("on_event",
         [](const std::string& event_id, const std::function<void()>& handler) {
-          EventDispatcher::Instance().Register(event_id, handler);
+          EventDispatcher::Instance().Register(
+              event_id, [handler]() { PythonCallbackWrapper(handler); });
         });
 }
 
