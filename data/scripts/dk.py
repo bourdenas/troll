@@ -3,7 +3,7 @@ import sprites
 
 def intro():
     platform_sizes = [3, 13, 13, 13, 13, 13, 14]
-    platforms = [sprites.Platform('platform_' + str(i), size)
+    platforms = [sprites.Platform(i, size)
                  for i, size in enumerate(platform_sizes)]
     platform_positions = [
         (262, 97, -3), (80, 155, -3), (112, 210, -3), (80, 275, -3),
@@ -29,7 +29,7 @@ def intro():
 
     dk = sprites.DonkeyKong('dk')
     dk.Create((300, 382, 0), frame_index=4)
-    dk.PlayAnimationScript(dk.IntroCutscene())
+    dk.PlayAnimationScript(dk.IntroCutscene(platforms))
 
 
 def level1():
