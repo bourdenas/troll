@@ -10,6 +10,7 @@
 #include "scripting/script-manager.h"
 #include "sdl/input-backend.h"
 #include "sdl/renderer.h"
+#include "sound/audio-mixer.h"
 #include "sound/sound-loader.h"
 
 namespace troll {
@@ -21,6 +22,7 @@ void Core::Init() {
   renderer_->Init(640, 480);
 
   SoundLoader::Instance().Init();
+  AudioMixer::Instance().Init();
 
   ResourceManager::Instance().LoadResources(*renderer_);
   LoadScene("main.scene");
