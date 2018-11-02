@@ -12,7 +12,7 @@ class AudioMixer {
     return singleton;
   }
 
-  void PlayMusic(const std::string& track_id);
+  void PlayMusic(const std::string& track_id, int repeat);
   void StopMusic();
   void PauseMusic();
   void ResumeMusic();

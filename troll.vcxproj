@@ -170,6 +170,7 @@
     <ClCompile Include="sdl\input-backend.cc" />
     <ClCompile Include="sdl\renderer.cc" />
     <ClCompile Include="sdl\texture.cc" />
+    <ClCompile Include="sound\audio-mixer.cc" />
     <ClCompile Include="sound\sound-loader.cc" />
   </ItemGroup>
   <ItemGroup>
