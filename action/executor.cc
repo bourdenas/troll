@@ -215,9 +215,9 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
 void PlayAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.play_audio();
   if (audio.has_track_id()) {
-    AudioMixer::Instance().PlayMusic(audio.track_id(), audio.repeat());
+    AudioMixer::Instance().PlayMusic(audio.track_id(), audio.repeat(), {});
   } else {
-    AudioMixer::Instance().PlaySound(audio.sfx_id(), audio.repeat());
+    AudioMixer::Instance().PlaySound(audio.sfx_id(), audio.repeat(), {});
   }
 }
 

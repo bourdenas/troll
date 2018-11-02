@@ -7,7 +7,11 @@
 
 namespace troll {
 
-void OnMusicFinished() {}
+void OnMusicFinished() {
+  if (AudioMixer::Instance().on_music_done_) {
+    AudioMixer::Instance().on_music_done_();
+  }
+}
 
 void OnChannelFinished(int channel) {
   AudioMixer::Instance().ChannelFinished(channel);
@@ -18,10 +22,12 @@ void AudioMixer::Init() {
   Mix_ChannelFinished(&OnChannelFinished);
 }
 
-void AudioMixer::PlayMusic(const std::string& track_id, int repeat = 1) {
+void AudioMixer::PlayMusic(const std::string& track_id, int repeat,
+                           const std::function<void()>& on_done) {
   const auto& music = ResourceManager::Instance().GetMusic(track_id);
   // For SDL-mixer repeat 0 is play 0 times and -1 is endless loop.
   Mix_PlayMusic(music.music(), repeat != 0 ? repeat : -1);
+  on_music_done_ = on_done;
 }
 
 void AudioMixer::StopMusic() { Mix_HaltMusic(); }
@@ -36,14 +42,15 @@ void AudioMixer::ResumeMusic() {
 
 bool AudioMixer::IsMusicPlaying() { return Mix_PlayingMusic() == 1; }
 
-void AudioMixer::PlaySound(const std::string& sfx_id, int repeat = 1) {
+void AudioMixer::PlaySound(const std::string& sfx_id, int repeat,
+                           const std::function<void()>& on_done) {
   const auto& sfx = ResourceManager::Instance().GetSound(sfx_id);
 
   int channel = Mix_PlayChannel(-1, sfx.sound(), repeat - 1);
   if (channel == -1) {
     LOG(ERROR) << Mix_GetError();
   }
-  channel_mapping_.emplace(channel, sfx_id);
+  channel_mapping_.emplace(channel, SfxData{sfx_id, on_done});
 }
 
 void AudioMixer::StopSound(const std::string& sfx_id) {
@@ -71,7 +78,7 @@ int AudioMixer::LookupChannel(const std::string& sfx_id) const {
   // NB: This is serial lookup based on value of a map. This is not expected to
   // be a frequent operation plus the size of map should be fairly small.
   for (const auto& kv : channel_mapping_) {
-    if (kv.second == sfx_id) {
+    if (kv.second.sfx_id == sfx_id) {
       return kv.first;
     }
   }
@@ -81,6 +88,9 @@ int AudioMixer::LookupChannel(const std::string& sfx_id) const {
 void AudioMixer::ChannelFinished(int channel) {
   const auto it = channel_mapping_.find(channel);
   if (it != channel_mapping_.end()) {
+    if (it->second.on_done) {
+      it->second.on_done();
+    }
     channel_mapping_.erase(it);
   }
 }
