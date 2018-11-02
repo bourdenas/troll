@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="core">
@@ -21,6 +21,9 @@
     </Filter>
     <Filter Include="scripting">
       <UniqueIdentifier>{5fcff62d-d53d-46b3-8522-8cb01662f0bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="sound">
+      <UniqueIdentifier>{e58ec4a8-ee5f-4f18-ace9-c782fc7c7f00}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +113,12 @@
     </ClInclude>
     <ClInclude Include="core\execution-context.h">
       <Filter>core</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\sound.h">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\sound-manager.h">
+      <Filter>sound</Filter>
     </ClInclude>
     <ClInclude Include="proto\audio.pb.h">
       <Filter>proto</Filter>
@@ -202,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="core\execution-context.cc">
       <Filter>core</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\sound-manager.cc">
+      <Filter>sound</Filter>
     </ClCompile>
     <ClCompile Include="proto\audio.pb.cc">
       <Filter>proto</Filter>

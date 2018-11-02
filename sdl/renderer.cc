@@ -16,7 +16,7 @@ constexpr char* kResourcePath = "../data/resources/";
 }  // namespace
 
 void Renderer::Init(int width, int height) {
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
     LOG(ERROR) << "SDL_Init error: " << SDL_GetError();
     return;
   }
@@ -44,6 +44,7 @@ void Renderer::Init(int width, int height) {
 void Renderer::CleanUp() {
   SDL_DestroyRenderer(sdl_renderer_);
   SDL_DestroyWindow(window_);
+  IMG_Quit();
   SDL_Quit();
 }
 
