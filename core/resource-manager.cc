@@ -17,6 +17,7 @@
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
 #include "sdl/renderer.h"
+#include "sound/sound-manager.h"
 
 namespace troll {
 
@@ -56,6 +57,7 @@ void ResourceManager::LoadResources(const Renderer& renderer) {
   LoadSprites(renderer);
   LoadTextures(renderer);
   LoadFonts(renderer);
+  LoadSounds();
 }
 
 void ResourceManager::CleanUp() {
@@ -173,6 +175,21 @@ constexpr char kDefaultFont[] = "fonts/times.ttf";
 
 void ResourceManager::LoadFonts(const Renderer& renderer) {
   fonts_[kDefaultFont] = renderer.LoadFont(kDefaultFont, 16);
+}
+
+void ResourceManager::LoadSounds() {
+  const auto sounds = LoadTextProtoFromPath<Audio>("../data/scenes/", ".sfx");
+
+  for (const Audio& sound : sounds) {
+    for (const auto& track : sound.track()) {
+      music_tracks_.emplace(
+          track.id(), SoundManager::Instance().LoadMusic(track.resource()));
+    }
+    for (const auto& sfx : sound.sfx()) {
+      sfx_.emplace(sfx.id(),
+                   SoundManager::Instance().LoadSound(sfx.resource()));
+    }
+  }
 }
 
 }  // namespace troll

@@ -14,6 +14,7 @@
 #include "proto/sprite.pb.h"
 #include "sdl/renderer.h"
 #include "sdl/texture.h"
+#include "sound/sound.h"
 
 namespace troll {
 
@@ -49,14 +50,21 @@ class ResourceManager {
   void LoadSprites(const Renderer& renderer);
   void LoadTextures(const Renderer& renderer);
   void LoadFonts(const Renderer& renderer);
+  void LoadSounds();
 
   KeyBindings key_bindings_;
+
   std::unordered_map<std::string, Sprite> sprites_;
   std::unordered_map<std::string, std::vector<boost::dynamic_bitset<>>>
       sprite_collision_masks_;
+
   std::unordered_map<std::string, AnimationScript> scripts_;
+
   std::unordered_map<std::string, std::unique_ptr<Texture>> textures_;
   std::unordered_map<std::string, std::unique_ptr<Font>> fonts_;
+
+  std::unordered_map<std::string, std::unique_ptr<Music>> music_tracks_;
+  std::unordered_map<std::string, std::unique_ptr<Sound>> sfx_;
 
   friend class TestingResourceManager;
 };
