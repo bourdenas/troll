@@ -117,11 +117,14 @@
     <ClInclude Include="sound\sound.h">
       <Filter>sound</Filter>
     </ClInclude>
-    <ClInclude Include="sound\sound-manager.h">
-      <Filter>sound</Filter>
-    </ClInclude>
     <ClInclude Include="proto\audio.pb.h">
       <Filter>proto</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\audio-mixer.h">
+      <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\sound-loader.h">
+      <Filter>sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -212,11 +215,11 @@
     <ClCompile Include="core\execution-context.cc">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="sound\sound-manager.cc">
-      <Filter>sound</Filter>
-    </ClCompile>
     <ClCompile Include="proto\audio.pb.cc">
       <Filter>proto</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\sound-loader.cc">
+      <Filter>sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

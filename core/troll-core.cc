@@ -10,7 +10,7 @@
 #include "scripting/script-manager.h"
 #include "sdl/input-backend.h"
 #include "sdl/renderer.h"
-#include "sound/sound-manager.h"
+#include "sound/sound-loader.h"
 
 namespace troll {
 
@@ -20,7 +20,7 @@ void Core::Init() {
   renderer_ = std::make_unique<Renderer>();
   renderer_->Init(640, 480);
 
-  SoundManager::Instance().Init();
+  SoundLoader::Instance().Init();
 
   ResourceManager::Instance().LoadResources(*renderer_);
   LoadScene("main.scene");
@@ -32,7 +32,7 @@ void Core::Init() {
 
 void Core::CleanUp() {
   ResourceManager::Instance().CleanUp();
-  SoundManager::Instance().CleanUp();
+  SoundLoader::Instance().CleanUp();
 
   renderer_->CleanUp();
 }

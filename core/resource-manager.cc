@@ -17,7 +17,7 @@
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
 #include "sdl/renderer.h"
-#include "sound/sound-manager.h"
+#include "sound/sound-loader.h"
 
 namespace troll {
 
@@ -183,11 +183,10 @@ void ResourceManager::LoadSounds() {
   for (const Audio& sound : sounds) {
     for (const auto& track : sound.track()) {
       music_tracks_.emplace(
-          track.id(), SoundManager::Instance().LoadMusic(track.resource()));
+          track.id(), SoundLoader::Instance().LoadMusic(track.resource()));
     }
     for (const auto& sfx : sound.sfx()) {
-      sfx_.emplace(sfx.id(),
-                   SoundManager::Instance().LoadSound(sfx.resource()));
+      sfx_.emplace(sfx.id(), SoundLoader::Instance().LoadSound(sfx.resource()));
     }
   }
 }
