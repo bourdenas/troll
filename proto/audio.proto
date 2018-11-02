@@ -1,0 +1,24 @@
+syntax = "proto2";
+
+package troll;
+
+message Audio {
+  repeated MusicTrack track = 1;
+  repeated SoundEffect sfx = 2;
+}
+
+message MusicTrack {
+  // Music unique id.
+  optional string id = 1;
+
+  // Resource file name of the music.
+  optional string resource = 2;
+}
+
+message SoundEffect {
+  // Sound effect unique id.
+  optional string id = 1;
+
+  // Resource file name of the sound effect.
+  optional string resource = 2;
+}

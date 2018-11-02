@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -124,6 +124,7 @@
     <ClInclude Include="input\input-manager.h" />
     <ClInclude Include="proto\action.pb.h" />
     <ClInclude Include="proto\animation.pb.h" />
+    <ClInclude Include="proto\audio.pb.h" />
     <ClInclude Include="proto\event.pb.h" />
     <ClInclude Include="proto\key-binding.pb.h" />
     <ClInclude Include="proto\primitives.pb.h" />
@@ -155,6 +156,7 @@
     <ClCompile Include="input\input-manager.cc" />
     <ClCompile Include="proto\action.pb.cc" />
     <ClCompile Include="proto\animation.pb.cc" />
+    <ClCompile Include="proto\audio.pb.cc" />
     <ClCompile Include="proto\event.pb.cc" />
     <ClCompile Include="proto\key-binding.pb.cc" />
     <ClCompile Include="proto\primitives.pb.cc" />
@@ -169,6 +171,7 @@
   <ItemGroup>
     <None Include="proto\action.proto" />
     <None Include="proto\animation.proto" />
+    <None Include="proto\audio.proto" />
     <None Include="proto\event.proto" />
     <None Include="proto\key-binding.proto" />
     <None Include="proto\primitives.proto" />

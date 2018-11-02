@@ -1,0 +1,25 @@
+track {
+  id: 'intro'
+  resource: 'intro.wav'
+}
+track {
+  id: 'height'
+  resource: 'height.wav'
+}
+track {
+  id: 'main_loop'
+  resource: 'loop.wav'
+}
+
+sfx {
+  id: 'walk'
+  resource: 'walking.wav'
+}
+sfx {
+  id: 'jump'
+  resource: 'jump.wav'
+}
+sfx {
+  id: 'finish'
+  resource: 'complete.wav'
+}
