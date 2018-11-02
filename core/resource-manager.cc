@@ -117,6 +117,20 @@ const Font& ResourceManager::GetFont(const std::string& font_id) const {
   return *it->second;
 }
 
+const Music& ResourceManager::GetMusic(const std::string& track_id) const {
+  const auto it = music_tracks_.find(track_id);
+  LOG_IF(FATAL, it == music_tracks_.end()) << "Music track with id='"
+                                           << track_id << "' was not found.";
+  return *it->second;
+}
+
+const Sound& ResourceManager::GetSound(const std::string& sfx_id) const {
+  const auto it = sfx_.find(sfx_id);
+  LOG_IF(FATAL, it == sfx_.end()) << "Sound effect with id='" << sfx_id
+                                  << "' was not found.";
+  return *it->second;
+}
+
 void ResourceManager::LoadAnimations() {
   const auto animations =
       LoadTextProtoFromPath<SpriteAnimation>("../data/sprites/", ".animation");
