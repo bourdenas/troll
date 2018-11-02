@@ -77,6 +77,26 @@ class PauseAnimationScriptExecutor : public Executor {
   void Execute(const Action& action) const override;
 };
 
+class PlayAudioExecutor : public Executor {
+  void Execute(const Action& action) const override;
+  Action Reverse(const Action& action) const override;
+};
+
+class StopAudioExecutor : public Executor {
+  void Execute(const Action& action) const override;
+  Action Reverse(const Action& action) const override;
+};
+
+class PauseAudioExecutor : public Executor {
+  void Execute(const Action& action) const override;
+  Action Reverse(const Action& action) const override;
+};
+
+class ResumeAudioExecutor : public Executor {
+  void Execute(const Action& action) const override;
+  Action Reverse(const Action& action) const override;
+};
+
 class DisplayTextExecutor : public Executor {
   void Execute(const Action& action) const override;
 };

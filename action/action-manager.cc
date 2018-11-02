@@ -34,6 +34,13 @@ void ActionManager::Init() {
   executors_.emplace(Action::kPauseAnimationScript,
                      std::make_unique<PauseAnimationScriptExecutor>());
 
+  executors_.emplace(Action::kPlayAudio, std::make_unique<PlayAudioExecutor>());
+  executors_.emplace(Action::kStopAudio, std::make_unique<StopAudioExecutor>());
+  executors_.emplace(Action::kPauseAudio,
+                     std::make_unique<PauseAudioExecutor>());
+  executors_.emplace(Action::kResumeAudio,
+                     std::make_unique<ResumeAudioExecutor>());
+
   executors_.emplace(Action::kDisplayText,
                      std::make_unique<DisplayTextExecutor>());
 

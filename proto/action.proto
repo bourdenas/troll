@@ -28,10 +28,15 @@ message Action {
     AnimationScriptAction stop_animation_script = 12;
     AnimationScriptAction pause_animation_script = 13;
 
-    DisplayTextAction display_text = 14;
+    SfxAction play_audio = 14;
+    SfxAction stop_audio = 15;
+    SfxAction pause_audio = 16;
+    SfxAction resume_audio = 17;
 
-    ScriptAction import_module = 15;
-    ScriptAction call = 16;
+    DisplayTextAction display_text = 18;
+
+    ScriptAction import_module = 19;
+    ScriptAction call = 20;
   }
 }
 
@@ -70,6 +75,12 @@ message AnimationScriptAction {
   optional string script_id = 2;
   
   optional string scene_node_id = 3;
+}
+
+message SfxAction {
+  optional string track_id = 1;
+  optional string sfx_id = 2;
+  optional int32 repeat = 3 [default = 1];
 }
 
 message DisplayTextAction {

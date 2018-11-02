@@ -9,6 +9,7 @@
 #include "core/scene-node-query.h"
 #include "core/troll-core.h"
 #include "scripting/script-manager.h"
+#include "sound/audio-mixer.h"
 
 namespace troll {
 
@@ -209,6 +210,66 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
     AnimatorManager::Instance().Pause(
         action.pause_animation_script().script_id(), id);
   }
+}
+
+void PlayAudioExecutor::Execute(const Action& action) const {
+  const auto& audio = action.play_audio();
+  if (audio.has_track_id()) {
+    AudioMixer::Instance().PlayMusic(audio.track_id(), audio.repeat());
+  } else {
+    AudioMixer::Instance().PlaySound(audio.sfx_id(), audio.repeat());
+  }
+}
+
+Action PlayAudioExecutor::Reverse(const Action& action) const {
+  Action reverse;
+  *reverse.mutable_stop_audio() = action.play_audio();
+  return reverse;
+}
+
+void StopAudioExecutor::Execute(const Action& action) const {
+  const auto& audio = action.stop_audio();
+  if (audio.has_track_id()) {
+    AudioMixer::Instance().StopMusic();
+  } else if (audio.has_sfx_id()) {
+    AudioMixer::Instance().StopSound(audio.sfx_id());
+  }
+}
+
+Action StopAudioExecutor::Reverse(const Action& action) const {
+  Action reverse;
+  *reverse.mutable_play_audio() = action.stop_audio();
+  return reverse;
+}
+
+void PauseAudioExecutor::Execute(const Action& action) const {
+  const auto& audio = action.pause_audio();
+  if (audio.has_track_id()) {
+    AudioMixer::Instance().PauseMusic();
+  } else if (audio.has_sfx_id()) {
+    AudioMixer::Instance().PauseSound(audio.sfx_id());
+  }
+}
+
+Action PauseAudioExecutor::Reverse(const Action& action) const {
+  Action reverse;
+  *reverse.mutable_resume_audio() = action.pause_audio();
+  return reverse;
+}
+
+void ResumeAudioExecutor::Execute(const Action& action) const {
+  const auto& audio = action.resume_audio();
+  if (audio.has_track_id()) {
+    AudioMixer::Instance().ResumeMusic();
+  } else if (audio.has_sfx_id()) {
+    AudioMixer::Instance().ResumeSound(audio.sfx_id());
+  }
+}
+
+Action ResumeAudioExecutor::Reverse(const Action& action) const {
+  Action reverse;
+  *reverse.mutable_pause_audio() = action.resume_audio();
+  return reverse;
 }
 
 void DisplayTextExecutor::Execute(const Action& action) const {
