@@ -7,7 +7,6 @@
 
 #include "core/scene-manager.h"
 #include "proto/sprite.pb.h"
-#include "sdl/renderer.h"
 
 namespace troll {
 
@@ -46,7 +45,6 @@ class Core {
   void FrameStarted(int time_since_last_frame);
   void FrameEnded(int time_since_last_frame);
 
-  std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<SceneManager> scene_manager_;
 
   struct FpsCounter {

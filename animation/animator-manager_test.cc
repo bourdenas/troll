@@ -16,7 +16,7 @@ using testing::Pointee;
 class AnimatorManagerTest : public testing::Test {
  protected:
   void SetUp() override {
-    scene_manager_ = new SceneManager(Renderer());
+    scene_manager_ = new SceneManager();
     Core::Instance().SetupTestSceneManager(scene_manager_);
 
     TestingResourceManager::SetTestSprite(ParseProto<Sprite>(R"(
@@ -371,7 +371,7 @@ TEST_F(AnimatorManagerTest, AnimationStopsWhenSceneNodeIsRemoved) {
                 })"))));
 
   // Create a new scene manager as a hacky way to delete the 'test_node'.
-  scene_manager_ = new SceneManager(Renderer());
+  scene_manager_ = new SceneManager();
   Core::Instance().SetupTestSceneManager(scene_manager_);
 
   AnimatorManager::Instance().Progress(5);

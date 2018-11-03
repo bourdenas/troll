@@ -15,28 +15,18 @@ namespace troll {
 
 class Renderer {
  public:
-  // Creates the rendering engine and window.
+  static Renderer& Instance() {
+    static Renderer singleton;
+    return singleton;
+  }
+
   void Init(int width, int height);
   void CleanUp();
-
-  // Load an image file into a texture.
-  std::unique_ptr<Texture> LoadTexture(const std::string& filename,
-                                       const RGBa& colour_key) const;
-  std::unique_ptr<Font> LoadFont(const std::string& filename,
-                                 int font_size) const;
 
   // Returns collision masks for each film in the sprite. Masks are auto-
   // generated from the sprite's image and colour key
   std::vector<boost::dynamic_bitset<>> GenerateCollisionMasks(
       const Sprite& sprite) const;
-
-  // Create a texture of the input size and colour.
-  std::unique_ptr<Texture> CreateTexture(const RGBa& colour, int width,
-                                         int height) const;
-  // Create a text surface area.
-  std::unique_ptr<Texture> CreateText(const std::string& text, const Font& font,
-                                      const RGBa& colour,
-                                      const RGBa& background_colour) const;
 
   // Blit a texture area to the screen.
   void BlitTexture(const Texture& src, const Box& src_box,
@@ -53,8 +43,13 @@ class Renderer {
   void ClearScreen() const;
 
  private:
+  Renderer() = default;
+  ~Renderer() = default;
+
   SDL_Window* window_ = nullptr;
   SDL_Renderer* sdl_renderer_ = nullptr;
+
+  friend class Texture;
 };
 
 }  // namespace troll

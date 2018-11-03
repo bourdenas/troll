@@ -3,22 +3,26 @@
 #include <glog/logging.h>
 #include <range/v3/action/push_back.hpp>
 #include <range/v3/action/sort.hpp>
+#include <range/v3/view/filter.hpp>
+#include <range/v3/view/map.hpp>
+#include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
 #include "core/collision-checker.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"
+#include "sdl/renderer.h"
 
 namespace troll {
 
 void SceneManager::SetupScene(const Scene& scene) {
   scene_ = scene;
-  renderer_.ClearScreen();
-  renderer_.FillColour(scene_.bitmap_config().background_colour(),
-                       scene_.viewport());
+  Renderer::Instance().ClearScreen();
+  Renderer::Instance().FillColour(scene_.bitmap_config().background_colour(),
+                                  scene_.viewport());
 
   if (scene_.bitmap_config().has_bitmap()) {
-    renderer_.BlitTexture(
+    Renderer::Instance().BlitTexture(
         ResourceManager::Instance().GetTexture(scene_.bitmap_config().bitmap()),
         Box(), Box());
   }
@@ -148,7 +152,8 @@ void SceneManager::Render() {
 
   // Render behind bounding boxes.
   for (const auto& box : dirty_boxes_) {
-    renderer_.FillColour(scene_.bitmap_config().background_colour(), box);
+    Renderer::Instance().FillColour(scene_.bitmap_config().background_colour(),
+                                    box);
   }
   dirty_boxes_.clear();
 
@@ -168,7 +173,7 @@ void SceneManager::Render() {
     BlitSceneNode(*node);
   }
 
-  renderer_.Flip();
+  Renderer::Instance().Flip();
 
   CleanUpDeletedSceneNodes();
 }
@@ -190,7 +195,7 @@ void SceneManager::BlitSceneNode(const SceneNode& node) const {
   destination.set_left(node.position().x());
   destination.set_top(node.position().y());
 
-  renderer_.BlitTexture(
+  Renderer::Instance().BlitTexture(
       ResourceManager::Instance().GetTexture(sprite.resource()), bounding_box,
       destination);
 }

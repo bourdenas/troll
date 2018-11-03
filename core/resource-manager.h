@@ -12,7 +12,6 @@
 #include "proto/key-binding.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
-#include "sdl/renderer.h"
 #include "sdl/texture.h"
 #include "sound/sound.h"
 
@@ -25,7 +24,7 @@ class ResourceManager {
     return singleton;
   }
 
-  void LoadResources(const Renderer& renderer);
+  void LoadResources();
   void CleanUp();
 
   Scene LoadScene(const std::string& scene);
@@ -53,9 +52,9 @@ class ResourceManager {
 
   void LoadAnimations();
   void LoadKeyBindings();
-  void LoadSprites(const Renderer& renderer);
-  void LoadTextures(const Renderer& renderer);
-  void LoadFonts(const Renderer& renderer);
+  void LoadSprites();
+  void LoadTextures();
+  void LoadFonts();
   void LoadSounds();
 
   KeyBindings key_bindings_;

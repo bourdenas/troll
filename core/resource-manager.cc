@@ -51,12 +51,12 @@ std::vector<Message> LoadTextProtoFromPath(const std::string& path,
 }
 }  // namespace
 
-void ResourceManager::LoadResources(const Renderer& renderer) {
+void ResourceManager::LoadResources() {
   LoadAnimations();
   LoadKeyBindings();
-  LoadSprites(renderer);
-  LoadTextures(renderer);
-  LoadFonts(renderer);
+  LoadSprites();
+  LoadTextures();
+  LoadFonts();
   LoadSounds();
 }
 
@@ -151,7 +151,7 @@ void ResourceManager::LoadKeyBindings() {
   }
 }
 
-void ResourceManager::LoadSprites(const Renderer& renderer) {
+void ResourceManager::LoadSprites() {
   const auto sprites =
       LoadTextProtoFromPath<Sprite>("../data/sprites/", ".sprite");
 
@@ -160,13 +160,13 @@ void ResourceManager::LoadSprites(const Renderer& renderer) {
              });
   sprite_collision_masks_ =
       sprites_ | ranges::view::values |
-      ranges::view::transform([&renderer](const Sprite& sprite) {
-        return std::make_pair(sprite.id(),
-                              renderer.GenerateCollisionMasks(sprite));
+      ranges::view::transform([](const Sprite& sprite) {
+        return std::make_pair(
+            sprite.id(), Renderer::Instance().GenerateCollisionMasks(sprite));
       });
 }
 
-void ResourceManager::LoadTextures(const Renderer& renderer) {
+void ResourceManager::LoadTextures() {
   std::vector<std::pair<std::string, std::string>> resources =
       sprites_ | ranges::view::values |
       ranges::view::transform([](const Sprite& sprite) {
@@ -175,20 +175,20 @@ void ResourceManager::LoadTextures(const Renderer& renderer) {
       });
   std::sort(resources.begin(), resources.end());
 
-  textures_ =
-      resources | ranges::view::unique |
-      ranges::view::transform([&renderer](const auto& resource) {
-        RGBa colour_key;
-        colour_key.ParseFromString(resource.second);
-        return std::make_pair(resource.first,
-                              renderer.LoadTexture(resource.first, colour_key));
-      });
+  textures_ = resources | ranges::view::unique |
+              ranges::view::transform([](const auto& resource) {
+                RGBa colour_key;
+                colour_key.ParseFromString(resource.second);
+                return std::make_pair(
+                    resource.first,
+                    Texture::CreateTextureFromFile(resource.first, colour_key));
+              });
 }
 
 constexpr char kDefaultFont[] = "fonts/times.ttf";
 
-void ResourceManager::LoadFonts(const Renderer& renderer) {
-  fonts_[kDefaultFont] = renderer.LoadFont(kDefaultFont, 16);
+void ResourceManager::LoadFonts() {
+  fonts_[kDefaultFont] = Font::CreateFontFromFile(kDefaultFont, 16);
 }
 
 void ResourceManager::LoadSounds() {

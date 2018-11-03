@@ -48,34 +48,6 @@ void Renderer::CleanUp() {
   SDL_Quit();
 }
 
-std::unique_ptr<Texture> Renderer::LoadTexture(const std::string& filename,
-                                               const RGBa& colour_key) const {
-  SDL_Surface* surface = IMG_Load((kResourcePath + filename).c_str());
-  if (surface == nullptr) {
-    LOG(ERROR) << SDL_GetError();
-  }
-  SDL_SetColorKey(surface, SDL_TRUE,
-                  SDL_MapRGB(surface->format, colour_key.red(),
-                             colour_key.green(), colour_key.blue()));
-
-  SDL_Texture* texture = SDL_CreateTextureFromSurface(sdl_renderer_, surface);
-  if (texture == nullptr) {
-    LOG(ERROR) << SDL_GetError();
-  }
-  SDL_FreeSurface(surface);
-
-  return std::make_unique<Texture>(texture);
-}
-
-std::unique_ptr<Font> Renderer::LoadFont(const std::string& filename,
-                                         int font_size) const {
-  TTF_Font* font = TTF_OpenFont((kResourcePath + filename).c_str(), font_size);
-  if (font == nullptr) {
-    LOG(ERROR) << SDL_GetError();
-  }
-  return std::make_unique<Font>(font);
-}
-
 std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
     const Sprite& sprite) const {
   SDL_Surface* sprite_surface =
@@ -124,32 +96,6 @@ std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
 
   SDL_FreeSurface(surface);
   return collision_masks;
-}
-
-std::unique_ptr<Texture> Renderer::CreateTexture(const RGBa& colour, int width,
-                                                 int height) const {
-  return nullptr;
-}
-
-std::unique_ptr<Texture> Renderer::CreateText(
-    const std::string& text, const Font& font, const RGBa& colour,
-    const RGBa& background_colour) const {
-  SDL_Surface* surface = TTF_RenderText_Blended(
-      font.font(), text.c_str(),
-      {static_cast<Uint8>(colour.red()), static_cast<Uint8>(colour.green()),
-       static_cast<Uint8>(colour.blue()), static_cast<Uint8>(colour.alpha())});
-  if (surface == nullptr) {
-    LOG(ERROR) << SDL_GetError();
-    return {};
-  }
-
-  SDL_Texture* texture = SDL_CreateTextureFromSurface(sdl_renderer_, surface);
-  if (texture == nullptr) {
-    LOG(ERROR) << SDL_GetError();
-  }
-  SDL_FreeSurface(surface);
-
-  return std::make_unique<Texture>(texture);
 }
 
 void Renderer::BlitTexture(const Texture& src, const Box& src_box,

@@ -18,13 +18,11 @@ namespace troll {
 void Core::Init() {
   ActionManager::Instance().Init();
 
-  renderer_ = std::make_unique<Renderer>();
-  renderer_->Init(640, 480);
-
+  Renderer::Instance().Init(640, 480);
   SoundLoader::Instance().Init();
   AudioMixer::Instance().Init();
 
-  ResourceManager::Instance().LoadResources(*renderer_);
+  ResourceManager::Instance().LoadResources();
   LoadScene("main.scene");
 
   InputManager::Instance().Init();
@@ -35,8 +33,7 @@ void Core::Init() {
 void Core::CleanUp() {
   ResourceManager::Instance().CleanUp();
   SoundLoader::Instance().CleanUp();
-
-  renderer_->CleanUp();
+  Renderer::Instance().CleanUp();
 }
 
 void Core::Run() {
@@ -57,7 +54,7 @@ void Core::Run() {
 void Core::Halt() { halt_ = true; }
 
 void Core::LoadScene(const std::string& scene_id) {
-  scene_manager_ = std::make_unique<SceneManager>(*renderer_);
+  scene_manager_ = std::make_unique<SceneManager>();
   scene_manager_->SetupScene(ResourceManager::Instance().LoadScene(scene_id));
 }
 

@@ -18,7 +18,7 @@ using testing::Pointee;
 class CollisionCheckerTest : public testing::Test {
  protected:
   void SetUp() override {
-    scene_manager_ = new SceneManager(Renderer());
+    scene_manager_ = new SceneManager();
     Core::Instance().SetupTestSceneManager(scene_manager_);
 
     TestingResourceManager::SetTestSprite(ParseProto<Sprite>(R"(

@@ -7,21 +7,16 @@
 #include <unordered_set>
 #include <vector>
 
-#include <range/v3/view/filter.hpp>
 #include <range/v3/view/map.hpp>
-#include <range/v3/view/transform.hpp>
 
 #include "core/geometry.h"
 #include "proto/primitives.pb.h"
 #include "proto/scene.pb.h"
-#include "sdl/renderer.h"
 
 namespace troll {
 
 class SceneManager {
  public:
-  SceneManager(const Renderer& renderer) : renderer_(renderer) {}
-
   void SetupScene(const Scene& scene);
 
   void AddSceneNode(const SceneNode& node);
@@ -75,8 +70,6 @@ class SceneManager {
   // Returns true if |node| matches all fields present in the |pattern|.
   static bool NodePatternMatching(const SceneNode& pattern,
                                   const SceneNode& node);
-
-  const Renderer& renderer_;
 
   Scene scene_;
   Box world_bounds_;

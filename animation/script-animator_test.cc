@@ -14,7 +14,7 @@ namespace troll {
 class AnimatorScriptTest : public testing::Test {
  protected:
   void SetUp() override {
-    scene_manager_ = new SceneManager(Renderer());
+    scene_manager_ = new SceneManager();
     Core::Instance().SetupTestSceneManager(scene_manager_);
 
     // Setup dummy sprite for 'test_node' with 5 films that are need for the
@@ -355,7 +355,7 @@ TEST_F(AnimatorScriptTest, RunScriptAnimationAndNodeIsDeleted) {
   EXPECT_FALSE(script_animator.is_finished());
 
   // Create a new scene manager as a hacky way to delete the 'test_node'.
-  scene_manager_ = new SceneManager(Renderer());
+  scene_manager_ = new SceneManager();
   Core::Instance().SetupTestSceneManager(scene_manager_);
 
   EXPECT_EQ(scene_manager_->GetSceneNodeById("test_node"), nullptr);

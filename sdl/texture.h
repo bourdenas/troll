@@ -11,10 +11,38 @@
 
 namespace troll {
 
+class Font {
+ public:
+  // Create a font from a file.
+  static std::unique_ptr<Font> CreateFontFromFile(const std::string& filename,
+                                                  int font_size);
+
+  ~Font() { TTF_CloseFont(font_); }
+
+  TTF_Font* font() const { return font_; }
+
+ private:
+  Font(TTF_Font* font) : font_(font) {}
+  Font(const Font&) = delete;
+
+  TTF_Font* font_;
+};
+
 class Texture {
  public:
-  Texture(SDL_Texture* texture) : texture_(texture) {}
-  Texture(const Texture&) = delete;
+  // Create a texture from an image file.
+  static std::unique_ptr<Texture> CreateTextureFromFile(
+      const std::string& filename, const RGBa& colour_key);
+
+  // Create a texture with a text from a font asset.
+  static std::unique_ptr<Texture> CreateTextureText(
+      const std::string& text, const Font& font, const RGBa& colour,
+      const RGBa& background_colour);
+
+  // Create a texture of specified colour and dimensions.
+  static std::unique_ptr<Texture> CreateTexture(const RGBa& colour, int width,
+                                                int height);
+
   ~Texture() { SDL_DestroyTexture(texture_); }
 
   SDL_Texture* texture() const { return texture_; }
@@ -22,19 +50,10 @@ class Texture {
   Box GetBoundingBox() const;
 
  private:
+  Texture(SDL_Texture* texture) : texture_(texture) {}
+  Texture(const Texture&) = delete;
+
   SDL_Texture* texture_;
-};
-
-class Font {
- public:
-  Font(TTF_Font* font) : font_(font) {}
-  Font(const Font&) = delete;
-  ~Font() { TTF_CloseFont(font_); }
-
-  TTF_Font* font() const { return font_; }
-
- private:
-  TTF_Font* font_;
 };
 
 }  // namespace troll
