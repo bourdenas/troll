@@ -37,7 +37,7 @@ def Move(node_id, vec):
 def PlayAnimationScript(node_id, script):
     action = proto.action_pb2.Action()
     action.play_animation_script.scene_node_id = node_id
-    action.play_animation_script.script_id = script
+    action.play_animation_script.script.CopyFrom(script)
     return action
 
 

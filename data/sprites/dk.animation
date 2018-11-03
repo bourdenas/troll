@@ -1,11 +1,11 @@
 script {
   id: 'dk_taunt'
   animation {
-    frame_range {
-      start_frame: 2
-      end_frame: 4
+    frame_list {
+      frame: [0, 2, 3, 2, 3, 2, 3, 0]
       delay: 300
-      vertical_align: BOTTOM
+      repeat: 1
+      horizontal_align: HCENTRE
     }
   }
 }
@@ -28,77 +28,10 @@ script {
       delay: 20
     }
   }
-  animation {
-    timer {
-      delay: 1000
-    }
-  }
-  animation {
-    frame_list {
-      frame: 5
-      delay: 0
-      vertical_align: BOTTOM
-    }
-    go_to {
-      destination {
-        x: 300
-        y: 70
-      }
-      step: 2
-      delay: 20
-    }
-  }
-  animation {
-    frame_list {
-      frame: 0
-      delay: 0
-      vertical_align: BOTTOM
-    }
-    go_to {
-      destination {
-        x: 300
-        y: 90
-      }
-      step: 2
-      delay: 20
-    }
-  }
-  animation {
-    timer {
-      delay: 300
-    }
-  }
-  animation {
-    go_to {
-      destination {
-        x: 130
-        y: 90
-      }
-      step: 1
-      delay: 17
-    }
-    run_script {
-      script_id: 'dk_jump'
-    }
-  }
-  animation {
-    timer {
-      delay: 300
-    }
-  }
-  animation {
-    frame_list {
-      frame: [0, 2, 3, 2, 3, 2, 3, 0]
-      delay: 300
-      repeat: 0
-      horizontal_align: HCENTRE
-    }
-  }
 }
 
 script {
   id: 'dk_jump'
-  repeat: 0
   animation {
     translation {
       vec {
@@ -115,6 +48,38 @@ script {
       }
       delay: 20
       repeat: 15
+    }
+  }
+}
+
+script {
+  id: 'dk_landing'
+  animation {
+    frame_list {
+      frame: 5
+      vertical_align: BOTTOM
+    }
+    go_to {
+      destination {
+        x: 300
+        y: 70
+      }
+      step: 2
+      delay: 20
+    }
+  }
+  animation {
+    frame_list {
+      frame: 0
+      vertical_align: BOTTOM
+    }
+    go_to {
+      destination {
+        x: 300
+        y: 90
+      }
+      step: 2
+      delay: 20
     }
   }
 }
