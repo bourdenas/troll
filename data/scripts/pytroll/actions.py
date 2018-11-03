@@ -62,6 +62,43 @@ def PauseAnimation(node_id, script_id=""):
     return action
 
 
+def PlayAudio(track_id='', sfx_id='', repeat=1):
+    action = proto.action_pb2.Action()
+    if track_id:
+        action.play_audio.track_id = track_id
+    elif sfx_id:
+        action.play_audio.sfx_id = sfx_id
+    action.play_audio.repeat = repeat
+    return action
+
+
+def StopAudio(sfx_id=''):
+    action = proto.action_pb2.Action()
+    if sfx_id:
+        action.stop_audio.sfx_id = sfx_id
+    else:
+        action.stop_audio.track_id = ''
+    return action
+
+
+def PauseAudio(sfx_id=''):
+    action = proto.action_pb2.Action()
+    if sfx_id:
+        action.pause_audio.sfx_id = sfx_id
+    else:
+        action.pause_audio.track_id = ''
+    return action
+
+
+def ResumeAudio(sfx_id=''):
+    action = proto.action_pb2.Action()
+    if sfx_id:
+        action.resume_audio.sfx_id = sfx_id
+    else:
+        action.resume_audio.track_id = ''
+    return action
+
+
 def OnCollision(node_ids, sprite_ids, actions):
     action = proto.action_pb2.Action()
     if node_ids:
