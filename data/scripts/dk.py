@@ -1,4 +1,5 @@
 import proto.animation_pb2
+import pytroll.audio
 import pytroll.events
 import sprites
 
@@ -21,14 +22,15 @@ def cutscene(dk, platforms, ladders):
     script.animation.add().timer.delay = 300
     script.animation.add().run_script.script_id = 'dk_taunt'
     dk.PlayAnimationScript(script)
+    pytroll.audio.PlayMusic('intro')
 
     def LandingHandler():
         princess = sprites.Princess()
         princess.Create((270, 50, -1), frame_index=1)
         platforms[1].Collapse()
         for i in range(4, 7):
-            ladders[-(1 + i*2)].Destroy()
-            ladders[-(2 + i*2)].Destroy()
+            ladders[-(i * 2 + 1)].Destroy()
+            ladders[-(i * 2 + 2)].Destroy()
     pytroll.events.OnEvent(
         pytroll.events.AnimationDone(dk.id, 'dk_landing'),
         lambda: LandingHandler())
@@ -45,9 +47,9 @@ def cutscene(dk, platforms, ladders):
     script = proto.animation_pb2.AnimationScript()
     script.animation.add().flash.repeat = 1
     for i in range(4):
-        script.animation[0].flash.delay = 1000 * (i+1)
-        ladders[-(1 + i*2)].PlayAnimationScript(script)
-        ladders[-(2 + i*2)].PlayAnimationScript(script)
+        script.animation[0].flash.delay = 700 * (i + 1)
+        ladders[-(i * 2 + 1)].PlayAnimationScript(script)
+        ladders[-(i * 2 + 2)].PlayAnimationScript(script)
 
 
 def intro():

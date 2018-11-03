@@ -25,7 +25,7 @@ script {
         y: 160
       }
       step: 1
-      delay: 20
+      delay: 15
     }
   }
 }
