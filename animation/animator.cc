@@ -41,6 +41,9 @@ void Animator::Start(const Animation& animation, SceneNode* scene_node) {
     performers_.push_back(
         std::make_unique<RunScriptPerformer>(animation.run_script()));
   }
+  if (animation.has_sfx()) {
+    performers_.push_back(std::make_unique<SfxPerformer>(animation.sfx()));
+  }
 
   for (auto& performer : performers_) {
     performer->Start(scene_node);

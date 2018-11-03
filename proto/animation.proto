@@ -1,5 +1,6 @@
 syntax = "proto2";
 
+import "proto/audio.proto";
 import "proto/primitives.proto";
 
 package troll;
@@ -45,8 +46,9 @@ message Animation {
   optional GotoAnimation go_to = 8;
   optional TimerAnimation timer = 9;
 
-  // Composable scripts.
+  // Instant execution animations.
   optional RunScriptAnimation run_script = 10;
+  optional SfxAnimation sfx = 11;
 }
 
 // A vector based transformation (e.g. translation) that is a pplied on a node
@@ -115,8 +117,14 @@ message TimerAnimation {
   optional int32 delay = 1;
 }
 
-// Executes an script referenced by its id. This can be used for composing more
-// copmlex animations from simpler ones.
+// Executes a script referenced by its id. This can be used for composing more
+// complex animations from simpler ones.
 message RunScriptAnimation {
   optional string script_id = 1;
+}
+
+// Play audio in sync with other animations.
+message SfxAnimation {
+  optional Audio audio = 1;
+  optional int32 repeat = 2;
 }

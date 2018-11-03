@@ -8,6 +8,7 @@
 #include "core/geometry.h"
 #include "core/scene-manager.h"
 #include "core/troll-core.h"
+#include "sound/audio-mixer.h"
 
 namespace troll {
 
@@ -139,5 +140,26 @@ void RunScriptPerformer::Stop(const SceneNode& scene_node) {
 }
 
 bool RunScriptPerformer::Execute(SceneNode* scene_node) { return finished_; }
+
+void SfxPerformer::Start(SceneNode* scene_node) {
+  auto&& on_done = [this]() { finished_ = false; };
+  if (!animation_.audio().track().empty()) {
+    AudioMixer::Instance().PlayMusic(animation_.audio().track(0).id(),
+                                     animation_.repeat(), on_done);
+  } else if (!animation_.audio().sfx().empty()) {
+    AudioMixer::Instance().PlaySound(animation_.audio().sfx(0).id(),
+                                     animation_.repeat(), on_done);
+  }
+}
+
+void SfxPerformer::Stop(const SceneNode& scene_node) {
+  if (!animation_.audio().track().empty()) {
+    AudioMixer::Instance().StopMusic();
+  } else if (!animation_.audio().sfx().empty()) {
+    AudioMixer::Instance().StopSound(animation_.audio().sfx(0).id());
+  }
+}
+
+bool SfxPerformer::Execute(SceneNode* _unused) { return finished_; }
 
 }  // namespace troll

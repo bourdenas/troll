@@ -221,6 +221,21 @@ class RunScriptPerformer : public InstantPerformerBase<RunScriptAnimation> {
   bool finished_ = false;
 };
 
+class SfxPerformer : public InstantPerformerBase<SfxAnimation> {
+ public:
+  SfxPerformer(const SfxAnimation& animation)
+      : InstantPerformerBase<SfxAnimation>(animation) {}
+
+  void Start(SceneNode* scene_node) override;
+  void Stop(const SceneNode& scene_node) override;
+
+ protected:
+  bool Execute(SceneNode* scene_node) override;
+
+ private:
+  bool finished_ = false;
+};
+
 }  // namespace troll
 
 #endif  // TROLL_ANIMATION_PERFORMER_H_
