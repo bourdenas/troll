@@ -5,6 +5,12 @@ def __assign_vec(proto_vec, py_tuple):
     proto_vec.x, proto_vec.y, proto_vec.z = py_tuple
 
 
+def ChangeScene(scene_id):
+    action = proto.action_pb2.Action()
+    action.change_scene.scene_id = scene_id
+    return action
+
+
 def Create(node_id, sprite_id, frame_index, position):
     action = proto.action_pb2.Action()
     action.create_scene_node.scene_node.id = node_id
