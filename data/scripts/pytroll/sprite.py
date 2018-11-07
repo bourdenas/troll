@@ -1,4 +1,5 @@
 import pytroll.actions
+import pytroll.events
 import troll
 
 
@@ -43,13 +44,17 @@ class Sprite:
         action = pytroll.actions.PlayAnimationScript(self.id, script)
         troll.execute(action.SerializeToString())
         if on_done:
-            troll.on_event('.'.join((self.id, script.id, 'done')), on_done)
+            pytroll.events.OnEvent(
+                pytroll.events.AnimationScriptDone(self.id, script.id),
+                on_done)
 
     def PlayAnimation(self, script_id, on_done=None):
         action = pytroll.actions.PlayAnimation(self.id, script_id)
         troll.execute(action.SerializeToString())
         if on_done:
-            troll.on_event('.'.join((self.id, script_id, 'done')), on_done)
+            pytroll.events.OnEvent(
+                pytroll.events.AnimationScriptDone(self.id, script_id),
+                on_done)
 
     def StopAnimation(self, script_id=""):
         action = pytroll.actions.StopAnimation(self.id, script_id)
