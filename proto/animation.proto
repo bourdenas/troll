@@ -24,6 +24,11 @@ message AnimationScript {
 
 // All animations that are instantiated in this proto are performed on parallel.
 message Animation {
+  // If an animation is named with an id, an event will be emitted when this
+  // part terminates. The event format is
+  // "<scene_node_id>.<script_id>.<id>.done".
+  optional string id = 1;
+
   enum TerminationCondition {
     ANY = 0;
     ALL = 1;
@@ -32,23 +37,23 @@ message Animation {
   // parts finishe. If the termination is ALL the animation finishes when all of
   // its parts are done. When termination is ALL finished parts do not continue
   // to execute while the unfinished are still running.
-  optional TerminationCondition termination = 1 [default = ANY];
+  optional TerminationCondition termination = 2 [default = ANY];
 
   // Repeatable animations.
-  optional VectorAnimation translation = 2;
-  optional VectorAnimation rotation = 3;
-  optional VectorAnimation scaling = 4;
-  optional FrameRangeAnimation frame_range = 5;
-  optional FrameListAnimation frame_list = 6;
-  optional FlashAnimation flash = 7;
+  optional VectorAnimation translation = 3;
+  optional VectorAnimation rotation = 4;
+  optional VectorAnimation scaling = 5;
+  optional FrameRangeAnimation frame_range = 6;
+  optional FrameListAnimation frame_list = 7;
+  optional FlashAnimation flash = 8;
 
   // Non-repeatable animations.
-  optional GotoAnimation go_to = 8;
-  optional TimerAnimation timer = 9;
+  optional GotoAnimation go_to = 9;
+  optional TimerAnimation timer = 10;
 
   // Instant execution animations.
-  optional RunScriptAnimation run_script = 10;
-  optional SfxAnimation sfx = 11;
+  optional RunScriptAnimation run_script = 11;
+  optional SfxAnimation sfx = 12;
 }
 
 // A vector based transformation (e.g. translation) that is a pplied on a node

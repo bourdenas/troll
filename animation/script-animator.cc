@@ -1,5 +1,7 @@
 #include "animation/script-animator.h"
 
+#include "core/event-dispatcher.h"
+#include "core/events.h"
 #include "core/scene-manager.h"
 #include "core/troll-core.h"
 #include "proto/scene-node.pb.h"
@@ -46,9 +48,19 @@ void ScriptAnimator::Progress(int time_since_last_frame) {
   }
 
   Core::Instance().scene_manager().Dirty(*scene_node);
-  if (current_animator_->Progress(time_since_last_frame, scene_node) &&
-      !MoveToNextAnimation(scene_node)) {
-    Stop();
+  if (current_animator_->Progress(time_since_last_frame, scene_node)) {
+    const int index = next_animation_index_ > 0
+                          ? next_animation_index_ - 1
+                          : script_.animation().size() - 1;
+    const auto& animation_id = script_.animation(index).id();
+    if (!animation_id.empty()) {
+      EventDispatcher::Instance().Emit(Events::OnAnimationScriptPartTermination(
+          scene_node->id(), script_.id(), animation_id));
+    }
+
+    if (!MoveToNextAnimation(scene_node)) {
+      Stop();
+    }
   }
 }
 
@@ -60,6 +72,8 @@ bool ScriptAnimator::MoveToNextAnimation(SceneNode* scene_node) {
   }
 
   if (next_animation_index_ == script_.animation().size()) {
+    EventDispatcher::Instance().Emit(
+        Events::OnAnimationScriptRepeat(scene_node->id(), script_.id()));
     next_animation_index_ = 0;
   }
 

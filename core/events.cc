@@ -9,4 +9,16 @@ std::string Events::OnAnimationScriptTermination(
   return absl::StrJoin({scene_node_id, script_id, std::string("done")}, ".");
 }
 
+std::string Events::OnAnimationScriptRepeat(const std::string& scene_node_id,
+                                            const std::string& script_id) {
+  return absl::StrJoin({scene_node_id, script_id, std::string("repeat")}, ".");
+}
+
+std::string Events::OnAnimationScriptPartTermination(
+    const std::string& scene_node_id, const std::string& script_id,
+    const std::string& animation_id) {
+  return absl::StrJoin(
+      {scene_node_id, script_id, animation_id, std::string("done")}, ".");
+}
+
 }  // namespace troll
