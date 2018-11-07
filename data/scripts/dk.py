@@ -32,7 +32,7 @@ def cutscene(dk, platforms, ladders):
             ladders[-(i * 2 + 1)].Destroy()
             ladders[-(i * 2 + 2)].Destroy()
     pytroll.events.OnEvent(
-        pytroll.events.AnimationDone(dk.id, 'dk_landing'),
+        pytroll.events.AnimationScriptDone(dk.id, 'dk_landing'),
         lambda: LandingHandler())
 
     def DestroyPlatform(index):
@@ -41,7 +41,7 @@ def cutscene(dk, platforms, ladders):
             dk.PlayAnimation(
                 'dk_jump', lambda: DestroyPlatform(index + 1))
     pytroll.events.OnEvent(
-        pytroll.events.AnimationDone(dk.id, 'dk_jump'),
+        pytroll.events.AnimationScriptDone(dk.id, 'dk_jump'),
         lambda: DestroyPlatform(2))
 
     script = proto.animation_pb2.AnimationScript()
