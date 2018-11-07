@@ -3,6 +3,7 @@
 #include "action/action-manager.h"
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
+#include "core/event-dispatcher.h"
 #include "core/resource-manager.h"
 #include "input/input-manager.h"
 #include "proto/scene.pb.h"
@@ -77,6 +78,7 @@ bool Core::InputHandling() {
 void Core::FrameStarted(int time_since_last_frame) {
   AnimatorManager::Instance().Progress(time_since_last_frame);
   CollisionChecker::Instance().CheckCollisions();
+  EventDispatcher::Instance().ProcessTriggeredEvents();
 }
 
 void Core::FrameEnded(int time_since_last_frame) {
