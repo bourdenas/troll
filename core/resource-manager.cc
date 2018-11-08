@@ -194,8 +194,8 @@ constexpr char kDefaultFont[] = "fonts/times.ttf";
 }  // namespace
 
 void ResourceManager::LoadFonts(const std::string& base_path) {
-  fonts_[kDefaultFont] =
-      Font::CreateFontFromFile(absl::StrCat(base_path, kDefaultFont), 16);
+  fonts_[kDefaultFont] = Font::CreateFontFromFile(
+      absl::StrCat(base_path, "resources/", kDefaultFont), 16);
 }
 
 void ResourceManager::LoadSounds(const std::string& base_path) {
