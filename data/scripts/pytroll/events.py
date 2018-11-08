@@ -1,8 +1,12 @@
 import troll
 
 
-def OnEvent(event_id, handler):
-    troll.on_event(event_id, handler)
+def OnEvent(event_id, handler, permanent=False):
+    return troll.on_event(event_id, handler, permanent)
+
+
+def Cancel(event_id, handler_id):
+    troll.cancel(event_id, handler_id)
 
 
 def AnimationScriptDone(node_id, script_id):

@@ -27,11 +27,20 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
     ActionManager::Instance().Execute(action);
   });
 
-  m.def("on_event",
-        [](const std::string& event_id, const std::function<void()>& handler) {
-          EventDispatcher::Instance().Register(
-              event_id, [handler]() { PythonCallbackWrapper(handler); });
-        });
+  m.def("on_event", [](const std::string& event_id,
+                       const std::function<void()>& handler, bool permanent) {
+    if (permanent) {
+      return EventDispatcher::Instance().RegisterPermanent(
+          event_id, [handler]() { PythonCallbackWrapper(handler); });
+    } else {
+      return EventDispatcher::Instance().Register(
+          event_id, [handler]() { PythonCallbackWrapper(handler); });
+    }
+  });
+
+  m.def("cancel", [](const std::string& event_id, int handler_id) {
+    EventDispatcher::Instance().Unregister(event_id, handler_id);
+  });
 }
 
 void ScriptManager::Init() {}
