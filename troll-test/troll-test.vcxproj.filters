@@ -33,6 +33,9 @@
     <ClCompile Include="..\core\geometry_test.cc">
       <Filter>core</Filter>
     </ClCompile>
+    <ClCompile Include="..\core\event-dispatcher_test.cc">
+      <Filter>core</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

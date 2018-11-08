@@ -55,6 +55,7 @@ void Core::Run() {
 void Core::Halt() { halt_ = true; }
 
 void Core::LoadScene(const std::string& scene_id) {
+  EventDispatcher::Instance().UnregisterAll();
   scene_manager_ = std::make_unique<SceneManager>();
   scene_manager_->SetupScene(ResourceManager::Instance().LoadScene(scene_id));
 }
