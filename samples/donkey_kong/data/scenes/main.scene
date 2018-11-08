@@ -18,6 +18,6 @@ bitmap_config {
 }
 
 on_init {
-  module: 'dk'
-  function: 'intro'
+  module: 'dk.intro'
+  function: 'init'
 }
