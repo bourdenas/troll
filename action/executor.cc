@@ -276,10 +276,6 @@ void DisplayTextExecutor::Execute(const Action& action) const {
   // TODO(bourdenas): Implement show text.
 }
 
-void ImportModuleExecutor::Execute(const Action& action) const {
-  ScriptManager::Instance().ImportModule(action.import_module().module());
-}
-
 void ScriptExecutor::Execute(const Action& action) const {
   ScriptManager::Instance().Call(action.call().module(),
                                  action.call().function());
