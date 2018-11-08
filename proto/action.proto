@@ -35,8 +35,7 @@ message Action {
 
     DisplayTextAction display_text = 18;
 
-    ScriptAction import_module = 19;
-    ScriptAction call = 20;
+    ScriptAction call = 19;
   }
 }
 
