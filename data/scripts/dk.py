@@ -1,11 +1,13 @@
 import proto.animation_pb2
 import pytroll.audio
 import pytroll.events
+import pytroll.scene
 import sprites
 
 
 def cutscene(dk, platforms, ladders):
     script = proto.animation_pb2.AnimationScript()
+    script.id = 'intro'
     script.animation.add().run_script.script_id = 'dk_climb'
     script.animation.add().timer.delay = 1000
     script.animation.add().run_script.script_id = 'dk_landing'
@@ -21,12 +23,12 @@ def cutscene(dk, platforms, ladders):
 
     script.animation.add().timer.delay = 300
     script.animation.add().run_script.script_id = 'dk_taunt'
+    script.animation.add().timer.delay = 1000
     dk.PlayAnimationScript(script)
     pytroll.audio.PlayMusic('intro')
 
     def LandingHandler():
-        princess = sprites.Princess()
-        princess.Create((270, 50, -1), frame_index=1)
+        sprites.Princess().Create((270, 50, -1), frame_index=1)
         platforms[1].Collapse()
         for i in range(4, 7):
             ladders[-(i * 2 + 1)].Destroy()
@@ -82,14 +84,73 @@ def intro():
     dk.Create((300, 382, 0), frame_index=4)
     cutscene(dk, platforms, ladders)
 
+    pytroll.events.OnEvent(
+        pytroll.events.AnimationScriptDone(dk.id, 'intro'),
+        lambda: pytroll.scene.ChangeScene('height.scene'))
+
+
+def height():
+    dk = sprites.DonkeyKong('dk')
+    dk.Create((300, 382, 0), frame_index=10)
+    pytroll.audio.PlayMusic('height')
+
+    script = proto.animation_pb2.AnimationScript()
+    script.id = 'height'
+    script.animation.add().timer.delay = 3500
+    dk.PlayAnimationScript(script)
+
+    pytroll.events.OnEvent(
+        pytroll.events.AnimationScriptDone(dk.id, 'height'),
+        lambda: pytroll.scene.ChangeScene('level1.scene'))
+
 
 def level1():
-    ladder_positions = [
-        (230, 70, -1), (262, 70, -1), (338, 112, -1), (250, 442, -1),
-        (250, 416, -1), (444, 417, -1), (280, 360, -1), (148, 356, -1),
-        (220, 324, -1), (220, 295, -1), (310, 300, -1), (444, 296, -1),
-        (380, 264, -1), (380, 230, -1), (220, 236, -1), (148, 236, -1),
-        (274, 196, -1), (274, 170, -1), (444, 172, -1),
+    platform_sizes = [3, 13, 13, 13, 13, 13, 14]
+    platforms = [sprites.Platform(i, size)
+                 for i, size in enumerate(platform_sizes)]
+    platform_positions = [
+        (262, 97, -3), (80, 155, -3), (112, 210, -3), (80, 275, -3),
+        (112, 335, -3), (80, 395, -3), (80, 455, -3),
     ]
-    for pos in ladder_positions:
-        sprites.Ladder().Create(pos, frame_index=0)
+    for platform, pos in zip(platforms, platform_positions):
+        platform.Create(pos)
+
+    for i in range(1, 7):
+        platforms[i].Collapse()
+
+    broken_ladder_positions = [
+        (250, 446, -5), (250, 416, -5),
+        (220, 326, -5), (220, 295, -5),
+        (380, 266, -5), (380, 230, -5),
+        (274, 198, -5), (274, 170, -5),
+    ]
+    [sprites.Ladder(100 + i).Create(pos, frame_index=1)
+     for i, pos in enumerate(broken_ladder_positions)]
+
+    ladder_positions = [
+        (210, 72, -5), (242, 72, -5),
+        (210, 112, -5), (242, 112, -5),
+        (338, 112, -5),
+
+        (444, 420, -5), (280, 358, -5), (148, 353, -5),
+        (310, 297, -5), (444, 294, -5),
+        (148, 235, -5), (226, 235, -5),
+        (444, 172, -5),
+    ]
+    [sprites.Ladder(i).Create(pos, frame_index=0)
+     for i, pos in enumerate(ladder_positions)]
+
+    sprites.Princess('princess').Create((270, 50, -1), frame_index=1)
+    sprites.Barrel('stack').Create((80, 88, 0), frame_index=5)
+    sprites.Barrel('base').Create((100, 428, 0), frame_index=6)
+
+    dk = sprites.DonkeyKong('dk').Create((126, 90, 0), frame_index=0)
+    dk.PlayAnimation('dk_barrel_throw')
+
+    pytroll.events.OnEvent(
+        pytroll.events.AnimationScriptPartDone(
+            dk.id, 'dk_barrel_throw', 'place_barrel'),
+        lambda: sprites.Barrel(0).Create((215, 134, 0), frame_index=1))
+
+    sprites.Mario('mario').Create((140, 428, 0), frame_index=15)
+    pytroll.audio.PlayMusic('main_loop', repeat=0)

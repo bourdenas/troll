@@ -53,3 +53,8 @@ class Platform(object):
 class Ladder(pytroll.sprite.Sprite):
     def __init__(self, id):
         pytroll.sprite.Sprite.__init__(self, 'ladder_' + str(id), 'ladder')
+
+
+class Barrel(pytroll.sprite.Sprite):
+    def __init__(self, id):
+        pytroll.sprite.Sprite.__init__(self, 'barrel_' + str(id), 'barrel')
