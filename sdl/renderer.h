@@ -26,7 +26,7 @@ class Renderer {
   // Returns collision masks for each film in the sprite. Masks are auto-
   // generated from the sprite's image and colour key
   std::vector<boost::dynamic_bitset<>> GenerateCollisionMasks(
-      const Sprite& sprite) const;
+      const std::string& base_path, const Sprite& sprite) const;
 
   // Blit a texture area to the screen.
   void BlitTexture(const Texture& src, const Box& src_box,

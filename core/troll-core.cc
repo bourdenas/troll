@@ -18,7 +18,8 @@
 
 namespace troll {
 
-void Core::Init(const std::string& name) {
+void Core::Init(const std::string& name,
+                const std::string& resource_base_path) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
   google::InitGoogleLogging(name.c_str());
 
@@ -26,14 +27,14 @@ void Core::Init(const std::string& name) {
 
   Renderer::Instance().Init(640, 480);
   SoundLoader::Instance().Init();
+  ResourceManager::Instance().LoadResources(resource_base_path);
+
   AudioMixer::Instance().Init();
-
-  ResourceManager::Instance().LoadResources();
-  LoadScene("main.scene");
-
   InputManager::Instance().Init();
   InputBackend::Instance().Init();
   ScriptManager::Instance().Init();
+
+  LoadScene("main.scene");
 }
 
 void Core::CleanUp() {

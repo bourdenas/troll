@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include <absl/strings/str_cat.h>
 #include <glog/logging.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
@@ -51,13 +52,13 @@ std::vector<Message> LoadTextProtoFromPath(const std::string& path,
 }
 }  // namespace
 
-void ResourceManager::LoadResources() {
-  LoadAnimations();
-  LoadKeyBindings();
-  LoadSprites();
-  LoadTextures();
-  LoadFonts();
-  LoadSounds();
+void ResourceManager::LoadResources(const std::string& base_path) {
+  LoadAnimations(base_path);
+  LoadKeyBindings(base_path);
+  LoadSprites(base_path);
+  LoadTextures(base_path);
+  LoadFonts(base_path);
+  LoadSounds(base_path);
 }
 
 void ResourceManager::CleanUp() {
@@ -131,9 +132,9 @@ const Sound& ResourceManager::GetSound(const std::string& sfx_id) const {
   return *it->second;
 }
 
-void ResourceManager::LoadAnimations() {
-  const auto animations =
-      LoadTextProtoFromPath<SpriteAnimation>("../data/sprites/", ".animation");
+void ResourceManager::LoadAnimations(const std::string& base_path) {
+  const auto animations = LoadTextProtoFromPath<SpriteAnimation>(
+      absl::StrCat(base_path, "sprites/"), ".animation");
   for (const auto& animation : animations) {
     ranges::action::insert(
         scripts_, animation.script() | ranges::view::transform([](
@@ -143,30 +144,31 @@ void ResourceManager::LoadAnimations() {
   }
 }
 
-void ResourceManager::LoadKeyBindings() {
-  const auto key_bindings =
-      LoadTextProtoFromPath<KeyBindings>("../data/scenes/", ".keys");
+void ResourceManager::LoadKeyBindings(const std::string& base_path) {
+  const auto key_bindings = LoadTextProtoFromPath<KeyBindings>(
+      absl::StrCat(base_path, "scenes/"), ".keys");
   for (const auto& keys : key_bindings) {
     key_bindings_.MergeFrom(keys);
   }
 }
 
-void ResourceManager::LoadSprites() {
-  const auto sprites =
-      LoadTextProtoFromPath<Sprite>("../data/sprites/", ".sprite");
+void ResourceManager::LoadSprites(const std::string& base_path) {
+  const auto sprites = LoadTextProtoFromPath<Sprite>(
+      absl::StrCat(base_path, "sprites/"), ".sprite");
 
   sprites_ = sprites | ranges::view::transform([](const Sprite& sprite) {
                return std::make_pair(sprite.id(), sprite);
              });
   sprite_collision_masks_ =
       sprites_ | ranges::view::values |
-      ranges::view::transform([](const Sprite& sprite) {
+      ranges::view::transform([&base_path](const Sprite& sprite) {
         return std::make_pair(
-            sprite.id(), Renderer::Instance().GenerateCollisionMasks(sprite));
+            sprite.id(), Renderer::Instance().GenerateCollisionMasks(
+                             absl::StrCat(base_path, "resources/"), sprite));
       });
 }
 
-void ResourceManager::LoadTextures() {
+void ResourceManager::LoadTextures(const std::string& base_path) {
   std::vector<std::pair<std::string, std::string>> resources =
       sprites_ | ranges::view::values |
       ranges::view::transform([](const Sprite& sprite) {
@@ -176,31 +178,40 @@ void ResourceManager::LoadTextures() {
   std::sort(resources.begin(), resources.end());
 
   textures_ = resources | ranges::view::unique |
-              ranges::view::transform([](const auto& resource) {
+              ranges::view::transform([&base_path](const auto& resource) {
                 RGBa colour_key;
                 colour_key.ParseFromString(resource.second);
                 return std::make_pair(
                     resource.first,
-                    Texture::CreateTextureFromFile(resource.first, colour_key));
+                    Texture::CreateTextureFromFile(
+                        absl::StrCat(base_path, "resources/", resource.first),
+                        colour_key));
               });
 }
 
+namespace {
 constexpr char kDefaultFont[] = "fonts/times.ttf";
+}  // namespace
 
-void ResourceManager::LoadFonts() {
-  fonts_[kDefaultFont] = Font::CreateFontFromFile(kDefaultFont, 16);
+void ResourceManager::LoadFonts(const std::string& base_path) {
+  fonts_[kDefaultFont] =
+      Font::CreateFontFromFile(absl::StrCat(base_path, kDefaultFont), 16);
 }
 
-void ResourceManager::LoadSounds() {
-  const auto sounds = LoadTextProtoFromPath<Audio>("../data/scenes/", ".sfx");
+void ResourceManager::LoadSounds(const std::string& base_path) {
+  const auto sounds =
+      LoadTextProtoFromPath<Audio>(absl::StrCat(base_path, "scenes/"), ".sfx");
 
   for (const Audio& sound : sounds) {
     for (const auto& track : sound.track()) {
       music_tracks_.emplace(
-          track.id(), SoundLoader::Instance().LoadMusic(track.resource()));
+          track.id(), SoundLoader::Instance().LoadMusic(absl::StrCat(
+                          base_path, "resources/sounds/", track.resource())));
     }
     for (const auto& sfx : sound.sfx()) {
-      sfx_.emplace(sfx.id(), SoundLoader::Instance().LoadSound(sfx.resource()));
+      sfx_.emplace(sfx.id(),
+                   SoundLoader::Instance().LoadSound(absl::StrCat(
+                       base_path, "resources/sounds/", sfx.resource())));
     }
   }
 }

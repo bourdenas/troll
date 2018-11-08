@@ -24,7 +24,7 @@ class ResourceManager {
     return singleton;
   }
 
-  void LoadResources();
+  void LoadResources(const std::string& base_path);
   void CleanUp();
 
   Scene LoadScene(const std::string& scene);
@@ -50,12 +50,12 @@ class ResourceManager {
   ResourceManager() = default;
   ~ResourceManager() = default;
 
-  void LoadAnimations();
-  void LoadKeyBindings();
-  void LoadSprites();
-  void LoadTextures();
-  void LoadFonts();
-  void LoadSounds();
+  void LoadAnimations(const std::string& base_path);
+  void LoadKeyBindings(const std::string& base_path);
+  void LoadSprites(const std::string& base_path);
+  void LoadTextures(const std::string& base_path);
+  void LoadFonts(const std::string& base_path);
+  void LoadSounds(const std::string& base_path);
 
   KeyBindings key_bindings_;
 

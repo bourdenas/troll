@@ -9,13 +9,9 @@
 
 namespace troll {
 
-namespace {
-constexpr char* kResourcePath = "../data/resources/";
-}  // namespace
-
 std::unique_ptr<Font> Font::CreateFontFromFile(const std::string& filename,
                                                int font_size) {
-  TTF_Font* font = TTF_OpenFont((kResourcePath + filename).c_str(), font_size);
+  TTF_Font* font = TTF_OpenFont(filename.c_str(), font_size);
   if (font == nullptr) {
     LOG(ERROR) << SDL_GetError();
   }
@@ -24,7 +20,7 @@ std::unique_ptr<Font> Font::CreateFontFromFile(const std::string& filename,
 
 std::unique_ptr<Texture> Texture::CreateTextureFromFile(
     const std::string& filename, const RGBa& colour_key) {
-  SDL_Surface* surface = IMG_Load((kResourcePath + filename).c_str());
+  SDL_Surface* surface = IMG_Load(filename.c_str());
   if (surface == nullptr) {
     LOG(ERROR) << SDL_GetError();
   }

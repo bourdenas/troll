@@ -17,7 +17,7 @@ class Core {
     return singleton;
   }
 
-  void Init(const std::string& name);
+  void Init(const std::string& name, const std::string& resource_base_path);
   void CleanUp();
 
   void Run();

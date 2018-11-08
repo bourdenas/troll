@@ -5,15 +5,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
+#include <absl/strings/str_cat.h>
 #include <glog/logging.h>
 
 #include "sdl/texture.h"
 
 namespace troll {
-
-namespace {
-constexpr char* kResourcePath = "../data/resources/";
-}  // namespace
 
 void Renderer::Init(int width, int height) {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -49,9 +46,9 @@ void Renderer::CleanUp() {
 }
 
 std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
-    const Sprite& sprite) const {
+    const std::string& base_path, const Sprite& sprite) const {
   SDL_Surface* sprite_surface =
-      IMG_Load((kResourcePath + sprite.resource()).c_str());
+      IMG_Load(absl::StrCat(base_path, sprite.resource()).c_str());
   if (sprite_surface == nullptr) {
     LOG(ERROR) << SDL_GetError();
   }
