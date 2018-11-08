@@ -17,22 +17,26 @@ class ScriptManager {
     return singleton;
   }
 
-  void Init();
-
-  // Import a module that is in the import path.
-  void ImportModule(const std::string& module);
+  void Init(const std::string& script_base_path);
 
   // Call an imported module's function in the scripting engine.
-  void Call(const std::string& module, const std::string& function) const;
+  void Call(const std::string& module, const std::string& function);
 
   ScriptManager(const ScriptManager&) = delete;
   ScriptManager& operator=(const ScriptManager&) = delete;
 
  private:
+  // Import a module that is in the import path.
+  const pybind11::module* ImportModule(const std::string& module);
+
   ScriptManager() = default;
   ~ScriptManager() = default;
 
+  std::string script_base_path_;
+
   pybind11::scoped_interpreter intpt_;
+  pybind11::module sys_module_;
+
   std::unordered_map<std::string, pybind11::module> modules_;
 };
 

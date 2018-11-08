@@ -32,7 +32,7 @@ void Core::Init(const std::string& name,
   AudioMixer::Instance().Init();
   InputManager::Instance().Init();
   InputBackend::Instance().Init();
-  ScriptManager::Instance().Init();
+  ScriptManager::Instance().Init(resource_base_path);
 
   LoadScene("main.scene");
 }
