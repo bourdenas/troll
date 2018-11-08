@@ -151,7 +151,6 @@
     <ClCompile Include="core\events.cc" />
     <ClCompile Include="core\execution-context.cc" />
     <ClCompile Include="core\geometry.cc" />
-    <ClCompile Include="core\main.cc" />
     <ClCompile Include="core\resource-manager.cc" />
     <ClCompile Include="core\scene-manager.cc" />
     <ClCompile Include="core\scene-node-query.cc" />

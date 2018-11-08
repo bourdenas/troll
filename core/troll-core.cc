@@ -1,5 +1,7 @@
 #include "core/troll-core.h"
 
+#include <glog/logging.h>
+
 #include "action/action-manager.h"
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
@@ -16,7 +18,10 @@
 
 namespace troll {
 
-void Core::Init() {
+void Core::Init(const std::string& name) {
+  GOOGLE_PROTOBUF_VERIFY_VERSION;
+  google::InitGoogleLogging(name.c_str());
+
   ActionManager::Instance().Init();
 
   Renderer::Instance().Init(640, 480);
