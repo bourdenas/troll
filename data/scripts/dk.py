@@ -150,7 +150,8 @@ def level1():
     pytroll.events.OnEvent(
         pytroll.events.AnimationScriptPartDone(
             dk.id, 'dk_barrel_throw', 'place_barrel'),
-        lambda: sprites.Barrel(0).Create((215, 134, 0), frame_index=1))
+        lambda: sprites.Barrel().Create((215, 134, 0), frame_index=1).Roll(),
+        permanent=True)
 
     sprites.Mario('mario').Create((140, 428, 0), frame_index=15)
     pytroll.audio.PlayMusic('main_loop', repeat=0)
