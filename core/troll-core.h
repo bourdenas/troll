@@ -23,7 +23,7 @@ class Core {
   void Run();
   void Halt();
 
-  void LoadScene(const std::string& scene);
+  void LoadScene(const Scene& scene);
 
   SceneManager& scene_manager() { return *scene_manager_; }
 

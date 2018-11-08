@@ -27,7 +27,7 @@ class ResourceManager {
   void LoadResources(const std::string& base_path);
   void CleanUp();
 
-  Scene LoadScene(const std::string& scene);
+  Scene LoadScene(const std::string& filename);
 
   const KeyBindings& GetKeyBindings() const;
 

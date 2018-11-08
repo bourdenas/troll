@@ -33,8 +33,6 @@ void Core::Init(const std::string& name,
   InputManager::Instance().Init();
   InputBackend::Instance().Init();
   ScriptManager::Instance().Init(resource_base_path);
-
-  LoadScene("main.scene");
 }
 
 void Core::CleanUp() {
@@ -60,10 +58,12 @@ void Core::Run() {
 
 void Core::Halt() { halt_ = true; }
 
-void Core::LoadScene(const std::string& scene_id) {
+void Core::LoadScene(const Scene& scene) {
   EventDispatcher::Instance().UnregisterAll();
+  CollisionChecker::Instance().Init();
+
   scene_manager_ = std::make_unique<SceneManager>();
-  scene_manager_->SetupScene(ResourceManager::Instance().LoadScene(scene_id));
+  scene_manager_->SetupScene(scene);
 }
 
 bool Core::InputHandling() {

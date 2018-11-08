@@ -68,8 +68,8 @@ void ResourceManager::CleanUp() {
   sprites_.clear();
 }
 
-Scene ResourceManager::LoadScene(const std::string& scene_id) {
-  return LoadTextProto<Scene>("../data/scenes/" + scene_id);
+Scene ResourceManager::LoadScene(const std::string& filename) {
+  return LoadTextProto<Scene>(filename);
 }
 
 const KeyBindings& ResourceManager::GetKeyBindings() const {
