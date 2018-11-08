@@ -3,8 +3,8 @@
 
 #include <vector>
 
+#include "proto/action.pb.h"
 #include "proto/animation.pb.h"
-#include "proto/scene.pb.h"
 
 namespace troll {
 
@@ -98,10 +98,6 @@ class ResumeAudioExecutor : public Executor {
 };
 
 class DisplayTextExecutor : public Executor {
-  void Execute(const Action& action) const override;
-};
-
-class ImportModuleExecutor : public Executor {
   void Execute(const Action& action) const override;
 };
 

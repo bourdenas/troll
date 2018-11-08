@@ -7,10 +7,10 @@
 #include <range/v3/view/map.hpp>
 #include <range/v3/view/transform.hpp>
 
-#include "action/action-manager.h"
 #include "core/collision-checker.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"
+#include "scripting/script-manager.h"
 #include "sdl/renderer.h"
 
 namespace troll {
@@ -27,13 +27,8 @@ void SceneManager::SetupScene(const Scene& scene) {
         Box(), Box());
   }
 
-  CollisionChecker::Instance().Init();
-  for (const auto& node : scene_.scene_node()) {
-    AddSceneNode(node);
-  }
-
-  for (const auto& action : scene_.on_init()) {
-    ActionManager::Instance().Execute(action);
+  for (const auto& script : scene_.on_init()) {
+    ScriptManager::Instance().Call(script.module(), script.function());
   }
 }
 

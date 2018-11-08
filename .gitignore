@@ -31,11 +31,13 @@ build/
 release/
 debug/
 packages/
-data/resources/
-*.sublime-workspace
-*.sublime-project
-*_pb2.py
 
+# Resources and generated files
+data/resources/
+samples/donkey_kong/data/resources/
+*_pb2.py
 *.pyc
 
+*.sublime-workspace
+*.sublime-project
 \.vscode/

@@ -1,5 +1,6 @@
 #include "scripting/script-manager.h"
 
+#include <absl/strings/str_cat.h>
 #include <glog/logging.h>
 #include <pybind11/functional.h>
 
@@ -43,34 +44,42 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
   });
 }
 
-void ScriptManager::Init() {}
+void ScriptManager::Init(const std::string& script_base_path) {
+  script_base_path_ = script_base_path;
 
-void ScriptManager::ImportModule(const std::string& module) {
   // Setup python module import paths appropriately.
-  auto sys = pybind11::module::import("sys");
-  for (const auto& path : {"..", "../data/scripts"}) {
-    sys.attr("path").attr("append")(path);
-  }
-
-  try {
-    modules_.emplace(module, pybind11::module::import(module.c_str()));
-  } catch (const pybind11::error_already_set& e) {
-    LOG(ERROR) << e.what();
+  sys_module_ = pybind11::module::import("sys");
+  for (const auto& path :
+       {std::string(".."), absl::StrCat(script_base_path_, "scripts")}) {
+    sys_module_.attr("path").attr("append")(path);
   }
 }
 
 void ScriptManager::Call(const std::string& module,
-                         const std::string& function) const {
+                         const std::string& function) {
+  const auto* py_module = ImportModule(module);
+  try {
+    py_module->attr(function.c_str())();
+  } catch (const pybind11::error_already_set& e) {
+    LOG(ERROR) << "Python run-time error:\n" << e.what();
+  }
+}
+
+const pybind11::module* ScriptManager::ImportModule(const std::string& module) {
   const auto it = modules_.find(module);
-  LOG_IF(ERROR, it == modules_.end())
-      << "Using module '" << module << "' that was not imported first.\nCall: '"
-      << module << "." << function << "()'";
+  if (it != modules_.end()) {
+    return &it->second;
+  }
 
   try {
-    it->second.attr(function.c_str())();
+    auto&& module_entry =
+        modules_.emplace(module, pybind11::module::import(module.c_str()))
+            .first;
+    return &module_entry->second;
   } catch (const pybind11::error_already_set& e) {
-    LOG(ERROR) << e.what();
+    LOG(FATAL) << "Python import module error:\n" << e.what();
   }
+  return nullptr;
 }
 
 }  // namespace troll

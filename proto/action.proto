@@ -4,6 +4,7 @@ import "proto/animation.proto";
 import "proto/event.proto";
 import "proto/primitives.proto";
 import "proto/scene-node.proto";
+import "proto/scene.proto";
 
 package troll;
 
@@ -35,8 +36,7 @@ message Action {
 
     DisplayTextAction display_text = 18;
 
-    ScriptAction import_module = 19;
-    ScriptAction call = 20;
+    ScriptAction call = 19;
   }
 }
 
@@ -49,7 +49,7 @@ message EmitAction {
 }
 
 message ChangeSceneAction {
-  optional string scene_id = 1;
+  optional Scene scene = 1;
 }
 
 message SceneNodeAction {

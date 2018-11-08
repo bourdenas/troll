@@ -30,7 +30,7 @@ void EmitExecutor::Execute(const Action& action) const {
 }
 
 void ChangeSceneExecutor::Execute(const Action& action) const {
-  Core::Instance().LoadScene(action.change_scene().scene_id());
+  Core::Instance().LoadScene(action.change_scene().scene());
 }
 
 void CreateSceneNodeExecutor::Execute(const Action& action) const {
@@ -274,10 +274,6 @@ Action ResumeAudioExecutor::Reverse(const Action& action) const {
 
 void DisplayTextExecutor::Execute(const Action& action) const {
   // TODO(bourdenas): Implement show text.
-}
-
-void ImportModuleExecutor::Execute(const Action& action) const {
-  ScriptManager::Instance().ImportModule(action.import_module().module());
 }
 
 void ScriptExecutor::Execute(const Action& action) const {

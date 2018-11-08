@@ -1,6 +1,5 @@
 syntax = "proto2";
 
-import "proto/action.proto";
 import "proto/primitives.proto";
 import "proto/scene-node.proto";
 
@@ -13,8 +12,7 @@ message Scene {
 
   optional BitmapSceneManagerConfig bitmap_config = 4;
 
-  repeated SceneNode scene_node = 5;
-  repeated Action on_init = 6;
+  repeated InitScript on_init = 5;
 }
 
 message BitmapSceneManagerConfig {
@@ -25,3 +23,7 @@ message BitmapSceneManagerConfig {
   optional int32 height = 4;
 }
 
+message InitScript {
+  optional string module = 1;
+  optional string function = 2;
+}
