@@ -17,5 +17,5 @@ film {
   left: 620
   top: 500
   width: 19
-  height: 10
+  height: 16
 }

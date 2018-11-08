@@ -33,7 +33,19 @@ film {
 }
 film {
   left: 588
-  top: 612
+  top: 152
   width: 24
   height: 20
+}
+film {
+  left: 535
+  top: 557
+  width: 42
+  height: 66
+}
+film {
+  left: 478
+  top: 590
+  width: 33
+  height: 32
 }

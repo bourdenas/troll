@@ -83,3 +83,32 @@ script {
     }
   }
 }
+
+script {
+  id: 'dk_barrel_throw'
+  repeat: 0
+  animation {
+    id: 'place_barrel'
+    frame_list {
+      frame: [8, 1, 9]
+      delay: 700
+      repeat: 1
+    }
+  }
+  animation {
+    timer {
+      delay: 700
+    }
+  }
+  animation {
+    frame_list {
+      frame: 0
+      repeat: 1
+    }
+  }
+  animation {
+    timer {
+      delay: 700
+    }
+  }
+}
