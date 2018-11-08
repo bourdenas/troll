@@ -5,9 +5,9 @@ def __assign_vec(proto_vec, py_tuple):
     proto_vec.x, proto_vec.y, proto_vec.z = py_tuple
 
 
-def ChangeScene(scene_id):
+def ChangeScene(scene):
     action = proto.action_pb2.Action()
-    action.change_scene.scene_id = scene_id
+    action.change_scene.scene.CopyFrom(scene)
     return action
 
 
