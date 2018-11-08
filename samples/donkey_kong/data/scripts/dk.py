@@ -1,4 +1,5 @@
 import proto.animation_pb2
+import proto.scene_pb2
 import pytroll.audio
 import pytroll.events
 import pytroll.scene
@@ -84,9 +85,16 @@ def intro():
     dk.Create((300, 382, 0), frame_index=4)
     cutscene(dk, platforms, ladders)
 
+    def HeightScene():
+        scene = proto.scene_pb2.Scene()
+        script = scene.on_init.add()
+        script.module = 'dk'
+        script.function = 'height'
+        return scene
+
     pytroll.events.OnEvent(
         pytroll.events.AnimationScriptDone(dk.id, 'intro'),
-        lambda: pytroll.scene.ChangeScene('height.scene'))
+        lambda: pytroll.scene.ChangeScene(HeightScene()))
 
 
 def height():
@@ -99,9 +107,16 @@ def height():
     script.animation.add().timer.delay = 3500
     dk.PlayAnimationScript(script)
 
+    def Level1Scene():
+        scene = proto.scene_pb2.Scene()
+        script = scene.on_init.add()
+        script.module = 'dk'
+        script.function = 'level1'
+        return scene
+
     pytroll.events.OnEvent(
         pytroll.events.AnimationScriptDone(dk.id, 'height'),
-        lambda: pytroll.scene.ChangeScene('level1.scene'))
+        lambda: pytroll.scene.ChangeScene(Level1Scene()))
 
 
 def level1():
