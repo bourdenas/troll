@@ -203,9 +203,6 @@
     <ClCompile Include="core\event-dispatcher.cc">
       <Filter>core</Filter>
     </ClCompile>
-    <ClCompile Include="core\main.cc">
-      <Filter>core</Filter>
-    </ClCompile>
     <ClCompile Include="core\events.cc">
       <Filter>core</Filter>
     </ClCompile>
