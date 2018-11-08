@@ -30,7 +30,7 @@ void EmitExecutor::Execute(const Action& action) const {
 }
 
 void ChangeSceneExecutor::Execute(const Action& action) const {
-  Core::Instance().LoadScene(action.change_scene().scene_id());
+  Core::Instance().LoadScene(action.change_scene().scene());
 }
 
 void CreateSceneNodeExecutor::Execute(const Action& action) const {
