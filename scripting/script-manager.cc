@@ -6,6 +6,9 @@
 
 #include "action/action-manager.h"
 #include "core/event-dispatcher.h"
+#include "input/input-manager.h"
+#include "proto/action.pb.h"
+#include "proto/input-event.pb.h"
 
 namespace troll {
 
@@ -19,6 +22,18 @@ void PythonCallbackWrapper(const std::function<void()>& python_handler) {
     LOG(ERROR) << "Python run-time error:\n" << e.what();
   }
 }
+
+// Returns an InputHandler that wraps a python handler for input events. The
+// wrappers handles marshaling of input events that are passed to python encoded
+// as strings.
+InputManager::InputHandler PythonInputHandlerWrapper(
+    const std::function<void(const std::string&)>& python_handler) {
+  return [python_handler](const InputEvent& event) {
+    std::string encoded_input_event;
+    event.SerializeToString(&encoded_input_event);
+    python_handler(encoded_input_event);
+  };
+}
 }  // namespace
 
 PYBIND11_EMBEDDED_MODULE(troll, m) {
@@ -28,19 +43,31 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
     ActionManager::Instance().Execute(action);
   });
 
-  m.def("on_event", [](const std::string& event_id,
-                       const std::function<void()>& handler, bool permanent) {
-    if (permanent) {
-      return EventDispatcher::Instance().RegisterPermanent(
-          event_id, [handler]() { PythonCallbackWrapper(handler); });
-    } else {
-      return EventDispatcher::Instance().Register(
-          event_id, [handler]() { PythonCallbackWrapper(handler); });
-    }
-  });
+  m.def("register_event_handler",
+        [](const std::string& event_id, const std::function<void()>& handler,
+           bool permanent) {
+          if (permanent) {
+            return EventDispatcher::Instance().RegisterPermanent(
+                event_id, [handler]() { PythonCallbackWrapper(handler); });
+          } else {
+            return EventDispatcher::Instance().Register(
+                event_id, [handler]() { PythonCallbackWrapper(handler); });
+          }
+        });
 
-  m.def("cancel", [](const std::string& event_id, int handler_id) {
-    EventDispatcher::Instance().Unregister(event_id, handler_id);
+  m.def("cancel_event_handler",
+        [](const std::string& event_id, int handler_id) {
+          EventDispatcher::Instance().Unregister(event_id, handler_id);
+        });
+
+  m.def("register_input_handler",
+        [](const std::function<void(const std::string&)>& handler) {
+          return InputManager::Instance().RegisterHandler(
+              PythonInputHandlerWrapper(handler));
+        });
+
+  m.def("cancel_input_handler", [](int handler_id) {
+    InputManager::Instance().UnregisterHandler(handler_id);
   });
 }
 
