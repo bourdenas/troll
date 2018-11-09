@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include <range/v3/view/filter.hpp>
+#include <range/v3/view/map.hpp>
 #include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
@@ -62,6 +63,16 @@ void InputManager::AddKeyMapping(const std::string& label, int key_code) {
   key_mapping_.emplace(key_code, label);
 }
 
+int InputManager::RegisterHandler(const InputHandler& handler) {
+  static int kHandlerId = 0;
+  const int handler_id = ++kHandlerId;
+  input_handlers_.emplace(handler_id, handler);
+}
+
+void InputManager::UnregisterHandler(int handler_id) {
+  input_handlers_.erase(handler_id);
+}
+
 void InputManager::ActivateContext(const std::string& context_id) {
   active_contexts_.insert(context_id);
 }
@@ -73,6 +84,11 @@ void InputManager::DeactivateContext(const std::string& context_id) {
 void InputManager::Handle(const InputEvent& event) const {
   if (event.event_type() == InputEvent::EventType::KEY_EVENT) {
     HandleKey(event.key_event());
+  }
+
+  // Trigger external input handlers.
+  for (const auto& handler : input_handlers_ | ranges::view::values) {
+    handler(event);
   }
 }
 

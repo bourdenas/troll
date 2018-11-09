@@ -1,6 +1,7 @@
 #ifndef TROLL_INPUT_INPUT_MANAGER_H_
 #define TROLL_INPUT_INPUT_MANAGER_H_
 
+#include <functional>
 #include <map>
 #include <string>
 #include <unordered_map>
@@ -20,6 +21,10 @@ class InputManager {
 
   void Init();
   void AddKeyMapping(const std::string& label, int key_code);
+
+  using InputHandler = std::function<void(const InputEvent&)>;
+  int RegisterHandler(const InputHandler& handler);
+  void UnregisterHandler(int handler_id);
 
   void ActivateContext(const std::string& context_id);
   void DeactivateContext(const std::string& context_id);
@@ -43,6 +48,9 @@ class InputManager {
 
   // Mapping of {key, context} pairs to interaction triggers.
   std::multimap<std::pair<std::string, std::string>, Trigger> interactions_;
+
+  // Registered input handlers.
+  std::unordered_map<int, InputHandler> input_handlers_;
 };
 
 }  // namespace troll
