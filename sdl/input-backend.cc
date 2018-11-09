@@ -3,7 +3,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_syswm.h>
 
-#include "input/input-event.h"
 #include "input/input-manager.h"
 #include "proto/key-binding.pb.h"
 
@@ -11,174 +10,189 @@ namespace troll {
 
 void InputBackend::Init() {
   SDL_SetRelativeMouseMode(SDL_TRUE);
-  auto& input = InputManager::Instance();
 
-  input.AddKeyMapping("DOLLAR", SDLK_DOLLAR);
-  input.AddKeyMapping("AMPERSAND", SDLK_AMPERSAND);
-  input.AddKeyMapping("QUOTE", SDLK_QUOTE);
-  input.AddKeyMapping("LEFTPAREN", SDLK_LEFTPAREN);
-  input.AddKeyMapping("RIGHTPAREN", SDLK_RIGHTPAREN);
-  input.AddKeyMapping("ASTERISK", SDLK_ASTERISK);
-  input.AddKeyMapping("PLUS", SDLK_PLUS);
-  input.AddKeyMapping("COMMA", SDLK_COMMA);
-  input.AddKeyMapping("MINUS", SDLK_MINUS);
-  input.AddKeyMapping("PERIOD", SDLK_PERIOD);
-  input.AddKeyMapping("SLASH", SDLK_SLASH);
+  key_mapping_ = {
+      {SDLK_DOLLAR, "DOLLAR"},
+      {SDLK_AMPERSAND, "AMPERSAND"},
+      {SDLK_QUOTE, "QUOTE"},
+      {SDLK_LEFTPAREN, "LEFTPAREN"},
+      {SDLK_RIGHTPAREN, "RIGHTPAREN"},
+      {SDLK_ASTERISK, "ASTERISK"},
+      {SDLK_PLUS, "PLUS"},
+      {SDLK_COMMA, "COMMA"},
+      {SDLK_MINUS, "MINUS"},
+      {SDLK_PERIOD, "PERIOD"},
+      {SDLK_SLASH, "SLASH"},
 
-  input.AddKeyMapping("0", SDLK_0);
-  input.AddKeyMapping("1", SDLK_1);
-  input.AddKeyMapping("2", SDLK_2);
-  input.AddKeyMapping("3", SDLK_3);
-  input.AddKeyMapping("4", SDLK_4);
-  input.AddKeyMapping("5", SDLK_5);
-  input.AddKeyMapping("6", SDLK_6);
-  input.AddKeyMapping("7", SDLK_7);
-  input.AddKeyMapping("8", SDLK_8);
-  input.AddKeyMapping("9", SDLK_9);
+      {SDLK_0, "0"},
+      {SDLK_1, "1"},
+      {SDLK_2, "2"},
+      {SDLK_3, "3"},
+      {SDLK_4, "4"},
+      {SDLK_5, "5"},
+      {SDLK_6, "6"},
+      {SDLK_7, "7"},
+      {SDLK_8, "8"},
+      {SDLK_9, "9"},
 
-  input.AddKeyMapping("COLON", SDLK_COLON);
-  input.AddKeyMapping("SEMICOLON", SDLK_SEMICOLON);
-  input.AddKeyMapping("LESS", SDLK_LESS);
-  input.AddKeyMapping("EQUALS", SDLK_EQUALS);
-  input.AddKeyMapping("GREATER", SDLK_GREATER);
-  input.AddKeyMapping("QUESTION", SDLK_QUESTION);
-  input.AddKeyMapping("AT", SDLK_AT);
-  input.AddKeyMapping("LEFTBRACKET", SDLK_LEFTBRACKET);
-  input.AddKeyMapping("BACKSLASH", SDLK_BACKSLASH);
-  input.AddKeyMapping("RIGHTBRACKET", SDLK_RIGHTBRACKET);
-  input.AddKeyMapping("CARET", SDLK_CARET);
-  input.AddKeyMapping("UNDERSCORE", SDLK_UNDERSCORE);
-  input.AddKeyMapping("BACKQUOTE", SDLK_BACKQUOTE);
-  input.AddKeyMapping("DELETE", SDLK_DELETE);
+      {SDLK_COLON, "COLON"},
+      {SDLK_SEMICOLON, "SEMICOLON"},
+      {SDLK_LESS, "LESS"},
+      {SDLK_EQUALS, "EQUALS"},
+      {SDLK_GREATER, "GREATER"},
+      {SDLK_QUESTION, "QUESTION"},
+      {SDLK_AT, "AT"},
+      {SDLK_LEFTBRACKET, "LEFTBRACKET"},
+      {SDLK_BACKSLASH, "BACKSLASH"},
+      {SDLK_RIGHTBRACKET, "RIGHTBRACKET"},
+      {SDLK_CARET, "CARET"},
+      {SDLK_UNDERSCORE, "UNDERSCORE"},
+      {SDLK_BACKQUOTE, "BACKQUOTE"},
+      {SDLK_DELETE, "DELETE"},
 
-  input.AddKeyMapping("a", SDLK_a);
-  input.AddKeyMapping("b", SDLK_b);
-  input.AddKeyMapping("c", SDLK_c);
-  input.AddKeyMapping("d", SDLK_d);
-  input.AddKeyMapping("e", SDLK_e);
-  input.AddKeyMapping("f", SDLK_f);
-  input.AddKeyMapping("g", SDLK_g);
-  input.AddKeyMapping("h", SDLK_h);
-  input.AddKeyMapping("i", SDLK_i);
-  input.AddKeyMapping("j", SDLK_j);
-  input.AddKeyMapping("k", SDLK_k);
-  input.AddKeyMapping("l", SDLK_l);
-  input.AddKeyMapping("m", SDLK_m);
-  input.AddKeyMapping("n", SDLK_n);
-  input.AddKeyMapping("o", SDLK_o);
-  input.AddKeyMapping("p", SDLK_p);
-  input.AddKeyMapping("q", SDLK_q);
-  input.AddKeyMapping("r", SDLK_r);
-  input.AddKeyMapping("s", SDLK_s);
-  input.AddKeyMapping("t", SDLK_t);
-  input.AddKeyMapping("u", SDLK_u);
-  input.AddKeyMapping("v", SDLK_v);
-  input.AddKeyMapping("w", SDLK_w);
-  input.AddKeyMapping("x", SDLK_x);
-  input.AddKeyMapping("y", SDLK_y);
-  input.AddKeyMapping("z", SDLK_z);
+      {SDLK_a, "a"},
+      {SDLK_b, "b"},
+      {SDLK_c, "c"},
+      {SDLK_d, "d"},
+      {SDLK_e, "e"},
+      {SDLK_f, "f"},
+      {SDLK_g, "g"},
+      {SDLK_h, "h"},
+      {SDLK_i, "i"},
+      {SDLK_j, "j"},
+      {SDLK_k, "k"},
+      {SDLK_l, "l"},
+      {SDLK_m, "m"},
+      {SDLK_n, "n"},
+      {SDLK_o, "o"},
+      {SDLK_p, "p"},
+      {SDLK_q, "q"},
+      {SDLK_r, "r"},
+      {SDLK_s, "s"},
+      {SDLK_t, "t"},
+      {SDLK_u, "u"},
+      {SDLK_v, "v"},
+      {SDLK_w, "w"},
+      {SDLK_x, "x"},
+      {SDLK_y, "y"},
+      {SDLK_z, "z"},
 
-  input.AddKeyMapping("KP_0", SDLK_KP_0);
-  input.AddKeyMapping("KP_1", SDLK_KP_1);
-  input.AddKeyMapping("KP_2", SDLK_KP_2);
-  input.AddKeyMapping("KP_3", SDLK_KP_3);
-  input.AddKeyMapping("KP_4", SDLK_KP_4);
-  input.AddKeyMapping("KP_5", SDLK_KP_5);
-  input.AddKeyMapping("KP_6", SDLK_KP_6);
-  input.AddKeyMapping("KP_7", SDLK_KP_7);
-  input.AddKeyMapping("KP_8", SDLK_KP_8);
-  input.AddKeyMapping("KP_9", SDLK_KP_9);
-  input.AddKeyMapping("KP_PERIOD", SDLK_KP_PERIOD);
-  input.AddKeyMapping("KP_DIVIDE", SDLK_KP_DIVIDE);
-  input.AddKeyMapping("KP_MULTIPLY", SDLK_KP_MULTIPLY);
-  input.AddKeyMapping("KP_MINUS", SDLK_KP_MINUS);
-  input.AddKeyMapping("KP_PLUS", SDLK_KP_PLUS);
-  input.AddKeyMapping("KP_ENTER", SDLK_KP_ENTER);
-  input.AddKeyMapping("KP_EQUALS", SDLK_KP_EQUALS);
+      {SDLK_KP_0, "KP_0"},
+      {SDLK_KP_1, "KP_1"},
+      {SDLK_KP_2, "KP_2"},
+      {SDLK_KP_3, "KP_3"},
+      {SDLK_KP_4, "KP_4"},
+      {SDLK_KP_5, "KP_5"},
+      {SDLK_KP_6, "KP_6"},
+      {SDLK_KP_7, "KP_7"},
+      {SDLK_KP_8, "KP_8"},
+      {SDLK_KP_9, "KP_9"},
+      {SDLK_KP_PERIOD, "KP_PERIOD"},
+      {SDLK_KP_DIVIDE, "KP_DIVIDE"},
+      {SDLK_KP_MULTIPLY, "KP_MULTIPLY"},
+      {SDLK_KP_MINUS, "KP_MINUS"},
+      {SDLK_KP_PLUS, "KP_PLUS"},
+      {SDLK_KP_ENTER, "KP_ENTER"},
+      {SDLK_KP_EQUALS, "KP_EQUALS"},
 
-  input.AddKeyMapping("UP", SDLK_UP);
-  input.AddKeyMapping("DOWN", SDLK_DOWN);
-  input.AddKeyMapping("RIGHT", SDLK_RIGHT);
-  input.AddKeyMapping("LEFT", SDLK_LEFT);
-  input.AddKeyMapping("SPACE", SDLK_SPACE);
-  input.AddKeyMapping("RETURN", SDLK_RETURN);
-  input.AddKeyMapping("INSERT", SDLK_INSERT);
-  input.AddKeyMapping("HOME", SDLK_HOME);
-  input.AddKeyMapping("END", SDLK_END);
-  input.AddKeyMapping("PAGEUP", SDLK_PAGEUP);
-  input.AddKeyMapping("PAGEDOWN", SDLK_PAGEDOWN);
+      {SDLK_UP, "UP"},
+      {SDLK_DOWN, "DOWN"},
+      {SDLK_RIGHT, "RIGHT"},
+      {SDLK_LEFT, "LEFT"},
+      {SDLK_SPACE, "SPACE"},
+      {SDLK_RETURN, "RETURN"},
+      {SDLK_INSERT, "INSERT"},
+      {SDLK_HOME, "HOME"},
+      {SDLK_END, "END"},
+      {SDLK_PAGEUP, "PAGEUP"},
+      {SDLK_PAGEDOWN, "PAGEDOWN"},
 
-  input.AddKeyMapping("F1", SDLK_F1);
-  input.AddKeyMapping("F2", SDLK_F2);
-  input.AddKeyMapping("F3", SDLK_F3);
-  input.AddKeyMapping("F4", SDLK_F4);
-  input.AddKeyMapping("F5", SDLK_F5);
-  input.AddKeyMapping("F6", SDLK_F6);
-  input.AddKeyMapping("F7", SDLK_F7);
-  input.AddKeyMapping("F8", SDLK_F8);
-  input.AddKeyMapping("F9", SDLK_F9);
-  input.AddKeyMapping("F10", SDLK_F10);
-  input.AddKeyMapping("F11", SDLK_F11);
-  input.AddKeyMapping("F12", SDLK_F12);
+      {SDLK_F1, "F1"},
+      {SDLK_F2, "F2"},
+      {SDLK_F3, "F3"},
+      {SDLK_F4, "F4"},
+      {SDLK_F5, "F5"},
+      {SDLK_F6, "F6"},
+      {SDLK_F7, "F7"},
+      {SDLK_F8, "F8"},
+      {SDLK_F9, "F9"},
+      {SDLK_F10, "F10"},
+      {SDLK_F11, "F11"},
+      {SDLK_F12, "F12"},
 
-  input.AddKeyMapping("NUMLOCK", SDLK_NUMLOCKCLEAR);
-  input.AddKeyMapping("CAPSLOCK", SDLK_CAPSLOCK);
-  input.AddKeyMapping("SCROLLLOCK", SDLK_SCROLLLOCK);
-  input.AddKeyMapping("LSHIFT", SDLK_LSHIFT);
-  input.AddKeyMapping("RSHIFT", SDLK_RSHIFT);
-  input.AddKeyMapping("LCTRL", SDLK_LCTRL);
-  input.AddKeyMapping("RCTRL", SDLK_RCTRL);
-  input.AddKeyMapping("LALT", SDLK_LALT);
-  input.AddKeyMapping("RALT", SDLK_RALT);
-  input.AddKeyMapping("LMETA", SDLK_LGUI);
-  input.AddKeyMapping("RMETA", SDLK_RGUI);
+      {SDLK_NUMLOCKCLEAR, "NUMLOCK"},
+      {SDLK_CAPSLOCK, "CAPSLOCK"},
+      {SDLK_SCROLLLOCK, "SCROLLLOCK"},
+      {SDLK_LSHIFT, "LSHIFT"},
+      {SDLK_RSHIFT, "RSHIFT"},
+      {SDLK_LCTRL, "LCTRL"},
+      {SDLK_RCTRL, "RCTRL"},
+      {SDLK_LALT, "LALT"},
+      {SDLK_RALT, "RALT"},
+      {SDLK_LGUI, "LMETA"},
+      {SDLK_RGUI, "RMETA"},
 
-  input.AddKeyMapping("LeftClick", SDL_BUTTON_LEFT);
-  input.AddKeyMapping("RightClick", SDL_BUTTON_RIGHT);
-  input.AddKeyMapping("MiddleClick", SDL_BUTTON_MIDDLE);
+      {SDL_BUTTON_LEFT, "LeftClick"},
+      {SDL_BUTTON_RIGHT, "RightClick"},
+      {SDL_BUTTON_MIDDLE, "MiddleClick"},
+  };
 }
 
-InputEvent InputBackend::PollEvent() const {
-  SDL_Event event;
-  if (SDL_PollEvent(&event) == 0) return {};
+InputEvent InputBackend::PollEvent() {
+  InputEvent event;
 
-  switch (event.type) {
+  SDL_Event sdl_event;
+  if (SDL_PollEvent(&sdl_event) == 0) {
+    event.mutable_no_event();
+    return event;
+  }
+
+  switch (sdl_event.type) {
     case SDL_QUIT: {
-      return InputEvent::QuitEvent{};
+      event.mutable_quit_event();
+      return event;
     }
 
     case SDL_MOUSEMOTION: {
-      return InputEvent::MouseEvent{
-          int(),
-          Trigger::NONE,
-          {event.motion.x, event.motion.y},
-          {event.motion.xrel, event.motion.yrel},
-      };
+      auto* mouse_event = event.mutable_mouse_event();
+      auto* pos = mouse_event->mutable_absolute_position();
+      pos->set_x(sdl_event.motion.x);
+      pos->set_y(sdl_event.motion.y);
+      pos = mouse_event->mutable_relative_position();
+      pos->set_x(sdl_event.motion.xrel);
+      pos->set_y(sdl_event.motion.yrel);
+      return event;
     }
 
     case SDL_MOUSEBUTTONDOWN:
     case SDL_MOUSEBUTTONUP: {
-      return InputEvent::MouseEvent{
-          event.button.button,
-          event.button.type == SDL_MOUSEBUTTONDOWN ? Trigger::PRESSED
-                                                   : Trigger::RELEASED,
-          {event.button.x, event.button.y},
-          {0, 0},
-      };
+      auto* mouse_event = event.mutable_mouse_event();
+      mouse_event->set_button(key_mapping_[sdl_event.button.button]);
+      mouse_event->set_key_state(sdl_event.button.type == SDL_MOUSEBUTTONDOWN
+                                     ? Trigger::PRESSED
+                                     : Trigger::RELEASED);
+      auto* pos = mouse_event->mutable_absolute_position();
+      pos->set_x(sdl_event.button.x);
+      pos->set_y(sdl_event.button.y);
+      return event;
     }
 
     case SDL_KEYDOWN:
     case SDL_KEYUP: {
-      return InputEvent::KeyEvent{
-          event.key.keysym.sym, event.key.keysym.mod,
-          event.key.state == SDL_PRESSED && !event.key.repeat
+      auto* key_event = event.mutable_key_event();
+      key_event->set_key(key_mapping_[sdl_event.key.keysym.sym]);
+      key_event->set_key_state(
+          sdl_event.key.state == SDL_PRESSED && !sdl_event.key.repeat
               ? Trigger::PRESSED
-              : (event.key.state == SDL_RELEASED ? Trigger::RELEASED
-                                                 : Trigger::NONE),
-      };
+              : (sdl_event.key.state == SDL_RELEASED ? Trigger::RELEASED
+                                                     : Trigger::NONE));
+      return event;
     }
 
-    default: { return {}; }
+    default: {
+      event.mutable_no_event();
+      return event;
+    }
   }
 }
 

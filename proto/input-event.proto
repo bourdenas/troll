@@ -1,0 +1,33 @@
+syntax = "proto2";
+
+import "proto/primitives.proto";
+import "proto/key-binding.proto";
+
+package troll;
+
+message InputEvent {
+  oneof Event {
+    NoEvent no_event = 1;
+    QuitEvent quit_event = 2;
+    KeyEvent key_event = 3;
+    MouseEvent mouse_event = 4;
+  }
+}
+
+message NoEvent {}
+
+message QuitEvent {}
+
+message KeyEvent {
+  optional string key = 1;
+  optional string key_modifiers = 2;
+  optional Trigger.KeyState key_state = 3;
+}
+
+message MouseEvent {
+  optional string button = 1;
+  optional Trigger.KeyState key_state = 2;
+
+  optional Vector absolute_position = 3;
+  optional Vector relative_position = 4;
+}

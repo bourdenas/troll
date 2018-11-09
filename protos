@@ -2,6 +2,7 @@ proto/action.proto
 proto/animation.proto
 proto/audio.proto
 proto/event.proto
+proto/input-event.proto
 proto/key-binding.proto
 proto/primitives.proto
 proto/scene-node.proto
