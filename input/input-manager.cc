@@ -59,10 +59,6 @@ void InputManager::Init() {
   }
 }
 
-void InputManager::AddKeyMapping(const std::string& label, int key_code) {
-  key_mapping_.emplace(key_code, label);
-}
-
 int InputManager::RegisterHandler(const InputHandler& handler) {
   static int kHandlerId = 0;
   const int handler_id = ++kHandlerId;
@@ -82,7 +78,7 @@ void InputManager::DeactivateContext(const std::string& context_id) {
 }
 
 void InputManager::Handle(const InputEvent& event) const {
-  if (event.event_type() == InputEvent::EventType::KEY_EVENT) {
+  if (event.has_key_event()) {
     HandleKey(event.key_event());
   }
 
@@ -92,16 +88,13 @@ void InputManager::Handle(const InputEvent& event) const {
   }
 }
 
-void InputManager::HandleKey(const InputEvent::KeyEvent& event) const {
-  const auto it = key_mapping_.find(event.key_code);
-  if (it == key_mapping_.end()) return;
-
+void InputManager::HandleKey(const KeyEvent& event) const {
   for (const auto& context_id : active_contexts_) {
-    const auto& key = std::make_pair(it->second, context_id);
-    for (auto iit = interactions_.lower_bound(key);
-         iit != interactions_.upper_bound(key); ++iit) {
-      const auto& trigger = iit->second;
-      if (trigger.state() != event.key_state) continue;
+    const auto& key = std::make_pair(event.key(), context_id);
+    for (auto it = interactions_.lower_bound(key);
+         it != interactions_.upper_bound(key); ++it) {
+      const auto& trigger = it->second;
+      if (trigger.state() != event.key_state()) continue;
 
       for (const auto& action : trigger.action()) {
         ActionManager::Instance().Execute(action);

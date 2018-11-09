@@ -3,7 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "input/input-event.h"
+#include "proto/input-event.pb.h"
 
 namespace troll {
 
@@ -16,7 +16,7 @@ class InputBackend {
 
   void Init();
 
-  InputEvent PollEvent() const;
+  InputEvent PollEvent();
 
   InputBackend(const InputBackend&) = delete;
   InputBackend& operator=(const InputBackend&) = delete;
@@ -24,6 +24,9 @@ class InputBackend {
  private:
   InputBackend() = default;
   ~InputBackend() = default;
+
+  // A mapping from a key code of a input backend into a semantic name.
+  std::unordered_map<int, std::string> key_mapping_;
 };
 
 }  // namespace troll

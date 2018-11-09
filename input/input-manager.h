@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "input/input-event.h"
+#include "proto/input-event.pb.h"
 #include "proto/key-binding.pb.h"
 
 namespace troll {
@@ -20,7 +20,6 @@ class InputManager {
   }
 
   void Init();
-  void AddKeyMapping(const std::string& label, int key_code);
 
   using InputHandler = std::function<void(const InputEvent&)>;
   int RegisterHandler(const InputHandler& handler);
@@ -38,10 +37,7 @@ class InputManager {
   InputManager() = default;
   ~InputManager() = default;
 
-  void HandleKey(const InputEvent::KeyEvent& event) const;
-
-  // A mapping from a key code of a input backend into a semantic name.
-  std::unordered_map<int, std::string> key_mapping_;
+  void HandleKey(const KeyEvent& event) const;
 
   // Set of activated games input contexts.
   std::unordered_set<std::string> active_contexts_ = {""};

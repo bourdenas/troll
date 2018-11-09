@@ -75,9 +75,6 @@
     <ClInclude Include="core\resource-manager.h">
       <Filter>core</Filter>
     </ClInclude>
-    <ClInclude Include="input\input-event.h">
-      <Filter>input</Filter>
-    </ClInclude>
     <ClInclude Include="input\input-manager.h">
       <Filter>input</Filter>
     </ClInclude>
@@ -125,6 +122,9 @@
     </ClInclude>
     <ClInclude Include="sound\sound-loader.h">
       <Filter>sound</Filter>
+    </ClInclude>
+    <ClInclude Include="proto\input-event.pb.h">
+      <Filter>proto</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -221,6 +221,9 @@
     <ClCompile Include="sound\audio-mixer.cc">
       <Filter>sound</Filter>
     </ClCompile>
+    <ClCompile Include="proto\input-event.pb.cc">
+      <Filter>proto</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="proto\scene.proto">
@@ -248,6 +251,9 @@
       <Filter>proto</Filter>
     </None>
     <None Include="proto\audio.proto">
+      <Filter>proto</Filter>
+    </None>
+    <None Include="proto\input-event.proto">
       <Filter>proto</Filter>
     </None>
   </ItemGroup>

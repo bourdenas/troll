@@ -8,6 +8,7 @@
 #include "core/event-dispatcher.h"
 #include "core/resource-manager.h"
 #include "input/input-manager.h"
+#include "proto/input-event.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
 #include "scripting/script-manager.h"
@@ -72,9 +73,8 @@ bool Core::InputHandling() {
   }
 
   InputEvent event;
-  while ((event = InputBackend::Instance().PollEvent()).event_type() !=
-         InputEvent::EventType::NO_EVENT) {
-    if (event.event_type() == InputEvent::EventType::QUIT_EVENT) {
+  while (!(event = InputBackend::Instance().PollEvent()).has_no_event()) {
+    if (event.has_quit_event()) {
       return false;
     }
     InputManager::Instance().Handle(event);
