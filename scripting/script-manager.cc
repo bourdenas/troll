@@ -27,11 +27,16 @@ void PythonCallbackWrapper(const std::function<void()>& python_handler) {
 // wrappers handles marshaling of input events that are passed to python encoded
 // as strings.
 InputManager::InputHandler PythonInputHandlerWrapper(
-    const std::function<void(const std::string&)>& python_handler) {
+    const std::function<void(const pybind11::bytes&)>& python_handler) {
   return [python_handler](const InputEvent& event) {
     std::string encoded_input_event;
     event.SerializeToString(&encoded_input_event);
-    python_handler(encoded_input_event);
+
+    try {
+      python_handler(pybind11::bytes(encoded_input_event));
+    } catch (pybind11::error_already_set& e) {
+      LOG(ERROR) << "Python run-time error:\n" << e.what();
+    }
   };
 }
 }  // namespace
@@ -61,7 +66,7 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
         });
 
   m.def("register_input_handler",
-        [](const std::function<void(const std::string&)>& handler) {
+        [](const std::function<void(const pybind11::bytes&)>& handler) {
           return InputManager::Instance().RegisterHandler(
               PythonInputHandlerWrapper(handler));
         });
