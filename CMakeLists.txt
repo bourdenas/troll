@@ -2,6 +2,8 @@
 cmake_minimum_required(VERSION 3.6)
 project(troll)
 
+set(CMAKE_CXX_STANDARD 17)
+
 include_directories(".")
 if(MSVC)
   # Visual Studio compiler cannot compile range-v3 library, use alternative.
