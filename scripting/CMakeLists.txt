@@ -4,15 +4,15 @@ set(SOURCES
   "script-manager.cc"
 )
 
-add_library(troll::scripting ${SOURCES})
+add_library(troll_scripting ${SOURCES})
 
 # Depend on a libraries defined in the top-level file.
-target_link_libraries(troll::scripting
+target_link_libraries(troll_scripting
   absl::strings
   glog
   pybind11
-  troll::action
-  troll::core
-  troll::input
-  troll::proto
+  troll_action
+  troll_core
+  troll_input
+  troll_proto
 )
