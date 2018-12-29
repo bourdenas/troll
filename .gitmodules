@@ -1,0 +1,9 @@
+[submodule "deps/range-v3"]
+	path = deps/range-v3
+	url = https://github.com/ericniebler/range-v3.git
+[submodule "deps/abseil-cpp"]
+	path = deps/abseil-cpp
+	url = https://github.com/abseil/abseil-cpp.git
+[submodule "deps/googletest"]
+	path = deps/googletest
+	url = https://github.com/google/googletest.git
