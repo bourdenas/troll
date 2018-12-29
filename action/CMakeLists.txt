@@ -5,15 +5,15 @@ set(SOURCES
   "executor.cc"
 )
 
-add_library(troll::action ${SOURCES})
+add_library(troll_action ${SOURCES})
 
 # Depend on a libraries defined in the top-level file.
-target_link_libraries(troll:action
+target_link_libraries(troll_action
   absl::strings
   glog
-  troll::animation
-  troll::core
-  troll::proto
-  troll::scripting
-  troll::sound
+  troll_animation
+  troll_core
+  troll_proto
+  troll_scripting
+  troll_sound
 )

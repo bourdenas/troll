@@ -13,9 +13,9 @@ set(SOURCES
   "sprite.pb.cc"
 )
 
-add_library(troll::proto ${SOURCES})
+add_library(troll_proto ${SOURCES})
 
 # Depend on a libraries defined in the top-level file.
-target_link_libraries(troll:proto
+target_link_libraries(troll_proto
   ${PROTOBUF_LIBRARY}
 )

@@ -4,12 +4,12 @@ set(SOURCES
   "input-manager.cc"
 )
 
-add_library(troll::input ${SOURCES})
+add_library(troll_input ${SOURCES})
 
 # Depend on a libraries defined in the top-level file.
-target_link_libraries(troll::input
+target_link_libraries(troll_input
   range-v3
-  troll::action
-  troll::core
-  troll::proto
+  troll_action
+  troll_core
+  troll_proto
 )

@@ -12,20 +12,20 @@ set(SOURCES
   "troll-core.cc"
 )
 
-add_library(troll::core ${SOURCES})
+add_library(troll_core ${SOURCES})
 
 # Depend on a libraries defined in the top-level file.
-target_link_libraries(troll::core
+target_link_libraries(troll_core
   ${Boost_FILESYSTEM_LIBRARY}
   ${PROTOBUF_LIBRARY}
   absl::strings
   glog
   range-v3
-  troll::action
-  troll::animation
-  troll::proto
-  troll::input
-  troll::scripting
-  troll::sdl
-  troll::sound
+  troll_action
+  troll_animation
+  troll_proto
+  troll_input
+  troll_scripting
+  troll_sdl
+  troll_sound
 )

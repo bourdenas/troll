@@ -6,13 +6,13 @@ set(SOURCES
   "texture.cc"
 )
 
-add_library(troll::sdl ${SOURCES})
+add_library(troll_sdl ${SOURCES})
 
 # Depend on a libraries defined in the top-level file.
-target_link_libraries(troll::sdl
+target_link_libraries(troll_sdl
   ${SDL2_LIBRARIES}
   absl::strings
   glog
-  troll::input
-  troll::proto
+  troll_input
+  troll_proto
 )
