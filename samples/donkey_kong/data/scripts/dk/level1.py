@@ -1,7 +1,9 @@
+import dk.controls
+import dk.sprites
 import pytroll.audio
 import pytroll.events
+import pytroll.input
 import pytroll.scene
-import dk.sprites
 
 
 def init():
@@ -55,5 +57,8 @@ def init():
             (215, 134, 0), frame_index=1).Roll(),
         permanent=True)
 
-    dk.sprites.Mario('mario').Create((140, 428, 0), frame_index=15)
+    dk.controls.mario = dk.sprites.Mario(
+        'mario').Create((140, 428, 0), frame_index=15)
+
     pytroll.audio.PlayMusic('main_loop', repeat=0)
+    pytroll.input.RegisterHandler(dk.controls.InputHandler)

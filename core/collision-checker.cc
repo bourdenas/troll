@@ -34,7 +34,7 @@ void CollisionChecker::Dirty(const SceneNode& node) {
 }
 
 void CollisionChecker::CheckCollisions() {
-  auto& scene_nodes = Core::Instance().scene_manager().GetSceneNodes();
+  const auto& scene_nodes = Core::Instance().scene_manager().GetSceneNodes();
 
   std::unordered_set<const SceneNode*> checked_nodes;
   for (int i = 0; i < dirty_nodes_.size(); ++i) {
@@ -44,14 +44,14 @@ void CollisionChecker::CheckCollisions() {
     const auto result = checked_nodes.insert(&lhs);
     if (!result.second) continue;
 
-    auto& lhs_aabb =
+    const auto& lhs_aabb =
         Core::Instance().scene_manager().GetSceneNodeBoundingBox(lhs);
 
     for (const auto& rhs : scene_nodes) {
       // Skip if collision checking with self.
       if (&lhs == &rhs) continue;
 
-      auto& rhs_aabb =
+      const auto& rhs_aabb =
           Core::Instance().scene_manager().GetSceneNodeBoundingBox(rhs);
 
       bool collision = false;
