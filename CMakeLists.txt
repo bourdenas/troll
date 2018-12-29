@@ -21,6 +21,10 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 find_package(glog REQUIRED)
 include_directories(${GLOG_INCLUDE_DIR})
 
+add_subdirectory(deps/absl-cpp)
+add_subdirectory(deps/googletest)
+add_subdirectory(deps/range-v3)
+
 add_subdirectory(action)
 add_subdirectory(animation)
 add_subdirectory(core)
