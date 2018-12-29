@@ -1,6 +1,5 @@
 #include "core/collision-checker.h"
 
-#include <absl/strings/str_join.h>
 #include <glog/logging.h>
 #include <range/v3/action/push_back.hpp>
 #include <range/v3/algorithm/any_of.hpp>

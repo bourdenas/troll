@@ -3,7 +3,6 @@
 #include <iterator>
 #include <vector>
 
-#include <absl/strings/str_join.h>
 #include <range/v3/action/push_back.hpp>
 #include <range/v3/action/remove_if.hpp>
 #include <range/v3/view/transform.hpp>
