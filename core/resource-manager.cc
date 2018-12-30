@@ -39,15 +39,14 @@ Message LoadTextProto(const std::string& uri) {
 template <class Message>
 std::vector<Message> LoadTextProtoFromPath(const std::string& path,
                                            const std::string& extension) {
-  const boost::filesystem::path resource_path(path);
-  const std::vector<Message> messages =
-      boost::filesystem::directory_iterator(resource_path) |
-      ranges::view::filter([&extension](const auto& p) {
-        return p.path().extension() == extension;
-      }) |
-      ranges::view::transform([](const auto& p) {
-        return LoadTextProto<Message>(p.path().string());
-      });
+  const auto resource_path = boost::filesystem::path(path);
+  
+  std::vector<Message> messages;
+  for (const auto& p : boost::filesystem::directory_iterator(resource_path)) {
+    if (p.path().extension() != extension) continue;
+
+    messages.push_back(LoadTextProto<Message>(p.path().string()));
+  }
   return messages;
 }
 }  // namespace

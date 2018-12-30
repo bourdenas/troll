@@ -1,6 +1,8 @@
 #ifndef TROLL_SDL_INPUT_BACKEND_H_
 #define TROLL_SDL_INPUT_BACKEND_H_
 
+#include <unordered_map>
+
 #include <SDL2/SDL.h>
 
 #include "proto/input-event.pb.h"

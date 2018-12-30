@@ -130,18 +130,20 @@ void SceneManager::Render() {
   // Collect scene nodes that overlap with dirty bounding boxes.
   std::unordered_set<const SceneNode*> dirty_nodes;
   for (int i = 0; i < dirty_boxes_.size(); ++i) {
-    auto& overlap_nodes =
+    const std::vector<const SceneNode*> overlap_nodes =
         scene_nodes_ | ranges::view::values |
         ranges::view::filter([&dirty_nodes](const SceneNode& node) {
           return dirty_nodes.find(&node) == dirty_nodes.end();
         }) |
         ranges::view::filter([this, i](const SceneNode& node) {
           return geo::Collide(dirty_boxes_[i], GetSceneNodeBoundingBox(node));
+        }) | ranges::view::transform([](const SceneNode& node) { 
+          return &node;
         });
 
-    for (const auto& node : overlap_nodes) {
-      dirty_nodes.insert(&node);
-      dirty_boxes_.push_back(GetSceneNodeBoundingBox(node));
+    for (const SceneNode* node : overlap_nodes) {
+      dirty_nodes.insert(node);
+      dirty_boxes_.push_back(GetSceneNodeBoundingBox(*node));
     }
   }
 
