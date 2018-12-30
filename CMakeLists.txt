@@ -11,15 +11,13 @@ if(MSVC)
 endif()
 
 find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIRS})
 
-find_package(Boost 1.66) 
+find_package(Boost REQUIRED) 
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 
-find_package(glog REQUIRED)
-include_directories(${GLOG_INCLUDE_DIR})
+find_package(PythonLibs REQUIRED)
 
 # Use -DBUILD_TESTING=OFF to disable tests.
 add_subdirectory(deps/abseil-cpp)
