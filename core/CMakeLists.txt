@@ -16,15 +16,15 @@ add_library(troll_core ${SOURCES})
 
 # Depend on a libraries defined in the top-level file.
 target_link_libraries(troll_core
-  ${Boost_FILESYSTEM_LIBRARY}
   ${PROTOBUF_LIBRARY}
   absl::strings
   glog
   range-v3
+  stdc++fs
   troll_action
   troll_animation
-  troll_proto
   troll_input
+  troll_proto
   troll_scripting
   troll_sdl
   troll_sound
