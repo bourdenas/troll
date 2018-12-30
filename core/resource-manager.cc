@@ -1,12 +1,12 @@
 #include "core/resource-manager.h"
 
+#include <experimental/filesystem>
 #include <fstream>
 
 #include <absl/strings/str_cat.h>
 #include <glog/logging.h>
 #include <google/protobuf/io/zero_copy_stream_impl.h>
 #include <google/protobuf/text_format.h>
-#include <boost/filesystem.hpp>
 #include <range/v3/action/insert.hpp>
 #include <range/v3/view/filter.hpp>
 #include <range/v3/view/map.hpp>
@@ -39,10 +39,10 @@ Message LoadTextProto(const std::string& uri) {
 template <class Message>
 std::vector<Message> LoadTextProtoFromPath(const std::string& path,
                                            const std::string& extension) {
-  const auto resource_path = boost::filesystem::path(path);
+  const auto resource_path = std::experimental::filesystem::path(path);
   
   std::vector<Message> messages;
-  for (const auto& p : boost::filesystem::directory_iterator(resource_path)) {
+  for (const auto& p : std::experimental::filesystem::directory_iterator(resource_path)) {
     if (p.path().extension() != extension) continue;
 
     messages.push_back(LoadTextProto<Message>(p.path().string()));
