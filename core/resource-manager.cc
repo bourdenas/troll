@@ -40,9 +40,10 @@ template <class Message>
 std::vector<Message> LoadTextProtoFromPath(const std::string& path,
                                            const std::string& extension) {
   const auto resource_path = std::experimental::filesystem::path(path);
-  
+
   std::vector<Message> messages;
-  for (const auto& p : std::experimental::filesystem::directory_iterator(resource_path)) {
+  for (const auto& p :
+       std::experimental::filesystem::directory_iterator(resource_path)) {
     if (p.path().extension() != extension) continue;
 
     messages.push_back(LoadTextProto<Message>(p.path().string()));
@@ -77,8 +78,8 @@ const KeyBindings& ResourceManager::GetKeyBindings() const {
 
 const Sprite& ResourceManager::GetSprite(const std::string& sprite_id) const {
   const auto it = sprites_.find(sprite_id);
-  LOG_IF(FATAL, it == sprites_.end()) << "Sprite with id='" << sprite_id
-                                      << "' was not found.";
+  LOG_IF(FATAL, it == sprites_.end())
+      << "Sprite with id='" << sprite_id << "' was not found.";
   return it->second;
 }
 
@@ -97,37 +98,37 @@ const boost::dynamic_bitset<>& ResourceManager::GetSpriteCollisionMask(
 const AnimationScript& ResourceManager::GetAnimationScript(
     const std::string& script_id) const {
   const auto it = scripts_.find(script_id);
-  LOG_IF(FATAL, it == scripts_.end()) << "AnimationScript with id='"
-                                      << script_id << "' was not found.";
+  LOG_IF(FATAL, it == scripts_.end())
+      << "AnimationScript with id='" << script_id << "' was not found.";
   return it->second;
 }
 
 const Texture& ResourceManager::GetTexture(
     const std::string& texture_id) const {
   const auto it = textures_.find(texture_id);
-  LOG_IF(FATAL, it == textures_.end()) << "Texture with id='" << texture_id
-                                       << "' was not found.";
+  LOG_IF(FATAL, it == textures_.end())
+      << "Texture with id='" << texture_id << "' was not found.";
   return *it->second;
 }
 
 const Font& ResourceManager::GetFont(const std::string& font_id) const {
   const auto it = fonts_.find(font_id);
-  LOG_IF(FATAL, it == fonts_.end()) << "Font with id='" << font_id
-                                    << "' was not found.";
+  LOG_IF(FATAL, it == fonts_.end())
+      << "Font with id='" << font_id << "' was not found.";
   return *it->second;
 }
 
 const Music& ResourceManager::GetMusic(const std::string& track_id) const {
   const auto it = music_tracks_.find(track_id);
-  LOG_IF(FATAL, it == music_tracks_.end()) << "Music track with id='"
-                                           << track_id << "' was not found.";
+  LOG_IF(FATAL, it == music_tracks_.end())
+      << "Music track with id='" << track_id << "' was not found.";
   return *it->second;
 }
 
 const Sound& ResourceManager::GetSound(const std::string& sfx_id) const {
   const auto it = sfx_.find(sfx_id);
-  LOG_IF(FATAL, it == sfx_.end()) << "Sound effect with id='" << sfx_id
-                                  << "' was not found.";
+  LOG_IF(FATAL, it == sfx_.end())
+      << "Sound effect with id='" << sfx_id << "' was not found.";
   return *it->second;
 }
 
@@ -136,10 +137,11 @@ void ResourceManager::LoadAnimations(const std::string& base_path) {
       absl::StrCat(base_path, "sprites/"), ".animation");
   for (const auto& animation : animations) {
     ranges::action::insert(
-        scripts_, animation.script() | ranges::view::transform([](
-                                           const AnimationScript& script) {
-                    return std::make_pair(script.id(), script);
-                  }));
+        scripts_,
+        animation.script() |
+            ranges::view::transform([](const AnimationScript& script) {
+              return std::make_pair(script.id(), script);
+            }));
   }
 }
 
