@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "proto/animation.pb.h"
-#include "proto/scene.pb.h"
+#include "proto/scene-node.pb.h"
 
 namespace troll {
 
