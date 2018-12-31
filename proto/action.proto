@@ -1,10 +1,10 @@
 syntax = "proto2";
 
-import "proto/animation.proto";
-import "proto/event.proto";
-import "proto/primitives.proto";
-import "proto/scene-node.proto";
-import "proto/scene.proto";
+import "animation.proto";
+import "event.proto";
+import "primitives.proto";
+import "scene-node.proto";
+import "scene.proto";
 
 package troll;
 

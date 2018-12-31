@@ -1,7 +1,7 @@
 syntax = "proto2";
 
-import "proto/primitives.proto";
-import "proto/key-binding.proto";
+import "primitives.proto";
+import "key-binding.proto";
 
 package troll;
 

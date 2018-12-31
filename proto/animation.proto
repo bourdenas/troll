@@ -1,7 +1,7 @@
 syntax = "proto2";
 
-import "proto/audio.proto";
-import "proto/primitives.proto";
+import "audio.proto";
+import "primitives.proto";
 
 package troll;
 

@@ -1,21 +1,23 @@
 project (proto)
 
-set(SOURCES
-  "action.pb.cc"
-  "animation.pb.cc"
-  "audio.pb.cc"
-  "event.pb.cc"
-  "input-event.pb.cc"
-  "key-binding.pb.cc"
-  "primitives.pb.cc"
-  "scene-node.pb.cc"
-  "scene.pb.cc"
-  "sprite.pb.cc"
+set(PROTOS
+  "action.proto"
+  "animation.proto"
+  "audio.proto"
+  "event.proto"
+  "input-event.proto"
+  "key-binding.proto"
+  "primitives.proto"
+  "scene-node.proto"
+  "scene.proto"
+  "sprite.proto"
 )
 
-add_library(troll_proto ${SOURCES})
+protobuf_generate_cpp(PROTO_SRC PROTO_HEADER ${PROTOS})
+protobuf_generate_python(PROTO_PY ${PROTOS})
 
-# Depend on a libraries defined in the top-level file.
+add_library(troll_proto ${PROTO_HEADER} ${PROTO_SRC})
+
 target_link_libraries(troll_proto
   ${PROTOBUF_LIBRARY}
 )
