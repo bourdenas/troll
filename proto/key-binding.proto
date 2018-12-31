@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-import "proto/action.proto";
+import "action.proto";
 
 package troll;
 

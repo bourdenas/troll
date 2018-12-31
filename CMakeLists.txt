@@ -5,6 +5,8 @@ project(troll)
 set(CMAKE_CXX_STANDARD 17)
 
 include_directories(".")
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 if(MSVC)
   # Visual Studio compiler cannot compile range-v3 library, use alternative.
   include_directories("../vcpkg/packages/range-v3-vs2015_x86-windows/include")
