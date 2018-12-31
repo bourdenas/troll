@@ -9,9 +9,9 @@ add_library(troll_sound ${SOURCES})
 
 # Depend on a libraries defined in the top-level file.
 target_link_libraries(troll_sound
-  ${SDL2_LIBRARIES}
   absl::strings
   glog
+  SDL2_mixer
   troll_core
   troll_proto
 )
