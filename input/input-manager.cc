@@ -63,6 +63,7 @@ int InputManager::RegisterHandler(const InputHandler& handler) {
   static int kHandlerId = 0;
   const int handler_id = ++kHandlerId;
   input_handlers_.emplace(handler_id, handler);
+  return handler_id;
 }
 
 void InputManager::UnregisterHandler(int handler_id) {
