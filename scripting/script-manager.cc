@@ -82,6 +82,7 @@ void ScriptManager::Init(const std::string& script_base_path) {
   // Setup python module import paths appropriately.
   sys_module_ = pybind11::module::import("sys");
   for (const auto& path : {
+           std::string(".."),
            std::string("../proto"),
            absl::StrCat(script_base_path_, "scripts"),
        }) {
