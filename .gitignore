@@ -30,6 +30,7 @@
 build/
 release/
 debug/
+ninja/
 packages/
 
 # Resources and generated files
