@@ -1,4 +1,4 @@
-project (proto)
+project(proto)
 
 set(PROTOS
   "action.proto"
@@ -17,6 +17,13 @@ protobuf_generate_cpp(PROTO_SRC PROTO_HEADER ${PROTOS})
 protobuf_generate_python(PROTO_PY ${PROTOS})
 
 add_library(troll_proto ${PROTO_HEADER} ${PROTO_SRC})
+
+# Uncomment line below to generate python proto files.
+# add_custom_target(troll_py_proto ALL DEPENDS ${PROTO_PY})
+# 
+# TODO: Protos will be generated in <build_folder>/proto/ and game engine
+# expects them in <project_root>/proto/. For now generated manually by invoking
+# protoc from terminal.
 
 target_link_libraries(troll_proto
   ${PROTOBUF_LIBRARY}

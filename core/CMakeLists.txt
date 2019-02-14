@@ -1,4 +1,4 @@
-project (core)
+project(core)
 
 set(SOURCES
   "collision-checker.cc"
@@ -14,13 +14,12 @@ set(SOURCES
 
 add_library(troll_core ${SOURCES})
 
-# Depend on a libraries defined in the top-level file.
 target_link_libraries(troll_core
   ${PROTOBUF_LIBRARY}
   absl::strings
-  glog
+  glog::glog
   range-v3
-  stdc++fs
+  # stdc++fs
   troll_action
   troll_animation
   troll_input
