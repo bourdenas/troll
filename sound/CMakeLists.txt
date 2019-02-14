@@ -1,4 +1,4 @@
-project (sound)
+project(sound)
 
 set(SOURCES
   "audio-mixer.cc"
@@ -7,10 +7,9 @@ set(SOURCES
 
 add_library(troll_sound ${SOURCES})
 
-# Depend on a libraries defined in the top-level file.
 target_link_libraries(troll_sound
   absl::strings
-  glog
+  glog::glog
   SDL2_mixer
   troll_core
   troll_proto

@@ -1,4 +1,4 @@
-project (action)
+project(action)
 
 set(SOURCES
   "action-manager.cc"
@@ -7,10 +7,9 @@ set(SOURCES
 
 add_library(troll_action ${SOURCES})
 
-# Depend on a libraries defined in the top-level file.
 target_link_libraries(troll_action
   absl::strings
-  glog
+  glog::glog
   troll_animation
   troll_core
   troll_proto
