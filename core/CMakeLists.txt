@@ -28,3 +28,6 @@ target_link_libraries(troll_core
   troll_sdl
   troll_sound
 )
+
+add_executable(geometry_test "geometry_test.cc")
+target_link_libraries(geometry_test PRIVATE troll_core Catch2::Catch2)
