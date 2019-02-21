@@ -32,3 +32,7 @@ target_link_libraries(troll_core
 add_executable(geometry_test "geometry_test.cc")
 target_link_libraries(geometry_test PRIVATE troll_core Catch2::Catch2)
 catch_discover_tests(geometry_test)
+
+add_executable(event-dispatcher_test "event-dispatcher_test.cc")
+target_link_libraries(event-dispatcher_test PRIVATE troll_core Catch2::Catch2)
+catch_discover_tests(event-dispatcher_test)

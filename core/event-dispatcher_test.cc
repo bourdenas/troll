@@ -1,171 +1,208 @@
 #include "core/event-dispatcher.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 
 namespace troll {
-
-class EventDispatcherTest : public testing::Test {
- protected:
-  void SetUp() override {}
-  void TearDown() override { EventDispatcher::Instance().UnregisterAll(); }
-};
 
 namespace {
 constexpr char kSampleEvent[] = "sample.event";
 constexpr char kNoTriggerEvent[] = "sample.event.notrigger";
 }  // namespace
 
-TEST_F(EventDispatcherTest,
-       EmitDoesNotTriggerHandlersUntilProcessingTriggeredEvents) {
-  int call_count = 0;
-  EventDispatcher::Instance().Register(kSampleEvent,
-                                       [&call_count]() { ++call_count; });
+SCENARIO("One-off event handler", "[EventDispatcher.OneOffHandler]") {
+  GIVEN("an one-off event handler") {
+    int call_count = 0;
+    EventDispatcher::Instance().Register(kSampleEvent,
+                                         [&call_count]() { ++call_count; });
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EXPECT_EQ(0, call_count);
+    WHEN("the event is emitted and processed") {
+      EventDispatcher::Instance().Emit(kSampleEvent);
+      EventDispatcher::Instance().ProcessTriggeredEvents();
+      THEN("the event handler is executed") { REQUIRE(call_count == 1); }
 
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(1, call_count);
+      WHEN("batch processing runs again") {
+        EventDispatcher::Instance().ProcessTriggeredEvents();
+        THEN("the event handler is not executed a second time") {
+          REQUIRE(call_count == 1);
+        }
+        WHEN("the event is emitted a second time") {
+          EventDispatcher::Instance().Emit(kSampleEvent);
+          THEN("has no effect on the event handler") {
+            REQUIRE(call_count == 1);
+          }
+          WHEN("the second event is batch processed") {
+            EventDispatcher::Instance().ProcessTriggeredEvents();
+            THEN("the event handler still does not execute being an one-off") {
+              REQUIRE(call_count == 1);
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-TEST_F(EventDispatcherTest, RegisterOneOffHandlerTriggerEventManyTimes) {
-  int call_count = 0;
-  EventDispatcher::Instance().Register(kSampleEvent,
-                                       [&call_count]() { ++call_count; });
+SCENARIO("One-off event handler cancelation before processing",
+         "[EventDispatcher.OneOffHandler]") {
+  GIVEN("an one-off event handler") {
+    int call_count = 0;
+    const auto handler_id = EventDispatcher::Instance().Register(
+        kSampleEvent, [&call_count]() { ++call_count; });
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(1, call_count);
+    WHEN("the event is emitted") {
+      EventDispatcher::Instance().Emit(kSampleEvent);
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(1, call_count);
+      WHEN("handler is canceled before the event gets batch processed") {
+        EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
+        EventDispatcher::Instance().ProcessTriggeredEvents();
+        THEN("the event handler is not executed") { REQUIRE(call_count == 0); }
+
+        WHEN("canceling an already canceled handler") {
+          THEN("expect no death") {
+            EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
+          }
+        }
+      }
+    }
+  }
 }
 
-TEST_F(EventDispatcherTest, RegisterPermanentHandlerTriggerEventManyTimes) {
-  int call_count = 0;
-  EventDispatcher::Instance().RegisterPermanent(
-      kSampleEvent, [&call_count]() { ++call_count; });
+SCENARIO("One-off event handler cancelation after processing",
+         "[EventDispatcher.OneOffHandler]") {
+  GIVEN("an one-off event handler") {
+    int call_count = 0;
+    const auto handler_id = EventDispatcher::Instance().Register(
+        kSampleEvent, [&call_count]() { ++call_count; });
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(1, call_count);
+    WHEN("the event is emitted and processed") {
+      EventDispatcher::Instance().Emit(kSampleEvent);
+      EventDispatcher::Instance().ProcessTriggeredEvents();
+      THEN("the event handler is executed") { REQUIRE(call_count == 1); }
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(2, call_count);
-
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(3, call_count);
+      WHEN("handler is canceled after its execution") {
+        THEN("expect no death") {
+          EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
+        }
+      }
+    }
+  }
 }
 
-TEST_F(EventDispatcherTest, RegisterMultipleHandlersForEvent) {
-  int count_a = 0;
-  EventDispatcher::Instance().RegisterPermanent(kSampleEvent,
-                                                [&count_a]() { ++count_a; });
-  int count_b = 0;
-  EventDispatcher::Instance().Register(kSampleEvent,
-                                       [&count_b]() { ++count_b; });
-  int count_c = 0;
-  EventDispatcher::Instance().RegisterPermanent(kNoTriggerEvent,
-                                                [&count_c]() { ++count_c; });
+SCENARIO("Unregister non-existing events and handlers",
+         "[EventDispatcher.Unregister]") {
+  GIVEN("an event registration") {
+    int call_count = 0;
+    const auto handler_id = EventDispatcher::Instance().Register(
+        kSampleEvent, [&call_count]() { ++call_count; });
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(1, count_a);
-  EXPECT_EQ(1, count_b);
-  EXPECT_EQ(0, count_c);
+    WHEN("a non-existing handler in unregistered") {
+      const auto non_existing_handler_id = 42;
+      REQUIRE(non_existing_handler_id != handler_id);
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(2, count_a);
-  EXPECT_EQ(1, count_b);
-  EXPECT_EQ(0, count_c);
+      THEN("expect no death") {
+        EventDispatcher::Instance().Unregister(kSampleEvent,
+                                               non_existing_handler_id);
+      }
+    }
+
+    WHEN("a non-registered event is unregistered") {
+      REQUIRE(std::string(kSampleEvent) != std::string(kNoTriggerEvent));
+
+      THEN("expect no death") {
+        EventDispatcher::Instance().Unregister(kNoTriggerEvent, 1);
+      }
+    }
+  }
 }
 
-TEST_F(EventDispatcherTest, CancelOneOffHandlerBeforeBeingTriggered) {
-  int call_count = 0;
-  const auto handler_id = EventDispatcher::Instance().Register(
-      kSampleEvent, [&call_count]() { ++call_count; });
+SCENARIO("Permanent event handler", "[EventDispatcher.PermanentHandler]") {
+  GIVEN("a permanent event handler") {
+    int call_count = 0;
+    const auto handler_id = EventDispatcher::Instance().RegisterPermanent(
+        kSampleEvent, [&call_count]() { ++call_count; });
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
+    WHEN("the event is emitted and processed") {
+      EventDispatcher::Instance().Emit(kSampleEvent);
+      EventDispatcher::Instance().ProcessTriggeredEvents();
+      THEN("the event handler is executed") { REQUIRE(call_count == 1); }
+    }
 
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(0, call_count);
+    WHEN("the event is emitted and processed again") {
+      EventDispatcher::Instance().Emit(kSampleEvent);
+      EventDispatcher::Instance().ProcessTriggeredEvents();
+      THEN("the event handler is executed") { REQUIRE(call_count == 2); }
+    }
+
+    WHEN("the event is emitted and processed third time") {
+      EventDispatcher::Instance().Emit(kSampleEvent);
+      EventDispatcher::Instance().ProcessTriggeredEvents();
+      THEN("the event handler is executed") { REQUIRE(call_count == 3); }
+    }
+
+    WHEN(
+        "the handler is canceled and the event is emitted and processed a "
+        "fourth time") {
+      EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
+      EventDispatcher::Instance().Emit(kSampleEvent);
+      EventDispatcher::Instance().ProcessTriggeredEvents();
+      THEN("the event handler is not executed") { REQUIRE(call_count == 3); }
+    }
+  }
 }
 
-TEST_F(EventDispatcherTest, CancelOneOffHandlerAfterBeingTriggered) {
-  int call_count = 0;
-  const auto handler_id = EventDispatcher::Instance().Register(
-      kSampleEvent, [&call_count]() { ++call_count; });
+SCENARIO("Register multiple handlers for an event",
+         "[EventDispatcher.MultipleHandler]") {
+  GIVEN("some event handler for an event") {
+    int count_a = 0;
+    EventDispatcher::Instance().RegisterPermanent(kSampleEvent,
+                                                  [&count_a]() { ++count_a; });
+    int count_b = 0;
+    EventDispatcher::Instance().Register(kSampleEvent,
+                                         [&count_b]() { ++count_b; });
+    int count_c = 0;
+    const auto handler_id = EventDispatcher::Instance().RegisterPermanent(
+        kSampleEvent, [&count_c]() { ++count_c; });
+    int count_d = 0;
+    EventDispatcher::Instance().RegisterPermanent(kNoTriggerEvent,
+                                                  [&count_d]() { ++count_d; });
 
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(1, call_count);
+    WHEN("the event is emitted and processed") {
+      EventDispatcher::Instance().Emit(kSampleEvent);
+      EventDispatcher::Instance().ProcessTriggeredEvents();
+      THEN("all attached handlers are executed") {
+        REQUIRE(count_a == 1);
+        REQUIRE(count_b == 1);
+        REQUIRE(count_c == 1);
+        REQUIRE(count_d == 0);
+      }
+    }
 
-  // Expect no death, but it is a noop.
-  EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
-}
+    WHEN("the event is emitted and processed second time") {
+      EventDispatcher::Instance().Emit(kSampleEvent);
+      EventDispatcher::Instance().ProcessTriggeredEvents();
+      THEN("all attached permanent handlers are executed") {
+        REQUIRE(count_a == 2);
+        REQUIRE(count_b == 1);
+        REQUIRE(count_c == 2);
+        REQUIRE(count_d == 0);
+      }
+    }
 
-TEST_F(EventDispatcherTest, CancelPermanentHandlerBeforeBeingTriggered) {
-  int call_count = 0;
-  const auto handler_id = EventDispatcher::Instance().RegisterPermanent(
-      kSampleEvent, [&call_count]() { ++call_count; });
-
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
-
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(0, call_count);
-}
-
-TEST_F(EventDispatcherTest, CancelPermanentHandlerAfterBeingTriggeredFewTimes) {
-  int call_count = 0;
-  const auto handler_id = EventDispatcher::Instance().RegisterPermanent(
-      kSampleEvent, [&call_count]() { ++call_count; });
-
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(1, call_count);
-
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(2, call_count);
-
-  EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
-
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(2, call_count);
-}
-
-TEST_F(EventDispatcherTest, CancelHandlerOnEventWithMultipleHandlers) {
-  int count_a = 0;
-  EventDispatcher::Instance().RegisterPermanent(kSampleEvent,
-                                                [&count_a]() { ++count_a; });
-  int count_b = 0;
-  const auto handler_id = EventDispatcher::Instance().RegisterPermanent(
-      kSampleEvent, [&count_b]() { ++count_b; });
-  int count_c = 0;
-  EventDispatcher::Instance().RegisterPermanent(kSampleEvent,
-                                                [&count_c]() { ++count_c; });
-
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(1, count_a);
-  EXPECT_EQ(1, count_b);
-  EXPECT_EQ(1, count_c);
-
-  EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
-
-  EventDispatcher::Instance().Emit(kSampleEvent);
-  EventDispatcher::Instance().ProcessTriggeredEvents();
-  EXPECT_EQ(2, count_a);
-  EXPECT_EQ(1, count_b);
-  EXPECT_EQ(2, count_c);
+    WHEN("one of the permanent handlers is canceled") {
+      EventDispatcher::Instance().Unregister(kSampleEvent, handler_id);
+      WHEN("the event is emitted and processed third time") {
+        EventDispatcher::Instance().Emit(kSampleEvent);
+        EventDispatcher::Instance().ProcessTriggeredEvents();
+        THEN("only the non-terminated handler is executed") {
+          REQUIRE(count_a == 3);
+          REQUIRE(count_b == 1);
+          REQUIRE(count_c == 2);
+          REQUIRE(count_d == 0);
+        }
+      }
+    }
+  }
 }
 
 }  // namespace troll
