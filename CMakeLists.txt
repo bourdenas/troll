@@ -40,6 +40,11 @@ endif()
 add_subdirectory(deps/pybind11)
 add_subdirectory(deps/range-v3)
 
+enable_testing()
+
+include(CTest)
+include(Catch)
+
 add_subdirectory(action)
 add_subdirectory(animation)
 add_subdirectory(core)
