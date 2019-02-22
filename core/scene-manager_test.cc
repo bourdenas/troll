@@ -1,7 +1,7 @@
 #include "core/scene-manager.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 
 #include "animation/animator-manager.h"
 #include "core/troll-core.h"
@@ -12,388 +12,315 @@
 
 namespace troll {
 
-using testing::Pointee;
-
-class SceneManagerIntegrationTest : public testing::Test {
- protected:
-  void SetUp() override {
+class SceneManagerFixture {
+ public:
+  SceneManagerFixture() {
     scene_manager_ = new SceneManager();
     Core::Instance().SetupTestSceneManager(scene_manager_);
 
     TestingResourceManager::SetTestSprite(ParseProto<Sprite>(R"(
-      id: 'sprite_a'
-      film { width: 10  height: 10 }
-      film { width: 20  height: 20 }
-      film { width: 30  height: 30 })"));
+        id: 'sprite_a'
+        film { width: 10  height: 10 }
+        film { width: 20  height: 20 }
+        film { width: 30  height: 30 })"));
   }
 
-  void TearDown() override {
+  virtual ~SceneManagerFixture() {
     AnimatorManager::Instance().StopAll();
     ResourceManager::Instance().CleanUp();
   }
 
+ protected:
   SceneManager* scene_manager_ = nullptr;
 };
 
-// Running an animation script on non-existing scene node is a noop.
-TEST_F(SceneManagerIntegrationTest, RunScriptOnNonExistingSceneNode) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
+SCENARIO_METHOD(SceneManagerFixture, "Running animation scripts on scene nodes",
+                "[SceneManager.RunScript") {
+  GIVEN("An animation script that is repeatable indefinitely") {
+    TestingResourceManager::SetTestAnimationScript(
+        ParseProto<AnimationScript>(R"(
+            id: 'script_a'
+            animation {
+              translation {
+                vec { x: 1 }
+                delay: 5
+              }
+            })"));
+
+    scene_manager_->AddSceneNode(
+        ParseProto<SceneNode>("id: 'node_a' sprite_id: 'sprite_a'"));
+
+    auto expected = ParseProto<SceneNode>(R"(
+          id: 'node_a' sprite_id: 'sprite_a'
+          position { x: 0  y: 0  z: 0 })");
+
+    WHEN("applied on a scene node") {
+      AnimatorManager::Instance().Play("script_a", "node_a");
+      AnimatorManager::Instance().Progress(12);
+
+      THEN("the scene node is affected") {
+        expected.mutable_position()->set_x(2);
+        REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                     EqualsProto(expected));
+
+        AND_WHEN("more progress is made") {
+          AnimatorManager::Instance().Progress(20);
+
+          THEN("animation keeps being applied") {
+            expected.mutable_position()->set_x(6);
+            REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                         EqualsProto(expected));
+
+            AND_WHEN("the animation is stopped") {
+              AnimatorManager::Instance().Stop("script_a", "node_a");
+              AnimatorManager::Instance().Progress(5);
+
+              THEN("the animation is no longer applied") {
+                REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                             EqualsProto(expected));
+              }
+            }
+
+            AND_WHEN("the animation is paused") {
+              AnimatorManager::Instance().Pause("script_a", "node_a");
+              AnimatorManager::Instance().Progress(5);
+
+              THEN("the animation is not applied") {
+                REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                             EqualsProto(expected));
+
+                AND_WHEN("the animation is resumed") {
+                  AnimatorManager::Instance().Resume("script_a", "node_a");
+                  AnimatorManager::Instance().Progress(15);
+
+                  THEN("the animation is applied again") {
+                    expected.mutable_position()->set_x(9);
+                    REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                                 EqualsProto(expected));
+                  }
+                }
+              }
+            }
+          }
+        }
       }
-    })"));
+    }
 
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Progress(5);
+    WHEN("applied on a scene node twice") {
+      AnimatorManager::Instance().Play("script_a", "node_a");
+      AnimatorManager::Instance().Play("script_a", "node_a");
+      AnimatorManager::Instance().Progress(12);
 
-  EXPECT_EQ(scene_manager_->GetSceneNodeById("node_a"), nullptr);
+      THEN("the animation effect is doubles") {
+        expected.mutable_position()->set_x(4);
+        REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                     EqualsProto(expected));
+      }
+    }
+  }
 }
 
-// Running a non-existing animation script on an existing scene node causes
-// death.
-TEST_F(SceneManagerIntegrationTest, RunNonExistingScriptOnSceneNode) {
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
+SCENARIO_METHOD(SceneManagerFixture, "Running finite scripts on scene nodes",
+                "[SceneManager.RunFiniteScript") {
+  GIVEN("An animation script that is repeated only twice") {
+    TestingResourceManager::SetTestAnimationScript(
+        ParseProto<AnimationScript>(R"(
+            id: 'script_a'
+            animation {
+              translation {
+                vec { x: 1 }
+                delay: 5
+                repeat: 2
+              }
+            })"));
 
-  EXPECT_DEATH(AnimatorManager::Instance().Play("script_a", "node_a"),
-               "AnimationScript with id=");
+    scene_manager_->AddSceneNode(
+        ParseProto<SceneNode>("id: 'node_a' sprite_id: 'sprite_a'"));
+
+    auto expected = ParseProto<SceneNode>(R"(
+        id: 'node_a' sprite_id: 'sprite_a'
+        position { x: 0  y: 0  z: 0 })");
+
+    WHEN("applied on a scene node till end") {
+      AnimatorManager::Instance().Play("script_a", "node_a");
+      AnimatorManager::Instance().Progress(20);
+
+      THEN("the animation is only applied twice") {
+        expected.mutable_position()->set_x(2);
+        REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                     EqualsProto(expected));
+      }
+    }
+
+    WHEN("it starts running on a scene node") {
+      AnimatorManager::Instance().Play("script_a", "node_a");
+      AnimatorManager::Instance().Progress(5);
+
+      THEN("the animation is applied") {
+        expected.mutable_position()->set_x(1);
+        REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                     EqualsProto(expected));
+
+        AND_WHEN("the animation is stopped") {
+          AnimatorManager::Instance().Stop("script_a", "node_a");
+          AnimatorManager::Instance().Progress(5);
+
+          THEN("the animation is no longer applied") {
+            REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                         EqualsProto(expected));
+          }
+        }
+
+        AND_WHEN("the animation is paused") {
+          AnimatorManager::Instance().Pause("script_a", "node_a");
+          AnimatorManager::Instance().Progress(5);
+
+          THEN("the animation is not applied") {
+            REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                         EqualsProto(expected));
+
+            AND_WHEN("the animation is resumed") {
+              AnimatorManager::Instance().Resume("script_a", "node_a");
+              AnimatorManager::Instance().Progress(15);
+
+              THEN("the animation is applied again") {
+                expected.mutable_position()->set_x(2);
+                REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                             EqualsProto(expected));
+              }
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
-// Running an non-terminating animation script on a scene node, applies its
-// effects perpetually.
-TEST_F(SceneManagerIntegrationTest, RunIndefiniteScriptAnimation) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
+SCENARIO_METHOD(SceneManagerFixture, "Scripts on non-existing scene nodes",
+                "[SceneManager.ScriptOnAbsentNodes") {
+  GIVEN("An animation script") {
+    TestingResourceManager::SetTestAnimationScript(
+        ParseProto<AnimationScript>(R"(
+            id: 'script_a'
+            animation {
+              translation {
+                vec { x: 1 }
+                delay: 5
+              }
+            })"));
+
+    WHEN("applied on a non-existing scene node") {
+      AnimatorManager::Instance().Play("script_a", "node_a");
+      AnimatorManager::Instance().Progress(5);
+
+      THEN("it is a noop") {
+        REQUIRE(scene_manager_->GetSceneNodeById("node_a") == nullptr);
       }
-    })"));
+    }
 
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
+    WHEN("stopped on a non-existing scene node") {
+      AnimatorManager::Instance().Stop("script_a", "node_a");
+      AnimatorManager::Instance().Progress(5);
 
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Progress(12);
+      THEN("it is a noop") {
+        REQUIRE(scene_manager_->GetSceneNodeById("node_a") == nullptr);
+      }
+    }
 
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
+    scene_manager_->AddSceneNode(
+        ParseProto<SceneNode>("id: 'node_a' sprite_id: 'sprite_a'"));
 
-  AnimatorManager::Instance().Progress(5);
+    auto expected = ParseProto<SceneNode>(R"(
+        id: 'node_a' sprite_id: 'sprite_a'
+        position { x: 0  y: 0  z: 0 })");
 
-  // Animation will never stop executing by iteself.
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 3  y: 0  z: 0
-                })"))));
+    WHEN("applied on a scene node") {
+      AnimatorManager::Instance().Play("script_a", "node_a");
+      AnimatorManager::Instance().Progress(5);
+
+      THEN("it makes some progress") {
+        expected.mutable_position()->set_x(1);
+        REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                     EqualsProto(expected));
+
+        AND_WHEN("the scene node is destroyed but the script keeps running") {
+          // Create a new scene manager as a hacky way to destory the node.
+          scene_manager_ = new SceneManager();
+          Core::Instance().SetupTestSceneManager(scene_manager_);
+
+          AnimatorManager::Instance().Progress(50);
+
+          THEN("expect no death") { SUCCEED(); }
+        }
+      }
+    }
+  }
 }
 
-// Animations with specified number of repetitions do not have an effect after
-// they are done.
-TEST_F(SceneManagerIntegrationTest, RunFiniteScriptAnimation) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-        repeat: 2
+SCENARIO_METHOD(SceneManagerFixture, "Scene nodes with multiple scripts",
+                "[SceneManager.MultiScriptNodes") {
+  GIVEN("Some animations scripts applied on some scene nodes") {
+    TestingResourceManager::SetTestAnimationScript(
+        ParseProto<AnimationScript>(R"(
+            id: 'script_a'
+            animation {
+              translation {
+                vec { x: 1 }
+                delay: 5
+              }
+            })"));
+    TestingResourceManager::SetTestAnimationScript(
+        ParseProto<AnimationScript>(R"(
+            id: 'script_b'
+            animation {
+              translation {
+                vec { y: 1 }
+                delay: 5
+              }
+            })"));
+
+    scene_manager_->AddSceneNode(
+        ParseProto<SceneNode>("id: 'node_a' sprite_id: 'sprite_a'"));
+    scene_manager_->AddSceneNode(
+        ParseProto<SceneNode>("id: 'node_b' sprite_id: 'sprite_a'"));
+
+    auto expected_a = ParseProto<SceneNode>(R"(
+        id: 'node_a' sprite_id: 'sprite_a'
+        position { x: 0  y: 0  z: 0 })");
+    auto expected_b = ParseProto<SceneNode>(R"(
+        id: 'node_b' sprite_id: 'sprite_a'
+        position { x: 0  y: 0  z: 0 })");
+
+    WHEN("multiple scripts are applied on a node") {
+      AnimatorManager::Instance().Play("script_a", "node_a");
+      AnimatorManager::Instance().Play("script_b", "node_a");
+      AnimatorManager::Instance().Play("script_a", "node_b");
+      AnimatorManager::Instance().Progress(10);
+
+      THEN("all of them are applied") {
+        expected_a.mutable_position()->set_x(2);
+        expected_a.mutable_position()->set_y(2);
+        expected_b.mutable_position()->set_x(2);
+        REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                     EqualsProto(expected_a));
+        REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_b"),
+                     EqualsProto(expected_b));
+
+        AND_WHEN("all animations for a node are stopped") {
+          AnimatorManager::Instance().StopNodeAnimations("node_a");
+          AnimatorManager::Instance().Progress(5);
+
+          THEN("it has no effect on other nodes") {
+            expected_b.mutable_position()->set_x(3);
+            REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_a"),
+                         EqualsProto(expected_a));
+            REQUIRE_THAT(*scene_manager_->GetSceneNodeById("node_b"),
+                         EqualsProto(expected_b));
+          }
+        }
       }
-    })"));
-
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
-
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Progress(20);
-
-  // Animation executes only twice, even though it could have run 4 times if it
-  // wasn't for its limit.
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
-}
-
-// Animations scripts have no longer an effect after they are stopped.
-TEST_F(SceneManagerIntegrationTest, RunAndStopIndefiniteScriptAnimation) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-      }
-    })"));
-
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
-
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Progress(12);
-
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
-
-  AnimatorManager::Instance().Stop("script_a", "node_a");
-  AnimatorManager::Instance().Progress(5);
-
-  // Animation stopped and no longer executes.
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
-}
-
-// Pausing an animation script halts temporarily its effects and are resumed
-// when it resumes itself.
-TEST_F(SceneManagerIntegrationTest, RunPauseResumeFiniteScriptAnimation) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-        repeat: 3
-      }
-    })"));
-
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
-
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Progress(12);
-
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
-
-  AnimatorManager::Instance().Pause("script_a", "node_a");
-  AnimatorManager::Instance().Progress(5);
-
-  // Animation paused and doesn't run until resumed.
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
-
-  AnimatorManager::Instance().Resume("script_a", "node_a");
-  AnimatorManager::Instance().Progress(10);
-
-  // Animation resumes and runs one more time before it self-terminates.
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 3  y: 0  z: 0
-                })"))));
-}
-
-// Halting all animation scripts for a specific scene node has the intended
-// effects and do not affect other nodes.
-TEST_F(SceneManagerIntegrationTest, StopMultipleNodeAnimations) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-      }
-    })"));
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_b'
-    animation {
-      translation {
-        vec { y: 1 }
-        delay: 5
-      }
-    })"));
-
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_b'
-    sprite_id: 'sprite_a')"));
-
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Play("script_b", "node_a");
-  AnimatorManager::Instance().Play("script_a", "node_b");
-  AnimatorManager::Instance().Progress(10);
-
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 2  z: 0
-                })"))));
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_b"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_b'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
-
-  AnimatorManager::Instance().StopNodeAnimations("node_a");
-  AnimatorManager::Instance().Progress(5);
-
-  // Animations don't run anymore for node_a.
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 2  z: 0
-                })"))));
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_b"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_b'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 3  y: 0  z: 0
-                })"))));
-}
-
-// Stopping animation script for non-existing scene node is safe with no effect.
-TEST_F(SceneManagerIntegrationTest, StopNodeAnimationsForNonExistingNode) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-      }
-    })"));
-
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
-
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Progress(10);
-
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
-  EXPECT_EQ(scene_manager_->GetSceneNodeById("node_b"), nullptr);
-
-  AnimatorManager::Instance().StopNodeAnimations("node_b");
-  AnimatorManager::Instance().Progress(5);
-
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 3  y: 0  z: 0
-                })"))));
-  EXPECT_EQ(scene_manager_->GetSceneNodeById("node_b"), nullptr);
-}
-
-// Applying a script twice on the same scene node doubles its effects.
-TEST_F(SceneManagerIntegrationTest,
-       ApplyingMultipleTimesScriptOnNodeMultipliesEffect) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-      }
-    })"));
-
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
-
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Progress(10);
-
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 4  y: 0  z: 0
-                })"))));
-}
-
-// Animation scripts applied on scene nodes that got destroyed are halted
-// automatically and are safe for the system.
-TEST_F(SceneManagerIntegrationTest, AnimationStopsWhenSceneNodeIsRemoved) {
-  TestingResourceManager::SetTestAnimationScript(ParseProto<AnimationScript>(R"(
-    id: 'script_a'
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-      }
-    })"));
-
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>(R"(
-    id: 'node_a'
-    sprite_id: 'sprite_a')"));
-
-  AnimatorManager::Instance().Play("script_a", "node_a");
-  AnimatorManager::Instance().Progress(10);
-
-  EXPECT_THAT(scene_manager_->GetSceneNodeById("node_a"),
-              Pointee(EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'node_a'
-                sprite_id: 'sprite_a'
-                position {
-                  x: 2  y: 0  z: 0
-                })"))));
-
-  // Create a new scene manager as a hacky way to delete the 'test_node'.
-  scene_manager_ = new SceneManager();
-  Core::Instance().SetupTestSceneManager(scene_manager_);
-
-  AnimatorManager::Instance().Progress(5);
-  EXPECT_EQ(scene_manager_->GetSceneNodeById("node_a"), nullptr);
+    }
+  }
 }
 
 }  // namespace troll

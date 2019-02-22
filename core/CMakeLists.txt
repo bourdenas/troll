@@ -36,3 +36,7 @@ catch_discover_tests(geometry_test)
 add_executable(event-dispatcher_test "event-dispatcher_test.cc")
 target_link_libraries(event-dispatcher_test PRIVATE troll_core Catch2::Catch2)
 catch_discover_tests(event-dispatcher_test)
+
+add_executable(scene-manager_test "scene-manager_test.cc")
+target_link_libraries(scene-manager_test PRIVATE troll_core Catch2::Catch2)
+catch_discover_tests(scene-manager_test)
