@@ -20,14 +20,11 @@ class AnimatorManager {
 
   void Play(const AnimationScript& script, const std::string& scene_node_id);
   void Play(const std::string& script_id, const std::string& scene_node_id);
-  void Stop(const std::string& script_id,
-            const std::string& scene_node_id) const;
-  void Pause(const std::string& script_id,
-             const std::string& scene_node_id) const;
-  void Resume(const std::string& script_id,
-              const std::string& scene_node_id) const;
+  void Stop(const std::string& script_id, const std::string& scene_node_id);
+  void Pause(const std::string& script_id, const std::string& scene_node_id);
+  void Resume(const std::string& script_id, const std::string& scene_node_id);
 
-  void StopNodeAnimations(const std::string& scene_node_id) const;
+  void StopNodeAnimations(const std::string& scene_node_id);
 
   void StopAll();
   void PauseAll();
@@ -43,7 +40,7 @@ class AnimatorManager {
   ~AnimatorManager() = default;
 
   bool paused_ = false;
-  std::vector<std::unique_ptr<ScriptAnimator>> running_scripts_;
+  std::vector<ScriptAnimator> running_scripts_;
 };
 
 }  // namespace troll
