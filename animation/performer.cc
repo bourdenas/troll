@@ -6,6 +6,7 @@
 #include "core/event-dispatcher.h"
 #include "core/events.h"
 #include "core/geometry.h"
+#include "core/resource-manager.h"
 #include "core/scene-manager.h"
 #include "core/troll-core.h"
 #include "sound/audio-mixer.h"
@@ -128,7 +129,9 @@ bool GotoPerformer::Execute(SceneNode* scene_node) {
 bool TimerPerformer::Execute(SceneNode* _unused) { return true; }
 
 void RunScriptPerformer::Start(SceneNode* scene_node) {
-  AnimatorManager::Instance().Play(animation_.script_id(), scene_node->id());
+  AnimatorManager::Instance().Play(
+      ResourceManager::Instance().GetAnimationScript(animation_.script_id()),
+      scene_node->id());
   EventDispatcher::Instance().Register(
       Events::OnAnimationScriptTermination(scene_node->id(),
                                            animation_.script_id()),

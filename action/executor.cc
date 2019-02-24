@@ -6,6 +6,7 @@
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
 #include "core/execution-context.h"
+#include "core/resource-manager.h"
 #include "core/scene-node-query.h"
 #include "core/troll-core.h"
 #include "scripting/script-manager.h"
@@ -154,13 +155,11 @@ void PlayAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    if (action.play_animation_script().has_script()) {
-      AnimatorManager::Instance().Play(action.play_animation_script().script(),
-                                       id);
-    } else {
-      AnimatorManager::Instance().Play(
-          action.play_animation_script().script_id(), id);
-    }
+    const auto& script = action.play_animation_script().has_script()
+                             ? action.play_animation_script().script()
+                             : ResourceManager::Instance().GetAnimationScript(
+                                   action.play_animation_script().script_id());
+    AnimatorManager::Instance().Play(script, id);
   }
 }
 

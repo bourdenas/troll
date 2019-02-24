@@ -7,7 +7,6 @@
 
 #include "core/event-dispatcher.h"
 #include "core/events.h"
-#include "core/resource-manager.h"
 
 namespace troll {
 
@@ -36,12 +35,6 @@ void AnimatorManager::Play(const AnimationScript& script,
   running_scripts_.push_back(
       std::make_unique<ScriptAnimator>(script, scene_node_id));
   running_scripts_.back()->Start();
-}
-
-void AnimatorManager::Play(const std::string& script_id,
-                           const std::string& scene_node_id) {
-  Play(ResourceManager::Instance().GetAnimationScript(script_id),
-       scene_node_id);
 }
 
 void AnimatorManager::Stop(const std::string& script_id,
