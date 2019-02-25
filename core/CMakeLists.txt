@@ -4,7 +4,6 @@ set(SOURCES
   "collision-checker.cc"
   "event-dispatcher.cc"
   "events.cc"
-  "execution-context.cc"
   "geometry.cc"
   "resource-manager.cc"
   "scene-manager.cc"

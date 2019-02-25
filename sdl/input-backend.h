@@ -11,12 +11,8 @@ namespace troll {
 
 class InputBackend {
  public:
-  static InputBackend& Instance() {
-    static InputBackend singleton;
-    return singleton;
-  }
-
-  void Init();
+  InputBackend();
+  ~InputBackend() = default;
 
   InputEvent PollEvent();
 
@@ -24,9 +20,6 @@ class InputBackend {
   InputBackend& operator=(const InputBackend&) = delete;
 
  private:
-  InputBackend() = default;
-  ~InputBackend() = default;
-
   // A mapping from a key code of a input backend into a semantic name.
   std::unordered_map<int, std::string> key_mapping_;
 };

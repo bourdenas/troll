@@ -54,8 +54,9 @@ void ScriptAnimator::Progress(int time_since_last_frame) {
                           : script_.animation().size() - 1;
     const auto& animation_id = script_.animation(index).id();
     if (!animation_id.empty()) {
-      EventDispatcher::Instance().Emit(Events::OnAnimationScriptPartTermination(
-          scene_node->id(), script_.id(), animation_id));
+      Core::Instance().event_dispatcher().Emit(
+          Events::OnAnimationScriptPartTermination(scene_node->id(),
+                                                   script_.id(), animation_id));
     }
 
     if (!MoveToNextAnimation(scene_node)) {
@@ -72,7 +73,7 @@ bool ScriptAnimator::MoveToNextAnimation(SceneNode* scene_node) {
   }
 
   if (next_animation_index_ == script_.animation().size()) {
-    EventDispatcher::Instance().Emit(
+    Core::Instance().event_dispatcher().Emit(
         Events::OnAnimationScriptRepeat(scene_node->id(), script_.id()));
     next_animation_index_ = 0;
   }

@@ -19,7 +19,8 @@ std::unique_ptr<Font> Font::CreateFontFromFile(const std::string& filename,
 }
 
 std::unique_ptr<Texture> Texture::CreateTextureFromFile(
-    const std::string& filename, const RGBa& colour_key) {
+    const std::string& filename, const RGBa& colour_key,
+    const Renderer* renderer) {
   SDL_Surface* surface = IMG_Load(filename.c_str());
   if (surface == nullptr) {
     LOG(ERROR) << SDL_GetError();
@@ -29,7 +30,7 @@ std::unique_ptr<Texture> Texture::CreateTextureFromFile(
                              colour_key.green(), colour_key.blue()));
 
   SDL_Texture* texture =
-      SDL_CreateTextureFromSurface(Renderer::Instance().sdl_renderer_, surface);
+      SDL_CreateTextureFromSurface(renderer->sdl_renderer_, surface);
   if (texture == nullptr) {
     LOG(ERROR) << SDL_GetError();
   }
@@ -40,7 +41,7 @@ std::unique_ptr<Texture> Texture::CreateTextureFromFile(
 
 std::unique_ptr<Texture> Texture::CreateTextureText(
     const std::string& text, const Font& font, const RGBa& colour,
-    const RGBa& background_colour) {
+    const RGBa& background_colour, const Renderer* renderer) {
   SDL_Surface* surface = TTF_RenderText_Blended(
       font.font(), text.c_str(),
       {static_cast<Uint8>(colour.red()), static_cast<Uint8>(colour.green()),
@@ -51,7 +52,7 @@ std::unique_ptr<Texture> Texture::CreateTextureText(
   }
 
   SDL_Texture* texture =
-      SDL_CreateTextureFromSurface(Renderer::Instance().sdl_renderer_, surface);
+      SDL_CreateTextureFromSurface(renderer->sdl_renderer_, surface);
   if (texture == nullptr) {
     LOG(ERROR) << SDL_GetError();
   }

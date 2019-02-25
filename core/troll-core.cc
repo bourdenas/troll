@@ -1,21 +1,11 @@
 #include "core/troll-core.h"
 
+#include <absl/strings/str_cat.h>
 #include <glog/logging.h>
 
-#include "action/action-manager.h"
-#include "animation/animator-manager.h"
-#include "core/collision-checker.h"
-#include "core/event-dispatcher.h"
-#include "core/resource-manager.h"
-#include "input/input-manager.h"
 #include "proto/input-event.pb.h"
 #include "proto/scene.pb.h"
 #include "proto/sprite.pb.h"
-#include "scripting/script-manager.h"
-#include "sdl/input-backend.h"
-#include "sdl/renderer.h"
-#include "sound/audio-mixer.h"
-#include "sound/sound-loader.h"
 
 namespace troll {
 
@@ -24,23 +14,30 @@ void Core::Init(const std::string& name,
   GOOGLE_PROTOBUF_VERIFY_VERSION;
   google::InitGoogleLogging(name.c_str());
 
-  ActionManager::Instance().Init();
+  renderer_ = std::make_unique<Renderer>();
+  renderer_->CreateWindow(640, 480);
 
-  Renderer::Instance().Init(640, 480);
-  SoundLoader::Instance().Init();
-  ResourceManager::Instance().LoadResources(resource_base_path);
+  sound_loader_ = std::make_unique<SoundLoader>();
+  sound_loader_->Init();
 
-  AudioMixer::Instance().Init();
-  InputManager::Instance().Init();
-  InputBackend::Instance().Init();
-  ScriptManager::Instance().Init(resource_base_path);
+  resource_manager_ = std::make_unique<ResourceManager>();
+  resource_manager_->LoadResources(resource_base_path, renderer_.get(),
+                                   sound_loader_.get());
+
+  audio_mixer_ = std::make_unique<AudioMixer>(resource_manager_.get());
+  input_backend_ = std::make_unique<InputBackend>();
+  script_manager_ = std::make_unique<ScriptManager>(resource_base_path);
+
+  action_manager_ = std::make_unique<ActionManager>();
+  animator_manager_ = std::make_unique<AnimatorManager>();
+  input_manager_ =
+      std::make_unique<InputManager>(resource_manager_->GetKeyBindings());
+
+  LoadScene(resource_manager_->LoadScene(
+      absl::StrCat(resource_base_path, "scenes/main.scene")));
 }
 
-void Core::CleanUp() {
-  ResourceManager::Instance().CleanUp();
-  SoundLoader::Instance().CleanUp();
-  Renderer::Instance().CleanUp();
-}
+void Core::CleanUp() {}
 
 void Core::Run() {
   int curr_time = SDL_GetTicks();
@@ -60,11 +57,12 @@ void Core::Run() {
 void Core::Halt() { halt_ = true; }
 
 void Core::LoadScene(const Scene& scene) {
-  EventDispatcher::Instance().UnregisterAll();
-  CollisionChecker::Instance().Init();
+  collision_checker_ = std::make_unique<CollisionChecker>();
+  event_dispatcher_ = std::make_unique<EventDispatcher>();
+  scene_manager_ =
+      std::make_unique<SceneManager>(resource_manager_.get(), renderer_.get());
 
-  scene_manager_ = std::make_unique<SceneManager>();
-  scene_manager_->SetupScene(scene);
+  scene_manager_->SetupScene(scene, script_manager_.get());
 }
 
 bool Core::InputHandling() {
@@ -73,19 +71,19 @@ bool Core::InputHandling() {
   }
 
   InputEvent event;
-  while (!(event = InputBackend::Instance().PollEvent()).has_no_event()) {
+  while (!(event = input_backend_->PollEvent()).has_no_event()) {
     if (event.has_quit_event()) {
       return false;
     }
-    InputManager::Instance().Handle(event);
+    input_manager_->Handle(event);
   }
   return true;
 }
 
 void Core::FrameStarted(int time_since_last_frame) {
-  AnimatorManager::Instance().Progress(time_since_last_frame);
-  CollisionChecker::Instance().CheckCollisions();
-  EventDispatcher::Instance().ProcessTriggeredEvents();
+  animator_manager_->Progress(time_since_last_frame);
+  collision_checker_->CheckCollisions();
+  event_dispatcher_->ProcessTriggeredEvents();
 }
 
 void Core::FrameEnded(int time_since_last_frame) {

@@ -13,10 +13,8 @@ namespace troll {
 
 class AnimatorManager {
  public:
-  static AnimatorManager& Instance() {
-    static AnimatorManager singleton;
-    return singleton;
-  }
+  AnimatorManager() = default;
+  ~AnimatorManager() = default;
 
   void Play(const AnimationScript& script, const std::string& scene_node_id);
   void Stop(const std::string& script_id,
@@ -38,9 +36,6 @@ class AnimatorManager {
   AnimatorManager& operator=(const AnimatorManager&) = delete;
 
  private:
-  AnimatorManager() = default;
-  ~AnimatorManager() = default;
-
   bool paused_ = false;
   std::vector<std::unique_ptr<ScriptAnimator>> running_scripts_;
 };

@@ -10,25 +10,27 @@
 #include "core/collision-checker.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"
+#include "core/troll-core.h"
 #include "scripting/script-manager.h"
 #include "sdl/renderer.h"
 
 namespace troll {
 
-void SceneManager::SetupScene(const Scene& scene) {
+void SceneManager::SetupScene(const Scene& scene,
+                              ScriptManager* script_manager) {
   scene_ = scene;
-  Renderer::Instance().ClearScreen();
-  Renderer::Instance().FillColour(scene_.bitmap_config().background_colour(),
-                                  scene_.viewport());
+  renderer_->ClearScreen();
+  renderer_->FillColour(scene_.bitmap_config().background_colour(),
+                        scene_.viewport());
 
   if (scene_.bitmap_config().has_bitmap()) {
-    Renderer::Instance().BlitTexture(
-        ResourceManager::Instance().GetTexture(scene_.bitmap_config().bitmap()),
-        Box(), Box());
+    renderer_->BlitTexture(
+        resource_manager_->GetTexture(scene_.bitmap_config().bitmap()), Box(),
+        Box());
   }
 
   for (const auto& script : scene_.on_init()) {
-    ScriptManager::Instance().Call(script.module(), script.function());
+    script_manager->Call(script.module(), script.function());
   }
 }
 
@@ -52,7 +54,7 @@ void SceneManager::RemoveSceneNode(const std::string& id) {
 
 void SceneManager::Dirty(const SceneNode& scene_node) {
   dirty_boxes_.push_back(GetSceneNodeBoundingBox(scene_node));
-  CollisionChecker::Instance().Dirty(scene_node);
+  Core::Instance().collision_checker().Dirty(scene_node);
 }
 
 const SceneNode* SceneManager::GetSceneNodeById(const std::string& id) const {
@@ -69,8 +71,8 @@ std::vector<std::string> SceneManager::GetSceneNodesAt(const Vector& at) const {
   std::vector<std::string> filtered_nodes;
   filtered_nodes |= ranges::push_back(
       scene_nodes_ | ranges::view::values |
-      ranges::view::filter([&at](const SceneNode& node) {
-        return geo::Contains(SceneManager::GetSceneNodeBoundingBox(node), at);
+      ranges::view::filter([this, &at](const SceneNode& node) {
+        return geo::Contains(GetSceneNodeBoundingBox(node), at);
       }) |
       ranges::view::transform([](const SceneNode& node) { return node.id(); }));
   return filtered_nodes;
@@ -137,9 +139,8 @@ void SceneManager::Render() {
         }) |
         ranges::view::filter([this, i](const SceneNode& node) {
           return geo::Collide(dirty_boxes_[i], GetSceneNodeBoundingBox(node));
-        }) | ranges::view::transform([](const SceneNode& node) { 
-          return &node;
-        });
+        }) |
+        ranges::view::transform([](const SceneNode& node) { return &node; });
 
     for (const SceneNode* node : overlap_nodes) {
       dirty_nodes.insert(node);
@@ -149,8 +150,7 @@ void SceneManager::Render() {
 
   // Render behind bounding boxes.
   for (const auto& box : dirty_boxes_) {
-    Renderer::Instance().FillColour(scene_.bitmap_config().background_colour(),
-                                    box);
+    renderer_->FillColour(scene_.bitmap_config().background_colour(), box);
   }
   dirty_boxes_.clear();
 
@@ -170,13 +170,13 @@ void SceneManager::Render() {
     BlitSceneNode(*node);
   }
 
-  Renderer::Instance().Flip();
+  renderer_->Flip();
 
   CleanUpDeletedSceneNodes();
 }
 
-Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) {
-  const auto& sprite = ResourceManager::Instance().GetSprite(node.sprite_id());
+Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) const {
+  const auto& sprite = resource_manager_->GetSprite(node.sprite_id());
 
   auto bounding_box = sprite.film(node.frame_index());
   bounding_box.set_left(node.position().x());
@@ -185,16 +185,15 @@ Box SceneManager::GetSceneNodeBoundingBox(const SceneNode& node) {
 }
 
 void SceneManager::BlitSceneNode(const SceneNode& node) const {
-  const auto& sprite = ResourceManager::Instance().GetSprite(node.sprite_id());
+  const auto& sprite = resource_manager_->GetSprite(node.sprite_id());
 
   const auto& bounding_box = sprite.film(node.frame_index());
   Box destination = bounding_box;
   destination.set_left(node.position().x());
   destination.set_top(node.position().y());
 
-  Renderer::Instance().BlitTexture(
-      ResourceManager::Instance().GetTexture(sprite.resource()), bounding_box,
-      destination);
+  renderer_->BlitTexture(resource_manager_->GetTexture(sprite.resource()),
+                         bounding_box, destination);
 }
 
 void SceneManager::CleanUpDeletedSceneNodes() {

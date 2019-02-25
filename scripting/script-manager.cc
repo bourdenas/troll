@@ -6,6 +6,7 @@
 
 #include "action/action-manager.h"
 #include "core/event-dispatcher.h"
+#include "core/troll-core.h"
 #include "input/input-manager.h"
 #include "proto/action.pb.h"
 #include "proto/input-event.pb.h"
@@ -45,38 +46,38 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
   m.def("execute", [](const std::string& encoded_action) {
     Action action;
     action.ParseFromString(encoded_action);
-    ActionManager::Instance().Execute(action);
+    Core::Instance().action_manager().Execute(action);
   });
 
   m.def("register_event_handler",
         [](const std::string& event_id, const std::function<void()>& handler,
            bool permanent) {
           if (permanent) {
-            return EventDispatcher::Instance().RegisterPermanent(
+            return Core::Instance().event_dispatcher().RegisterPermanent(
                 event_id, [handler]() { PythonCallbackWrapper(handler); });
           } else {
-            return EventDispatcher::Instance().Register(
+            return Core::Instance().event_dispatcher().Register(
                 event_id, [handler]() { PythonCallbackWrapper(handler); });
           }
         });
 
   m.def("cancel_event_handler",
         [](const std::string& event_id, int handler_id) {
-          EventDispatcher::Instance().Unregister(event_id, handler_id);
+          Core::Instance().event_dispatcher().Unregister(event_id, handler_id);
         });
 
   m.def("register_input_handler",
         [](const std::function<void(const pybind11::bytes&)>& handler) {
-          return InputManager::Instance().RegisterHandler(
+          return Core::Instance().input_manager().RegisterHandler(
               PythonInputHandlerWrapper(handler));
         });
 
   m.def("cancel_input_handler", [](int handler_id) {
-    InputManager::Instance().UnregisterHandler(handler_id);
+    Core::Instance().input_manager().UnregisterHandler(handler_id);
   });
 }
 
-void ScriptManager::Init(const std::string& script_base_path) {
+ScriptManager::ScriptManager(const std::string& script_base_path) {
   script_base_path_ = script_base_path;
 
   // Setup python module import paths appropriately.

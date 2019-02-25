@@ -10,20 +10,16 @@ namespace troll {
 
 class SoundLoader {
  public:
-  static SoundLoader& Instance() {
-    static SoundLoader singleton;
-    return singleton;
-  }
+  SoundLoader() = default;
+  ~SoundLoader();
 
   void Init();
-  void CleanUp();
 
   std::unique_ptr<Music> LoadMusic(const std::string& resource) const;
   std::unique_ptr<Sound> LoadSound(const std::string& resource) const;
 
- private:
-  SoundLoader() = default;
-  ~SoundLoader() = default;
+  SoundLoader(const SoundLoader&) = delete;
+  SoundLoader& operator=(const SoundLoader&) = delete;
 };
 
 }  // namespace troll

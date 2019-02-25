@@ -7,6 +7,7 @@
 
 #include "core/event-dispatcher.h"
 #include "core/events.h"
+#include "core/troll-core.h"
 
 namespace troll {
 
@@ -89,15 +90,16 @@ void AnimatorManager::Progress(int time_since_last_frame) {
 
   // Clean up finished scripts and fire events.
   std::vector<std::string> events;
-  const auto it = std::remove_if(
-      running_scripts_.begin(), running_scripts_.end(),
-      [&events](auto& script) {
-        if (script->is_finished()) {
-          EventDispatcher::Instance().Emit(Events::OnAnimationScriptTermination(
-              script->scene_node_id(), script->script_id()));
-        }
-        return script->is_finished();
-      });
+  const auto it =
+      std::remove_if(running_scripts_.begin(), running_scripts_.end(),
+                     [&events](auto&& script) {
+                       if (script->is_finished()) {
+                         Core::Instance().event_dispatcher().Emit(
+                             Events::OnAnimationScriptTermination(
+                                 script->scene_node_id(), script->script_id()));
+                       }
+                       return script->is_finished();
+                     });
   running_scripts_.erase(it, running_scripts_.end());
 }
 

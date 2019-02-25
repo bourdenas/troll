@@ -14,12 +14,8 @@ namespace troll {
 
 class InputManager {
  public:
-  static InputManager& Instance() {
-    static InputManager singleton;
-    return singleton;
-  }
-
-  void Init();
+  InputManager(const KeyBindings& key_bindings);
+  ~InputManager() = default;
 
   using InputHandler = std::function<void(const InputEvent&)>;
   int RegisterHandler(const InputHandler& handler);
@@ -34,9 +30,6 @@ class InputManager {
   InputManager& operator=(const InputManager&) = delete;
 
  private:
-  InputManager() = default;
-  ~InputManager() = default;
-
   void HandleKey(const KeyEvent& event) const;
 
   // Set of activated games input contexts.

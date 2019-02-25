@@ -1,10 +1,7 @@
 #ifndef TROLL_ACTION_EXECUTOR_H_
 #define TROLL_ACTION_EXECUTOR_H_
 
-#include <vector>
-
 #include "proto/action.pb.h"
-#include "proto/animation.pb.h"
 
 namespace troll {
 

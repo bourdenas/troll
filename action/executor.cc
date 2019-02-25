@@ -5,7 +5,6 @@
 
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
-#include "core/execution-context.h"
 #include "core/resource-manager.h"
 #include "core/scene-node-query.h"
 #include "core/troll-core.h"
@@ -58,7 +57,8 @@ std::vector<std::string> ResolveSceneNodes(const std::string& node_expression) {
       node_ids = Core::Instance().scene_manager().GetSceneNodesByPattern(
           query.pattern);
     } else if (query.mode == SceneNodeQuery::RetrievalMode::LOCAL) {
-      auto&& context_nodes = ExecutionContext::Instance().scene_nodes();
+      auto&& context_nodes =
+          Core::Instance().collision_checker().collision_context();
       node_ids = Core::Instance().scene_manager().GetSceneNodesByPattern(
           query.pattern, context_nodes);
     }
@@ -135,11 +135,12 @@ Action MoveSceneNodeExecutor::Reverse(const Action& action) const {
 }
 
 void OnCollisionExecutor::Execute(const Action& action) const {
-  CollisionChecker::Instance().RegisterCollision(action.on_collision());
+  Core::Instance().collision_checker().RegisterCollision(action.on_collision());
 }
 
 void OnDetachingExecutor::Execute(const Action& action) const {
-  CollisionChecker::Instance().RegisterDetachment(action.on_detaching());
+  Core::Instance().collision_checker().RegisterDetachment(
+      action.on_detaching());
 }
 
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {
@@ -155,11 +156,12 @@ void PlayAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    const auto& script = action.play_animation_script().has_script()
-                             ? action.play_animation_script().script()
-                             : ResourceManager::Instance().GetAnimationScript(
-                                   action.play_animation_script().script_id());
-    AnimatorManager::Instance().Play(script, id);
+    const auto& script =
+        action.play_animation_script().has_script()
+            ? action.play_animation_script().script()
+            : Core::Instance().resource_manager().GetAnimationScript(
+                  action.play_animation_script().script_id());
+    Core::Instance().animator_manager().Play(script, id);
   }
 }
 
@@ -182,8 +184,8 @@ void StopAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    AnimatorManager::Instance().Stop(action.stop_animation_script().script_id(),
-                                     id);
+    Core::Instance().animator_manager().Stop(
+        action.stop_animation_script().script_id(), id);
   }
 }
 
@@ -206,7 +208,7 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    AnimatorManager::Instance().Pause(
+    Core::Instance().animator_manager().Pause(
         action.pause_animation_script().script_id(), id);
   }
 }
@@ -214,9 +216,11 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
 void PlayAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.play_audio();
   if (audio.has_track_id()) {
-    AudioMixer::Instance().PlayMusic(audio.track_id(), audio.repeat(), {});
+    Core::Instance().audio_mixer().PlayMusic(audio.track_id(), audio.repeat(),
+                                             {});
   } else {
-    AudioMixer::Instance().PlaySound(audio.sfx_id(), audio.repeat(), {});
+    Core::Instance().audio_mixer().PlaySound(audio.sfx_id(), audio.repeat(),
+                                             {});
   }
 }
 
@@ -229,9 +233,9 @@ Action PlayAudioExecutor::Reverse(const Action& action) const {
 void StopAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.stop_audio();
   if (audio.has_track_id()) {
-    AudioMixer::Instance().StopMusic();
+    Core::Instance().audio_mixer().StopMusic();
   } else if (audio.has_sfx_id()) {
-    AudioMixer::Instance().StopSound(audio.sfx_id());
+    Core::Instance().audio_mixer().StopSound(audio.sfx_id());
   }
 }
 
@@ -244,9 +248,9 @@ Action StopAudioExecutor::Reverse(const Action& action) const {
 void PauseAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.pause_audio();
   if (audio.has_track_id()) {
-    AudioMixer::Instance().PauseMusic();
+    Core::Instance().audio_mixer().PauseMusic();
   } else if (audio.has_sfx_id()) {
-    AudioMixer::Instance().PauseSound(audio.sfx_id());
+    Core::Instance().audio_mixer().PauseSound(audio.sfx_id());
   }
 }
 
@@ -259,9 +263,9 @@ Action PauseAudioExecutor::Reverse(const Action& action) const {
 void ResumeAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.resume_audio();
   if (audio.has_track_id()) {
-    AudioMixer::Instance().ResumeMusic();
+    Core::Instance().audio_mixer().ResumeMusic();
   } else if (audio.has_sfx_id()) {
-    AudioMixer::Instance().ResumeSound(audio.sfx_id());
+    Core::Instance().audio_mixer().ResumeSound(audio.sfx_id());
   }
 }
 
@@ -276,8 +280,8 @@ void DisplayTextExecutor::Execute(const Action& action) const {
 }
 
 void ScriptExecutor::Execute(const Action& action) const {
-  ScriptManager::Instance().Call(action.call().module(),
-                                 action.call().function());
+  Core::Instance().script_manager().Call(action.call().module(),
+                                         action.call().function());
 }
 
 }  // namespace troll

@@ -12,37 +12,39 @@
 
 namespace troll {
 
-void Renderer::Init(int width, int height) {
+Renderer::~Renderer() {
+  SDL_DestroyRenderer(sdl_renderer_);
+  SDL_DestroyWindow(window_);
+  IMG_Quit();
+  SDL_Quit();
+}
+
+bool Renderer::CreateWindow(int width, int height) {
   if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
     LOG(ERROR) << "SDL_Init error: " << SDL_GetError();
-    return;
+    return false;
   }
 
   if (TTF_Init() != 0) {
     LOG(ERROR) << "TTF_Init: " << SDL_GetError();
-    return;
+    return false;
   }
 
   window_ = SDL_CreateWindow("Troll the World!", 100, 100, width, height,
                              SDL_WINDOW_SHOWN);
   if (window_ == nullptr) {
     LOG(ERROR) << "SDL_CreateWindow Error: " << SDL_GetError();
-    return;
+    return false;
   }
 
   sdl_renderer_ = SDL_CreateRenderer(
       window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
   if (sdl_renderer_ == nullptr) {
     LOG(ERROR) << "SDL_CreateRenderer Error: " << SDL_GetError();
-    return;
+    return false;
   }
-}
 
-void Renderer::CleanUp() {
-  SDL_DestroyRenderer(sdl_renderer_);
-  SDL_DestroyWindow(window_);
-  IMG_Quit();
-  SDL_Quit();
+  return true;
 }
 
 std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
@@ -98,10 +100,16 @@ std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
 void Renderer::BlitTexture(const Texture& src, const Box& src_box,
                            const Box& dst_box) const {
   SDL_Rect src_rect = {
-      src_box.left(), src_box.top(), src_box.width(), src_box.height(),
+      src_box.left(),
+      src_box.top(),
+      src_box.width(),
+      src_box.height(),
   };
   SDL_Rect dst_rect = {
-      dst_box.left(), dst_box.top(), dst_box.width(), dst_box.height(),
+      dst_box.left(),
+      dst_box.top(),
+      dst_box.width(),
+      dst_box.height(),
   };
   SDL_RenderCopy(sdl_renderer_, src.texture(),
                  src_box.width() == 0 ? nullptr : &src_rect,
@@ -112,7 +120,10 @@ void Renderer::FillColour(const RGBa& colour, const Box& dst_box) const {
   SDL_SetRenderDrawColor(sdl_renderer_, colour.red(), colour.green(),
                          colour.blue(), colour.alpha());
   SDL_Rect dst_rect = {
-      dst_box.left(), dst_box.top(), dst_box.width(), dst_box.height(),
+      dst_box.left(),
+      dst_box.top(),
+      dst_box.width(),
+      dst_box.height(),
   };
   SDL_RenderFillRect(sdl_renderer_, &dst_rect);
 }

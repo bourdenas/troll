@@ -1,7 +1,6 @@
 #ifndef TROLL_CORE_SCENE_MANAGER_H_
 #define TROLL_CORE_SCENE_MANAGER_H_
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
@@ -9,15 +8,23 @@
 
 #include <range/v3/view/map.hpp>
 
-#include "core/geometry.h"
 #include "proto/primitives.pb.h"
+#include "proto/scene-node.pb.h"
 #include "proto/scene.pb.h"
 
 namespace troll {
 
+class Renderer;
+class ResourceManager;
+class ScriptManager;
+
 class SceneManager {
  public:
-  void SetupScene(const Scene& scene);
+  SceneManager(const ResourceManager* resource_manager,
+               const Renderer* renderer)
+      : resource_manager_(resource_manager), renderer_(renderer) {}
+
+  void SetupScene(const Scene& scene, ScriptManager* script_manager);
 
   void AddSceneNode(const SceneNode& node);
   void RemoveSceneNode(const std::string& id);
@@ -61,7 +68,7 @@ class SceneManager {
   const Box& viewport() const { return viewport_; }
 
   // Returns a bounding box describing the position of input node in the scene.
-  static Box GetSceneNodeBoundingBox(const SceneNode& node);
+  Box GetSceneNodeBoundingBox(const SceneNode& node) const;
 
  private:
   void BlitSceneNode(const SceneNode& node) const;
@@ -70,6 +77,9 @@ class SceneManager {
   // Returns true if |node| matches all fields present in the |pattern|.
   static bool NodePatternMatching(const SceneNode& pattern,
                                   const SceneNode& node);
+
+  const ResourceManager* resource_manager_;
+  const Renderer* renderer_;
 
   Scene scene_;
   Box world_bounds_;

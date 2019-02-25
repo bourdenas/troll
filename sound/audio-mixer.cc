@@ -7,24 +7,37 @@
 
 namespace troll {
 
+namespace {
+// NB: Awful hack for the C-style API of SDL. If two instances of AudioMixer are
+// created this will blow.
+AudioMixer* mixer_instance;
+}  // namespace
+
 void OnMusicFinished() {
-  if (AudioMixer::Instance().on_music_done_) {
-    AudioMixer::Instance().on_music_done_();
+  if (mixer_instance == nullptr) return;
+
+  if (mixer_instance->on_music_done_) {
+    mixer_instance->on_music_done_();
   }
 }
 
 void OnChannelFinished(int channel) {
-  AudioMixer::Instance().ChannelFinished(channel);
+  if (mixer_instance == nullptr) return;
+
+  mixer_instance->ChannelFinished(channel);
 }
 
-void AudioMixer::Init() {
+AudioMixer::AudioMixer(const ResourceManager* resource_manager)
+    : resource_manager_(resource_manager) {
+  mixer_instance = this;
   Mix_HookMusicFinished(&OnMusicFinished);
   Mix_ChannelFinished(&OnChannelFinished);
 }
+AudioMixer::~AudioMixer() { mixer_instance = nullptr; }
 
 void AudioMixer::PlayMusic(const std::string& track_id, int repeat,
                            const std::function<void()>& on_done) {
-  const auto& music = ResourceManager::Instance().GetMusic(track_id);
+  const auto& music = resource_manager_->GetMusic(track_id);
   // For SDL-mixer repeat 0 is play 0 times and -1 is endless loop.
   Mix_PlayMusic(music.music(), repeat != 0 ? repeat : -1);
   on_music_done_ = on_done;
@@ -44,7 +57,7 @@ bool AudioMixer::IsMusicPlaying() { return Mix_PlayingMusic() == 1; }
 
 void AudioMixer::PlaySound(const std::string& sfx_id, int repeat,
                            const std::function<void()>& on_done) {
-  const auto& sfx = ResourceManager::Instance().GetSound(sfx_id);
+  const auto& sfx = resource_manager_->GetSound(sfx_id);
 
   int channel = Mix_PlayChannel(-1, sfx.sound(), repeat - 1);
   if (channel == -1) {

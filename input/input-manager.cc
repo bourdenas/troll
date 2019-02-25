@@ -7,10 +7,11 @@
 #include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
-#include "core/resource-manager.h"
+#include "core/troll-core.h"
 
 namespace troll {
 
+namespace {
 // For an input HOLD trigger return two separate triggers on-press and
 // on-release that implement the hold logic while the key is pressed and reverse
 // it when it is released.
@@ -26,7 +27,7 @@ std::pair<Trigger, Trigger> MakePressReleaseTriggers(
   // actions.
   const std::vector<Action> on_release_actions =
       hold_trigger.action() | ranges::view::transform([](const Action& action) {
-        return ActionManager::Instance().Reverse(action);
+        return Core::Instance().action_manager().Reverse(action);
       }) |
       ranges::view::filter(
           [](const Action& reverse) { return !reverse.has_noop(); });
@@ -37,10 +38,10 @@ std::pair<Trigger, Trigger> MakePressReleaseTriggers(
 
   return std::make_pair(on_press, on_release);
 }
+}  // namespace
 
-void InputManager::Init() {
-  const auto& bindings = ResourceManager::Instance().GetKeyBindings();
-  for (const auto& context : bindings.context()) {
+InputManager::InputManager(const KeyBindings& key_bindings) {
+  for (const auto& context : key_bindings.context()) {
     for (const auto& interaction : context.interaction()) {
       for (const auto& key_combo : interaction.key_combo()) {
         for (const auto& trigger : interaction.trigger()) {
@@ -98,7 +99,7 @@ void InputManager::HandleKey(const KeyEvent& event) const {
       if (trigger.state() != event.key_state()) continue;
 
       for (const auto& action : trigger.action()) {
-        ActionManager::Instance().Execute(action);
+        Core::Instance().action_manager().Execute(action);
       }
     }
   }

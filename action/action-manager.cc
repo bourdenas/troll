@@ -4,7 +4,7 @@
 
 namespace troll {
 
-void ActionManager::Init() {
+ActionManager::ActionManager() {
   executors_.emplace(Action::kNoop, std::make_unique<NoopExecutor>());
   executors_.emplace(Action::kQuit, std::make_unique<QuitExecutor>());
   executors_.emplace(Action::kEmit, std::make_unique<EmitExecutor>());

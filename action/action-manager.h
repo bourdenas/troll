@@ -11,12 +11,8 @@ namespace troll {
 
 class ActionManager {
  public:
-  static ActionManager& Instance() {
-    static ActionManager singleton;
-    return singleton;
-  }
-
-  void Init();
+  ActionManager();
+  ~ActionManager() = default;
 
   void Execute(const Action& action);
   Action Reverse(const Action& action);
@@ -25,9 +21,6 @@ class ActionManager {
   ActionManager& operator=(const ActionManager&) = delete;
 
  private:
-  ActionManager() = default;
-  ~ActionManager() = default;
-
   std::unordered_map<Action::ActionCase, std::unique_ptr<Executor>> executors_;
 };
 

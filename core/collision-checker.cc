@@ -1,24 +1,13 @@
 #include "core/collision-checker.h"
 
-#include <glog/logging.h>
-#include <range/v3/action/push_back.hpp>
 #include <range/v3/algorithm/any_of.hpp>
-#include <range/v3/view/remove_if.hpp>
-#include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
-#include "core/execution-context.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"
 #include "core/troll-core.h"
 
 namespace troll {
-
-void CollisionChecker::Init() {
-  collision_directory_.clear();
-  dirty_nodes_.clear();
-  collision_cache_.clear();
-}
 
 void CollisionChecker::RegisterCollision(const CollisionAction& collision) {
   collision_directory_.push_back(collision);
@@ -56,10 +45,10 @@ void CollisionChecker::CheckCollisions() {
       bool collision = false;
       if (geo::Collide(lhs_aabb, rhs_aabb)) {
         const auto& lhs_mask =
-            ResourceManager::Instance().GetSpriteCollisionMask(
+            Core::Instance().resource_manager().GetSpriteCollisionMask(
                 lhs.sprite_id(), lhs.frame_index());
         const auto& rhs_mask =
-            ResourceManager::Instance().GetSpriteCollisionMask(
+            Core::Instance().resource_manager().GetSpriteCollisionMask(
                 rhs.sprite_id(), rhs.frame_index());
 
         collision = internal::SceneNodePixelsCollide(lhs_aabb, rhs_aabb,
@@ -80,19 +69,24 @@ void CollisionChecker::CheckCollisions() {
   dirty_nodes_.clear();
 }
 
+std::vector<std::string> CollisionChecker::collision_context() const {
+  return !collision_context_.empty() ? collision_context_.top().nodes()
+                                     : std::vector<std::string>();
+}
+
 void CollisionChecker::TriggerCollisionAction(
     const SceneNode& lhs, const SceneNode& rhs,
-    const std::vector<CollisionAction>& collision_directory) const {
-  ExecutionContext::Instance().AddSceneNodes({lhs.id(), rhs.id()});
+    const std::vector<CollisionAction>& collision_directory) {
+  collision_context_.push(CollisionContext({lhs.id(), rhs.id()}));
   for (const auto& collision : collision_directory) {
     if (!NodeInCollision(lhs, collision) || !NodeInCollision(rhs, collision)) {
       continue;
     }
     for (const auto& action : collision.action()) {
-      ActionManager::Instance().Execute(action);
+      Core::Instance().action_manager().Execute(action);
     }
   }
-  ExecutionContext::Instance().ClearSceneNodes();
+  collision_context_.pop();
 }
 
 bool CollisionChecker::NodeInCollision(const SceneNode& node,

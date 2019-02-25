@@ -1,7 +1,5 @@
 #include "animation/performer.h"
 
-#include <glog/logging.h>
-
 #include "animation/animator-manager.h"
 #include "core/event-dispatcher.h"
 #include "core/events.h"
@@ -129,17 +127,19 @@ bool GotoPerformer::Execute(SceneNode* scene_node) {
 bool TimerPerformer::Execute(SceneNode* _unused) { return true; }
 
 void RunScriptPerformer::Start(SceneNode* scene_node) {
-  AnimatorManager::Instance().Play(
-      ResourceManager::Instance().GetAnimationScript(animation_.script_id()),
+  Core::Instance().animator_manager().Play(
+      Core::Instance().resource_manager().GetAnimationScript(
+          animation_.script_id()),
       scene_node->id());
-  EventDispatcher::Instance().Register(
+  Core::Instance().event_dispatcher().Register(
       Events::OnAnimationScriptTermination(scene_node->id(),
                                            animation_.script_id()),
       [this]() { finished_ = true; });
 }
 
 void RunScriptPerformer::Stop(const SceneNode& scene_node) {
-  AnimatorManager::Instance().Stop(animation_.script_id(), scene_node.id());
+  Core::Instance().animator_manager().Stop(animation_.script_id(),
+                                           scene_node.id());
 }
 
 bool RunScriptPerformer::Execute(SceneNode* scene_node) { return finished_; }
@@ -147,19 +147,19 @@ bool RunScriptPerformer::Execute(SceneNode* scene_node) { return finished_; }
 void SfxPerformer::Start(SceneNode* scene_node) {
   auto&& on_done = [this]() { finished_ = false; };
   if (!animation_.audio().track().empty()) {
-    AudioMixer::Instance().PlayMusic(animation_.audio().track(0).id(),
-                                     animation_.repeat(), on_done);
+    Core::Instance().audio_mixer().PlayMusic(animation_.audio().track(0).id(),
+                                             animation_.repeat(), on_done);
   } else if (!animation_.audio().sfx().empty()) {
-    AudioMixer::Instance().PlaySound(animation_.audio().sfx(0).id(),
-                                     animation_.repeat(), on_done);
+    Core::Instance().audio_mixer().PlaySound(animation_.audio().sfx(0).id(),
+                                             animation_.repeat(), on_done);
   }
 }
 
 void SfxPerformer::Stop(const SceneNode& scene_node) {
   if (!animation_.audio().track().empty()) {
-    AudioMixer::Instance().StopMusic();
+    Core::Instance().audio_mixer().StopMusic();
   } else if (!animation_.audio().sfx().empty()) {
-    AudioMixer::Instance().StopSound(animation_.audio().sfx(0).id());
+    Core::Instance().audio_mixer().StopSound(animation_.audio().sfx(0).id());
   }
 }
 

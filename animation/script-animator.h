@@ -2,7 +2,7 @@
 #define TROLL_ANIMATION_SCRIPT_ANIMATOR_H_
 
 #include <memory>
-#include <vector>
+#include <string>
 
 #include "animation/animator.h"
 #include "proto/animation.pb.h"
@@ -13,9 +13,8 @@ namespace troll {
 // scene-node.
 class ScriptAnimator {
  public:
-  ScriptAnimator(const AnimationScript& script,
-                 const std::string& scene_node_id)
-      : script_(script), scene_node_id_(scene_node_id) {}
+  ScriptAnimator(const AnimationScript& script, std::string scene_node_id)
+      : script_(script), scene_node_id_(std::move(scene_node_id)) {}
 
   void Start();
   void Stop();

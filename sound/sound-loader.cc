@@ -5,13 +5,13 @@
 
 namespace troll {
 
+SoundLoader::~SoundLoader() { Mix_Quit(); }
+
 void SoundLoader::Init() {
   if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) != 0) {
     LOG(ERROR) << Mix_GetError();
   }
 }
-
-void SoundLoader::CleanUp() { Mix_Quit(); }
 
 std::unique_ptr<Music> SoundLoader::LoadMusic(
     const std::string& resource) const {

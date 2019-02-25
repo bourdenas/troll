@@ -43,8 +43,6 @@ void EventDispatcher::Unregister(const std::string& event_id, int handler_id) {
   }
 }
 
-void EventDispatcher::UnregisterAll() { event_registry_.clear(); }
-
 void EventDispatcher::Emit(const std::string& event_id) {
   triggered_events_.push_back(event_id);
 }

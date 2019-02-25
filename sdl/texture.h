@@ -11,6 +11,8 @@
 
 namespace troll {
 
+class Renderer;
+
 class Font {
  public:
   // Create a font from a file.
@@ -32,12 +34,13 @@ class Texture {
  public:
   // Create a texture from an image file.
   static std::unique_ptr<Texture> CreateTextureFromFile(
-      const std::string& filename, const RGBa& colour_key);
+      const std::string& filename, const RGBa& colour_key,
+      const Renderer* renderer);
 
   // Create a texture with a text from a font asset.
   static std::unique_ptr<Texture> CreateTextureText(
       const std::string& text, const Font& font, const RGBa& colour,
-      const RGBa& background_colour);
+      const RGBa& background_colour, const Renderer* renderer);
 
   // Create a texture of specified colour and dimensions.
   static std::unique_ptr<Texture> CreateTexture(const RGBa& colour, int width,

@@ -2,7 +2,8 @@
 #define TROLL_CORE_COLLISION_CHECKER_H_
 
 #include <set>
-#include <string>
+#include <stack>
+#include <vector>
 
 #include <boost/dynamic_bitset.hpp>
 
@@ -13,12 +14,8 @@ namespace troll {
 
 class CollisionChecker {
  public:
-  static CollisionChecker& Instance() {
-    static CollisionChecker singleton;
-    return singleton;
-  }
-
-  void Init();
+  CollisionChecker() = default;
+  ~CollisionChecker() = default;
 
   void RegisterCollision(const CollisionAction& collision);
   void RegisterDetachment(const CollisionAction& detaching);
@@ -30,15 +27,17 @@ class CollisionChecker {
   // collision actions as consequences.
   void CheckCollisions();
 
- private:
-  CollisionChecker() = default;
-  CollisionChecker(const CollisionChecker&) = delete;
-  ~CollisionChecker() = default;
+  // Returns the pair of scene node ids of the current collision.
+  std::vector<std::string> collision_context() const;
 
+  CollisionChecker(const CollisionChecker&) = delete;
+  CollisionChecker& operator=(const CollisionChecker&) = delete;
+
+ private:
   // Triggers actions associated with collision/detaching of input nodes.
   void TriggerCollisionAction(
       const SceneNode& lhs, const SceneNode& rhs,
-      const std::vector<CollisionAction>& collision_directory) const;
+      const std::vector<CollisionAction>& collision_directory);
 
   // Returns true if node is part of the CollisionAction description directly
   // (i.e. by scene_node_id) or indirectly (i.e. by sprite_id).
@@ -50,6 +49,20 @@ class CollisionChecker {
   void RemoveFromCollisionCache(const SceneNode& left, const SceneNode& right);
   bool NodesInCollisionCache(const SceneNode& left,
                              const SceneNode& right) const;
+
+  class CollisionContext {
+   public:
+    explicit CollisionContext(std::vector<std::string> node_ids)
+        : collision_node_ids_(std::move(node_ids)) {}
+
+    const std::vector<std::string>& nodes() const {
+      return collision_node_ids_;
+    }
+
+   private:
+    std::vector<std::string> collision_node_ids_;
+  };
+  std::stack<CollisionContext> collision_context_;
 
   // Directory of registered collisions.
   std::vector<CollisionAction> collision_directory_;

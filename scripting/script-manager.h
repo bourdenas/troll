@@ -1,7 +1,6 @@
 #ifndef TROLL_SCRIPTING_SCRIPT_MANAGER_H_
 #define TROLL_SCRIPTING_SCRIPT_MANAGER_H_
 
-#include <memory>
 #include <unordered_map>
 
 #include <pybind11/embed.h>
@@ -12,12 +11,8 @@ namespace troll {
 // expressions.
 class ScriptManager {
  public:
-  static ScriptManager& Instance() {
-    static ScriptManager singleton;
-    return singleton;
-  }
-
-  void Init(const std::string& script_base_path);
+  ScriptManager(const std::string& script_base_path);
+  ~ScriptManager() = default;
 
   // Call an imported module's function in the scripting engine.
   void Call(const std::string& module, const std::string& function);
@@ -28,9 +23,6 @@ class ScriptManager {
  private:
   // Import a module that is in the import path.
   const pybind11::module* ImportModule(const std::string& module);
-
-  ScriptManager() = default;
-  ~ScriptManager() = default;
 
   std::string script_base_path_;
 

@@ -7,14 +7,12 @@
 
 namespace troll {
 
+class ResourceManager;
+
 class AudioMixer {
  public:
-  static AudioMixer& Instance() {
-    static AudioMixer singleton;
-    return singleton;
-  }
-
-  void Init();
+  AudioMixer(const ResourceManager* resource_manager);
+  ~AudioMixer();
 
   void PlayMusic(const std::string& track_id, int repeat,
                  const std::function<void()>& on_done);
@@ -35,12 +33,11 @@ class AudioMixer {
   void ResumeAll();
 
  private:
-  AudioMixer() = default;
-  ~AudioMixer() = default;
-
   int LookupChannel(const std::string& sfx_id) const;
 
   void ChannelFinished(int channel);
+
+  const ResourceManager* resource_manager_;
 
   std::function<void()> on_music_done_;
 

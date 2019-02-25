@@ -15,13 +15,10 @@ namespace troll {
 
 class Renderer {
  public:
-  static Renderer& Instance() {
-    static Renderer singleton;
-    return singleton;
-  }
+  Renderer() = default;
+  ~Renderer();
 
-  void Init(int width, int height);
-  void CleanUp();
+  bool CreateWindow(int width, int height);
 
   // Returns collision masks for each film in the sprite. Masks are auto-
   // generated from the sprite's image and colour key
@@ -42,10 +39,10 @@ class Renderer {
   void PrintText(const std::string& text, const Vector& at) const {}
   void ClearScreen() const;
 
- private:
-  Renderer() = default;
-  ~Renderer() = default;
+  Renderer(const Renderer&) = delete;
+  Renderer& operator=(const Renderer&) = delete;
 
+ private:
   SDL_Window* window_ = nullptr;
   SDL_Renderer* sdl_renderer_ = nullptr;
 

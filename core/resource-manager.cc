@@ -52,20 +52,15 @@ std::vector<Message> LoadTextProtoFromPath(const std::string& path,
 }
 }  // namespace
 
-void ResourceManager::LoadResources(const std::string& base_path) {
+void ResourceManager::LoadResources(const std::string& base_path,
+                                    const Renderer* renderer,
+                                    const SoundLoader* sound_loader) {
   LoadAnimations(base_path);
   LoadKeyBindings(base_path);
-  LoadSprites(base_path);
-  LoadTextures(base_path);
+  LoadSprites(base_path, renderer);
+  LoadTextures(base_path, renderer);
   LoadFonts(base_path);
-  LoadSounds(base_path);
-}
-
-void ResourceManager::CleanUp() {
-  fonts_.clear();
-  textures_.clear();
-  scripts_.clear();
-  sprites_.clear();
+  LoadSounds(base_path, sound_loader);
 }
 
 Scene ResourceManager::LoadScene(const std::string& filename) {
@@ -153,7 +148,8 @@ void ResourceManager::LoadKeyBindings(const std::string& base_path) {
   }
 }
 
-void ResourceManager::LoadSprites(const std::string& base_path) {
+void ResourceManager::LoadSprites(const std::string& base_path,
+                                  const Renderer* renderer) {
   const auto sprites = LoadTextProtoFromPath<Sprite>(
       absl::StrCat(base_path, "sprites/"), ".sprite");
 
@@ -162,14 +158,15 @@ void ResourceManager::LoadSprites(const std::string& base_path) {
              });
   sprite_collision_masks_ =
       sprites_ | ranges::view::values |
-      ranges::view::transform([&base_path](const Sprite& sprite) {
+      ranges::view::transform([&base_path, renderer](const Sprite& sprite) {
         return std::make_pair(
-            sprite.id(), Renderer::Instance().GenerateCollisionMasks(
+            sprite.id(), renderer->GenerateCollisionMasks(
                              absl::StrCat(base_path, "resources/"), sprite));
       });
 }
 
-void ResourceManager::LoadTextures(const std::string& base_path) {
+void ResourceManager::LoadTextures(const std::string& base_path,
+                                   const Renderer* renderer) {
   std::vector<std::pair<std::string, std::string>> resources =
       sprites_ | ranges::view::values |
       ranges::view::transform([](const Sprite& sprite) {
@@ -178,16 +175,17 @@ void ResourceManager::LoadTextures(const std::string& base_path) {
       });
   std::sort(resources.begin(), resources.end());
 
-  textures_ = resources | ranges::view::unique |
-              ranges::view::transform([&base_path](const auto& resource) {
-                RGBa colour_key;
-                colour_key.ParseFromString(resource.second);
-                return std::make_pair(
-                    resource.first,
-                    Texture::CreateTextureFromFile(
-                        absl::StrCat(base_path, "resources/", resource.first),
-                        colour_key));
-              });
+  textures_ =
+      resources | ranges::view::unique |
+      ranges::view::transform([&base_path, renderer](const auto& resource) {
+        RGBa colour_key;
+        colour_key.ParseFromString(resource.second);
+        return std::make_pair(
+            resource.first,
+            Texture::CreateTextureFromFile(
+                absl::StrCat(base_path, "resources/", resource.first),
+                colour_key, renderer));
+      });
 }
 
 namespace {
@@ -199,19 +197,20 @@ void ResourceManager::LoadFonts(const std::string& base_path) {
       absl::StrCat(base_path, "resources/", kDefaultFont), 16);
 }
 
-void ResourceManager::LoadSounds(const std::string& base_path) {
+void ResourceManager::LoadSounds(const std::string& base_path,
+                                 const SoundLoader* sound_loader) {
   const auto sounds =
       LoadTextProtoFromPath<Audio>(absl::StrCat(base_path, "scenes/"), ".sfx");
 
   for (const Audio& sound : sounds) {
     for (const auto& track : sound.track()) {
       music_tracks_.emplace(
-          track.id(), SoundLoader::Instance().LoadMusic(absl::StrCat(
+          track.id(), sound_loader->LoadMusic(absl::StrCat(
                           base_path, "resources/sounds/", track.resource())));
     }
     for (const auto& sfx : sound.sfx()) {
       sfx_.emplace(sfx.id(),
-                   SoundLoader::Instance().LoadSound(absl::StrCat(
+                   sound_loader->LoadSound(absl::StrCat(
                        base_path, "resources/sounds/", sfx.resource())));
     }
   }

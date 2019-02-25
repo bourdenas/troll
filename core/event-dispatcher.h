@@ -16,10 +16,8 @@ using EventHandler = std::function<void()>;
 // Event definitions can be found in "core/events.h".
 class EventDispatcher {
  public:
-  static EventDispatcher& Instance(void) {
-    static EventDispatcher singleton;
-    return singleton;
-  }
+  EventDispatcher() = default;
+  ~EventDispatcher() = default;
 
   // Registers an event_id with a handler, calling it when the event is emitted.
   // Returns a handler id that can be used in combination with the event_id to
@@ -38,9 +36,6 @@ class EventDispatcher {
   // registration.
   void Unregister(const std::string& event_id, int handler_id);
 
-  // Unregister all hanlders for any event.
-  void UnregisterAll();
-
   // Triggers event handlers of input event. Event handlers are not called
   // immediately but all handlers whose events fired are batch executed when
   // ProcessTriggeredEvents() is called.
@@ -49,10 +44,10 @@ class EventDispatcher {
   // Activates all fired events.
   void ProcessTriggeredEvents();
 
- private:
-  EventDispatcher() = default;
-  ~EventDispatcher() = default;
+  EventDispatcher(const EventDispatcher&) = delete;
+  EventDispatcher& operator=(const EventDispatcher&) = delete;
 
+ private:
   struct HandlerInfo {
     int id;
     bool permanent;

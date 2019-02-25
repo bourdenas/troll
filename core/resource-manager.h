@@ -17,15 +17,16 @@
 
 namespace troll {
 
+class Renderer;
+class SoundLoader;
+
 class ResourceManager {
  public:
-  static ResourceManager& Instance() {
-    static ResourceManager singleton;
-    return singleton;
-  }
+  ResourceManager() = default;
+  ~ResourceManager() = default;
 
-  void LoadResources(const std::string& base_path);
-  void CleanUp();
+  void LoadResources(const std::string& base_path, const Renderer* renderer,
+                     const SoundLoader* sound_loader);
 
   Scene LoadScene(const std::string& filename);
 
@@ -47,15 +48,13 @@ class ResourceManager {
   ResourceManager& operator=(const ResourceManager&) = delete;
 
  private:
-  ResourceManager() = default;
-  ~ResourceManager() = default;
-
   void LoadAnimations(const std::string& base_path);
   void LoadKeyBindings(const std::string& base_path);
-  void LoadSprites(const std::string& base_path);
-  void LoadTextures(const std::string& base_path);
+  void LoadSprites(const std::string& base_path, const Renderer* renderer);
+  void LoadTextures(const std::string& base_path, const Renderer* renderer);
   void LoadFonts(const std::string& base_path);
-  void LoadSounds(const std::string& base_path);
+  void LoadSounds(const std::string& base_path,
+                  const SoundLoader* sound_loader);
 
   KeyBindings key_bindings_;
 
