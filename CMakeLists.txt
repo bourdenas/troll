@@ -30,6 +30,8 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 
 find_package(PythonLibs REQUIRED)
 
+find_package(Catch2 CONFIG REQUIRED)
+
 # Use -DBUILD_TESTING=OFF to disable tests.
 add_subdirectory(deps/abseil-cpp)
 if(!MSVC)
@@ -37,6 +39,11 @@ if(!MSVC)
 endif()
 add_subdirectory(deps/pybind11)
 add_subdirectory(deps/range-v3)
+
+enable_testing()
+
+include(CTest)
+include(Catch)
 
 add_subdirectory(action)
 add_subdirectory(animation)

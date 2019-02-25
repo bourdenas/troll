@@ -12,6 +12,7 @@ message SceneNode {
   optional string sprite_id = 2;
   optional int32 frame_index = 3;
 
+  // Top,left position of scene node's bounding box.
   optional Vector position = 4;
   optional bool visible = 5 [default = true];
 

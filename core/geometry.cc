@@ -14,14 +14,14 @@ bool Contains(const Box& box, const Vector& v) {
 }
 
 bool Collide(const Box& lhs, const Box& rhs) {
-  auto lhs_x_centre = lhs.left() + (lhs.width() >> 1);
-  auto lhs_y_centre = lhs.top() + (lhs.height() >> 1);
-
-  auto rhs_x_centre = rhs.left() + (rhs.width() >> 1);
-  auto rhs_y_centre = rhs.top() + (rhs.height() >> 1);
-
-  return abs(lhs_x_centre - rhs_x_centre) * 2 < lhs.width() + rhs.width() &&
-         abs(lhs_y_centre - rhs_y_centre) * 2 < lhs.height() + rhs.height();
+  // Derived from:
+  // abs(lhs.x - rhs.x) * 2 < lhs.w + rhs.w &&
+  // abs(lhs.y - rhs.y) * 2 < lhs.h + rhs.h
+  // where (x,y) is box's centre point.
+  return abs(2 * lhs.left() - 2 * rhs.left() + lhs.width() - rhs.width()) <
+             lhs.width() + rhs.width() &&
+         abs(2 * lhs.top() - 2 * rhs.top() + lhs.height() - rhs.height()) <
+             lhs.height() + rhs.height();
 }
 
 Box Intersection(const Box& lhs, const Box& rhs) {
