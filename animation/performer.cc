@@ -6,7 +6,6 @@
 #include "core/geometry.h"
 #include "core/resource-manager.h"
 #include "core/scene-manager.h"
-#include "core/troll-core.h"
 #include "sound/audio-mixer.h"
 
 namespace troll {
@@ -30,12 +29,10 @@ bool ScalingPerformer::Execute(SceneNode* scene_node) {
 namespace {
 // Handles key frame changes on nodes taking care of sprite film alignments.
 void SetSceneNodeFrame(int frame_index, VerticalAlign v_align,
-                       HorizontalAlign h_align, SceneNode* node) {
-  const auto prev_aabb =
-      Core::Instance().scene_manager().GetSceneNodeBoundingBox(*node);
+                       HorizontalAlign h_align, SceneNode* node, Core* core) {
+  const auto prev_aabb = core->scene_manager()->GetSceneNodeBoundingBox(*node);
   node->set_frame_index(frame_index);
-  const auto next_aabb =
-      Core::Instance().scene_manager().GetSceneNodeBoundingBox(*node);
+  const auto next_aabb = core->scene_manager()->GetSceneNodeBoundingBox(*node);
 
   if (h_align == HorizontalAlign::RIGHT) {
     node->mutable_position()->set_x(node->position().x() + prev_aabb.width() -
@@ -60,7 +57,7 @@ void FrameRangePerformer::Start(SceneNode* scene_node) {
   step_ = animation_.start_frame() < animation_.end_frame() ? 1 : -1;
 
   SetSceneNodeFrame(current_frame_, animation_.vertical_align(),
-                    animation_.horizontal_align(), scene_node);
+                    animation_.horizontal_align(), scene_node, core_);
   current_frame_ += step_;
 }
 
@@ -68,13 +65,13 @@ bool FrameRangePerformer::Execute(SceneNode* scene_node) {
   if (current_frame_ == animation_.end_frame()) {
     current_frame_ = animation_.start_frame();
     SetSceneNodeFrame(current_frame_, animation_.vertical_align(),
-                      animation_.horizontal_align(), scene_node);
+                      animation_.horizontal_align(), scene_node, core_);
     current_frame_ += step_;
     return current_frame_ == animation_.end_frame();
   }
 
   SetSceneNodeFrame(current_frame_, animation_.vertical_align(),
-                    animation_.horizontal_align(), scene_node);
+                    animation_.horizontal_align(), scene_node, core_);
   current_frame_ += step_;
   return current_frame_ == animation_.end_frame();
 }
@@ -82,7 +79,7 @@ bool FrameRangePerformer::Execute(SceneNode* scene_node) {
 void FrameListPerformer::Start(SceneNode* scene_node) {
   SetSceneNodeFrame(animation_.frame(current_frame_index_++),
                     animation_.vertical_align(), animation_.horizontal_align(),
-                    scene_node);
+                    scene_node, core_);
 }
 
 bool FrameListPerformer::Execute(SceneNode* scene_node) {
@@ -90,13 +87,13 @@ bool FrameListPerformer::Execute(SceneNode* scene_node) {
     current_frame_index_ = 0;
     SetSceneNodeFrame(animation_.frame(current_frame_index_++),
                       animation_.vertical_align(),
-                      animation_.horizontal_align(), scene_node);
+                      animation_.horizontal_align(), scene_node, core_);
     return current_frame_index_ == animation_.frame_size();
   }
 
   SetSceneNodeFrame(animation_.frame(current_frame_index_++),
                     animation_.vertical_align(), animation_.horizontal_align(),
-                    scene_node);
+                    scene_node, core_);
   return current_frame_index_ == animation_.frame_size();
 }
 
@@ -127,19 +124,17 @@ bool GotoPerformer::Execute(SceneNode* scene_node) {
 bool TimerPerformer::Execute(SceneNode* _unused) { return true; }
 
 void RunScriptPerformer::Start(SceneNode* scene_node) {
-  Core::Instance().animator_manager().Play(
-      Core::Instance().resource_manager().GetAnimationScript(
-          animation_.script_id()),
+  core_->animator_manager()->Play(
+      core_->resource_manager()->GetAnimationScript(animation_.script_id()),
       scene_node->id());
-  Core::Instance().event_dispatcher().Register(
+  core_->event_dispatcher()->Register(
       Events::OnAnimationScriptTermination(scene_node->id(),
                                            animation_.script_id()),
       [this]() { finished_ = true; });
 }
 
 void RunScriptPerformer::Stop(const SceneNode& scene_node) {
-  Core::Instance().animator_manager().Stop(animation_.script_id(),
-                                           scene_node.id());
+  core_->animator_manager()->Stop(animation_.script_id(), scene_node.id());
 }
 
 bool RunScriptPerformer::Execute(SceneNode* scene_node) { return finished_; }
@@ -147,19 +142,19 @@ bool RunScriptPerformer::Execute(SceneNode* scene_node) { return finished_; }
 void SfxPerformer::Start(SceneNode* scene_node) {
   auto&& on_done = [this]() { finished_ = false; };
   if (!animation_.audio().track().empty()) {
-    Core::Instance().audio_mixer().PlayMusic(animation_.audio().track(0).id(),
-                                             animation_.repeat(), on_done);
+    core_->audio_mixer()->PlayMusic(animation_.audio().track(0).id(),
+                                    animation_.repeat(), on_done);
   } else if (!animation_.audio().sfx().empty()) {
-    Core::Instance().audio_mixer().PlaySound(animation_.audio().sfx(0).id(),
-                                             animation_.repeat(), on_done);
+    core_->audio_mixer()->PlaySound(animation_.audio().sfx(0).id(),
+                                    animation_.repeat(), on_done);
   }
 }
 
 void SfxPerformer::Stop(const SceneNode& scene_node) {
   if (!animation_.audio().track().empty()) {
-    Core::Instance().audio_mixer().StopMusic();
+    core_->audio_mixer()->StopMusic();
   } else if (!animation_.audio().sfx().empty()) {
-    Core::Instance().audio_mixer().StopSound(animation_.audio().sfx(0).id());
+    core_->audio_mixer()->StopSound(animation_.audio().sfx(0).id());
   }
 }
 

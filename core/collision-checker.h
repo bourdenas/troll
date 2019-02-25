@@ -7,6 +7,9 @@
 
 #include <boost/dynamic_bitset.hpp>
 
+#include "action/action-manager.h"
+#include "core/core.h"
+#include "core/scene-manager.h"
 #include "proto/action.pb.h"
 #include "proto/scene-node.pb.h"
 
@@ -14,7 +17,11 @@ namespace troll {
 
 class CollisionChecker {
  public:
-  CollisionChecker() = default;
+  CollisionChecker(const SceneManager* scene_manager,
+                   const ActionManager* action_manager, Core* core)
+      : scene_manager_(scene_manager),
+        action_manager_(action_manager),
+        core_(core) {}
   ~CollisionChecker() = default;
 
   void RegisterCollision(const CollisionAction& collision);
@@ -49,6 +56,10 @@ class CollisionChecker {
   void RemoveFromCollisionCache(const SceneNode& left, const SceneNode& right);
   bool NodesInCollisionCache(const SceneNode& left,
                              const SceneNode& right) const;
+
+  const SceneManager* scene_manager_;
+  const ActionManager* action_manager_;
+  Core* core_;
 
   class CollisionContext {
    public:

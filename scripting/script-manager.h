@@ -5,14 +5,16 @@
 
 #include <pybind11/embed.h>
 
+#include "core/core.h"
+
 namespace troll {
 
 // Script execution engine that handles scripting modules and evaluates
 // expressions.
 class ScriptManager {
  public:
-  ScriptManager(const std::string& script_base_path);
-  ~ScriptManager() = default;
+  ScriptManager(const std::string& script_base_path, Core* core);
+  ~ScriptManager();
 
   // Call an imported module's function in the scripting engine.
   void Call(const std::string& module, const std::string& function);

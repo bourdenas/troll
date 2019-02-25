@@ -3,6 +3,7 @@
 
 #include <vector>
 
+#include "core/core.h"
 #include "proto/animation.pb.h"
 #include "proto/scene-node.pb.h"
 
@@ -139,8 +140,9 @@ class ScalingPerformer : public RepeatablePerformerBase<VectorAnimation> {
 class FrameRangePerformer
     : public RepeatablePerformerBase<FrameRangeAnimation> {
  public:
-  FrameRangePerformer(const FrameRangeAnimation& animation)
+  FrameRangePerformer(const FrameRangeAnimation& animation, Core* core)
       : RepeatablePerformerBase<FrameRangeAnimation>(animation),
+        core_(core),
         current_frame_(animation.start_frame()) {}
 
   void Start(SceneNode* scene_node) override;
@@ -149,14 +151,16 @@ class FrameRangePerformer
   bool Execute(SceneNode* scene_node) override;
 
  private:
+  Core* core_;
+
   int current_frame_ = 0;
   int step_ = 0;
 };
 
 class FrameListPerformer : public RepeatablePerformerBase<FrameListAnimation> {
  public:
-  FrameListPerformer(const FrameListAnimation& animation)
-      : RepeatablePerformerBase<FrameListAnimation>(animation) {}
+  FrameListPerformer(const FrameListAnimation& animation, Core* core)
+      : RepeatablePerformerBase<FrameListAnimation>(animation), core_(core) {}
 
   void Start(SceneNode* scene_node) override;
 
@@ -164,6 +168,8 @@ class FrameListPerformer : public RepeatablePerformerBase<FrameListAnimation> {
   bool Execute(SceneNode* scene_node) override;
 
  private:
+  Core* core_;
+
   int current_frame_index_ = 0;
 };
 
@@ -208,8 +214,8 @@ class TimerPerformer : public OneOffPerformerBase<TimerAnimation> {
 
 class RunScriptPerformer : public InstantPerformerBase<RunScriptAnimation> {
  public:
-  RunScriptPerformer(const RunScriptAnimation& animation)
-      : InstantPerformerBase<RunScriptAnimation>(animation) {}
+  RunScriptPerformer(const RunScriptAnimation& animation, Core* core)
+      : InstantPerformerBase<RunScriptAnimation>(animation), core_(core) {}
 
   void Start(SceneNode* scene_node) override;
   void Stop(const SceneNode& scene_node) override;
@@ -218,13 +224,15 @@ class RunScriptPerformer : public InstantPerformerBase<RunScriptAnimation> {
   bool Execute(SceneNode* scene_node) override;
 
  private:
+  Core* core_;
+
   bool finished_ = false;
 };
 
 class SfxPerformer : public InstantPerformerBase<SfxAnimation> {
  public:
-  SfxPerformer(const SfxAnimation& animation)
-      : InstantPerformerBase<SfxAnimation>(animation) {}
+  SfxPerformer(const SfxAnimation& animation, Core* core)
+      : InstantPerformerBase<SfxAnimation>(animation), core_(core) {}
 
   void Start(SceneNode* scene_node) override;
   void Stop(const SceneNode& scene_node) override;
@@ -233,6 +241,8 @@ class SfxPerformer : public InstantPerformerBase<SfxAnimation> {
   bool Execute(SceneNode* scene_node) override;
 
  private:
+  Core* core_;
+
   bool finished_ = false;
 };
 

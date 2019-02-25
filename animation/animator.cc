@@ -5,7 +5,8 @@
 
 namespace troll {
 
-void Animator::Start(const Animation& animation, SceneNode* scene_node) {
+void Animator::Start(const Animation& animation, SceneNode* scene_node,
+                     Core* core) {
   wait_for_all_ = animation.termination() == Animation::ALL;
 
   if (animation.has_translation()) {
@@ -22,11 +23,11 @@ void Animator::Start(const Animation& animation, SceneNode* scene_node) {
   }
   if (animation.has_frame_range()) {
     performers_.push_back(
-        std::make_unique<FrameRangePerformer>(animation.frame_range()));
+        std::make_unique<FrameRangePerformer>(animation.frame_range(), core));
   }
   if (animation.has_frame_list()) {
     performers_.push_back(
-        std::make_unique<FrameListPerformer>(animation.frame_list()));
+        std::make_unique<FrameListPerformer>(animation.frame_list(), core));
   }
   if (animation.has_flash()) {
     performers_.push_back(std::make_unique<FlashPerformer>(animation.flash()));
@@ -39,10 +40,11 @@ void Animator::Start(const Animation& animation, SceneNode* scene_node) {
   }
   if (animation.has_run_script()) {
     performers_.push_back(
-        std::make_unique<RunScriptPerformer>(animation.run_script()));
+        std::make_unique<RunScriptPerformer>(animation.run_script(), core));
   }
   if (animation.has_sfx()) {
-    performers_.push_back(std::make_unique<SfxPerformer>(animation.sfx()));
+    performers_.push_back(
+        std::make_unique<SfxPerformer>(animation.sfx(), core));
   }
 
   for (auto& performer : performers_) {

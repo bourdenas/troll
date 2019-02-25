@@ -5,6 +5,7 @@
 #include <string>
 
 #include "animation/animator.h"
+#include "core/core.h"
 #include "proto/animation.pb.h"
 
 namespace troll {
@@ -13,8 +14,11 @@ namespace troll {
 // scene-node.
 class ScriptAnimator {
  public:
-  ScriptAnimator(const AnimationScript& script, std::string scene_node_id)
-      : script_(script), scene_node_id_(std::move(scene_node_id)) {}
+  ScriptAnimator(const AnimationScript& script, std::string scene_node_id,
+                 Core* core)
+      : script_(script),
+        scene_node_id_(std::move(scene_node_id)),
+        core_(core) {}
 
   void Start();
   void Stop();
@@ -44,6 +48,7 @@ class ScriptAnimator {
 
   const AnimationScript script_;
   std::string scene_node_id_;
+  Core* core_;
 
   State state_ = State::INIT;
   std::unique_ptr<Animator> current_animator_;

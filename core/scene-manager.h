@@ -8,6 +8,7 @@
 
 #include <range/v3/view/map.hpp>
 
+#include "core/core.h"
 #include "proto/primitives.pb.h"
 #include "proto/scene-node.pb.h"
 #include "proto/scene.pb.h"
@@ -21,8 +22,8 @@ class ScriptManager;
 class SceneManager {
  public:
   SceneManager(const ResourceManager* resource_manager,
-               const Renderer* renderer)
-      : resource_manager_(resource_manager), renderer_(renderer) {}
+               const Renderer* renderer, Core* core)
+      : resource_manager_(resource_manager), renderer_(renderer), core_(core) {}
 
   void SetupScene(const Scene& scene, ScriptManager* script_manager);
 
@@ -80,6 +81,7 @@ class SceneManager {
 
   const ResourceManager* resource_manager_;
   const Renderer* renderer_;
+  Core* core_;
 
   Scene scene_;
   Box world_bounds_;

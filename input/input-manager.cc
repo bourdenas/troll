@@ -7,7 +7,6 @@
 #include <range/v3/view/transform.hpp>
 
 #include "action/action-manager.h"
-#include "core/troll-core.h"
 
 namespace troll {
 
@@ -16,7 +15,7 @@ namespace {
 // on-release that implement the hold logic while the key is pressed and reverse
 // it when it is released.
 std::pair<Trigger, Trigger> MakePressReleaseTriggers(
-    const Trigger& hold_trigger) {
+    const Trigger& hold_trigger, const ActionManager* action_manager) {
   Trigger on_press = hold_trigger;
   on_press.set_state(Trigger::PRESSED);
 
@@ -26,8 +25,9 @@ std::pair<Trigger, Trigger> MakePressReleaseTriggers(
   // On release trigger all reverse actions of the pressed ignoring irreversible
   // actions.
   const std::vector<Action> on_release_actions =
-      hold_trigger.action() | ranges::view::transform([](const Action& action) {
-        return Core::Instance().action_manager().Reverse(action);
+      hold_trigger.action() |
+      ranges::view::transform([action_manager](const Action& action) {
+        return action_manager->Reverse(action);
       }) |
       ranges::view::filter(
           [](const Action& reverse) { return !reverse.has_noop(); });
@@ -40,14 +40,17 @@ std::pair<Trigger, Trigger> MakePressReleaseTriggers(
 }
 }  // namespace
 
-InputManager::InputManager(const KeyBindings& key_bindings) {
+InputManager::InputManager(const KeyBindings& key_bindings,
+                           const ActionManager* action_manager)
+    : action_manager_(action_manager) {
   for (const auto& context : key_bindings.context()) {
     for (const auto& interaction : context.interaction()) {
       for (const auto& key_combo : interaction.key_combo()) {
         for (const auto& trigger : interaction.trigger()) {
           std::vector<Trigger> triggers = {trigger};
           if (trigger.state() == Trigger::HOLD) {
-            const auto trigger_pair = MakePressReleaseTriggers(trigger);
+            const auto trigger_pair =
+                MakePressReleaseTriggers(trigger, action_manager_);
             triggers = {std::get<0>(trigger_pair), std::get<1>(trigger_pair)};
           }
           for (const auto& trigger : triggers) {
@@ -99,7 +102,7 @@ void InputManager::HandleKey(const KeyEvent& event) const {
       if (trigger.state() != event.key_state()) continue;
 
       for (const auto& action : trigger.action()) {
-        Core::Instance().action_manager().Execute(action);
+        action_manager_->Execute(action);
       }
     }
   }

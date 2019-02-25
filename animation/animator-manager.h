@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "animation/script-animator.h"
+#include "core/core.h"
 #include "proto/animation.pb.h"
 #include "proto/scene.pb.h"
 
@@ -13,7 +14,7 @@ namespace troll {
 
 class AnimatorManager {
  public:
-  AnimatorManager() = default;
+  AnimatorManager(Core* core) : core_(core) {}
   ~AnimatorManager() = default;
 
   void Play(const AnimationScript& script, const std::string& scene_node_id);
@@ -36,6 +37,8 @@ class AnimatorManager {
   AnimatorManager& operator=(const AnimatorManager&) = delete;
 
  private:
+  Core* core_;
+
   bool paused_ = false;
   std::vector<std::unique_ptr<ScriptAnimator>> running_scripts_;
 };

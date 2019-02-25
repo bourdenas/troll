@@ -5,9 +5,9 @@
 
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
+#include "core/core.h"
 #include "core/resource-manager.h"
 #include "core/scene-node-query.h"
-#include "core/troll-core.h"
 #include "scripting/script-manager.h"
 #include "sound/audio-mixer.h"
 
@@ -21,16 +21,14 @@ Action Executor::Reverse(const Action& action) const {
 
 void NoopExecutor::Execute(const Action& action) const {}
 
-void QuitExecutor::Execute(const Action& action) const {
-  Core::Instance().Halt();
-}
+void QuitExecutor::Execute(const Action& action) const { core_->Halt(); }
 
 void EmitExecutor::Execute(const Action& action) const {
   // TODO(bourdenas): Implement event handling system.
 }
 
 void ChangeSceneExecutor::Execute(const Action& action) const {
-  Core::Instance().LoadScene(action.change_scene().scene());
+  core_->LoadScene(action.change_scene().scene());
 }
 
 void CreateSceneNodeExecutor::Execute(const Action& action) const {
@@ -38,29 +36,28 @@ void CreateSceneNodeExecutor::Execute(const Action& action) const {
     static int i = 0;
     auto node = action.create_scene_node().scene_node();
     node.set_id(absl::StrCat("node_id#", i++));
-    Core::Instance().scene_manager().AddSceneNode(node);
+    core_->scene_manager()->AddSceneNode(node);
   } else {
-    Core::Instance().scene_manager().AddSceneNode(
+    core_->scene_manager()->AddSceneNode(
         action.create_scene_node().scene_node());
   }
 }
 
 namespace {
 // Returns all scene node ids described by a node expression in an action.
-std::vector<std::string> ResolveSceneNodes(const std::string& node_expression) {
+std::vector<std::string> ResolveSceneNodes(const std::string& node_expression,
+                                           Core* core) {
   std::vector<std::string> node_ids;
   if (!node_expression.empty() && node_expression[0] == '$') {
     SceneNodeQuery query;
     if (!query.Parse(node_expression)) return node_ids;
 
     if (query.mode == SceneNodeQuery::RetrievalMode::GLOBAL) {
-      node_ids = Core::Instance().scene_manager().GetSceneNodesByPattern(
-          query.pattern);
+      node_ids = core->scene_manager()->GetSceneNodesByPattern(query.pattern);
     } else if (query.mode == SceneNodeQuery::RetrievalMode::LOCAL) {
-      auto&& context_nodes =
-          Core::Instance().collision_checker().collision_context();
-      node_ids = Core::Instance().scene_manager().GetSceneNodesByPattern(
-          query.pattern, context_nodes);
+      auto&& context_nodes = core->collision_checker()->collision_context();
+      node_ids = core->scene_manager()->GetSceneNodesByPattern(query.pattern,
+                                                               context_nodes);
     }
   } else {
     node_ids.push_back(node_expression);
@@ -72,25 +69,25 @@ std::vector<std::string> ResolveSceneNodes(const std::string& node_expression) {
 
 void DestroySceneNodeExecutor::Execute(const Action& action) const {
   auto&& node_ids =
-      ResolveSceneNodes(action.destroy_scene_node().scene_node().id());
+      ResolveSceneNodes(action.destroy_scene_node().scene_node().id(), core_);
 
   for (const auto& id : node_ids) {
-    if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
+    if (core_->scene_manager()->GetSceneNodeById(id) == nullptr) {
       LOG(WARNING)
           << "DestroySceneNodeExecutor: Cannot destroy SceneNode with id='"
           << id << "' that does not exist.";
       return;
     }
-    Core::Instance().scene_manager().RemoveSceneNode(id);
+    core_->scene_manager()->RemoveSceneNode(id);
   }
 }
 
 void PositionSceneNodeExecutor::Execute(const Action& action) const {
   auto&& node_ids =
-      ResolveSceneNodes(action.position_scene_node().scene_node_id());
+      ResolveSceneNodes(action.position_scene_node().scene_node_id(), core_);
 
   for (const auto& id : node_ids) {
-    auto* node = Core::Instance().scene_manager().GetSceneNodeById(id);
+    auto* node = core_->scene_manager()->GetSceneNodeById(id);
     if (node == nullptr) {
       LOG(WARNING) << "PositionSceneNodeExecutor: Cannot set position for "
                       "SceneNode with id='"
@@ -98,23 +95,24 @@ void PositionSceneNodeExecutor::Execute(const Action& action) const {
       return;
     }
 
-    Core::Instance().scene_manager().Dirty(*node);
+    core_->scene_manager()->Dirty(*node);
     *node->mutable_position() = action.position_scene_node().vec();
   }
 }
 
 void MoveSceneNodeExecutor::Execute(const Action& action) const {
-  auto&& node_ids = ResolveSceneNodes(action.move_scene_node().scene_node_id());
+  auto&& node_ids =
+      ResolveSceneNodes(action.move_scene_node().scene_node_id(), core_);
 
   for (const auto& id : node_ids) {
-    auto* node = Core::Instance().scene_manager().GetSceneNodeById(id);
+    auto* node = core_->scene_manager()->GetSceneNodeById(id);
     if (node == nullptr) {
       LOG(WARNING) << "MoveSceneNodeExecutor: Cannot move SceneNode with id='"
                    << id << "' that does not exist.";
       return;
     }
 
-    Core::Instance().scene_manager().Dirty(*node);
+    core_->scene_manager()->Dirty(*node);
     auto* pos = node->mutable_position();
     const auto& move = action.move_scene_node().vec();
     pos->set_x(pos->x() + move.x());
@@ -135,20 +133,19 @@ Action MoveSceneNodeExecutor::Reverse(const Action& action) const {
 }
 
 void OnCollisionExecutor::Execute(const Action& action) const {
-  Core::Instance().collision_checker().RegisterCollision(action.on_collision());
+  core_->collision_checker()->RegisterCollision(action.on_collision());
 }
 
 void OnDetachingExecutor::Execute(const Action& action) const {
-  Core::Instance().collision_checker().RegisterDetachment(
-      action.on_detaching());
+  core_->collision_checker()->RegisterDetachment(action.on_detaching());
 }
 
 void PlayAnimationScriptExecutor::Execute(const Action& action) const {
   auto&& node_ids =
-      ResolveSceneNodes(action.play_animation_script().scene_node_id());
+      ResolveSceneNodes(action.play_animation_script().scene_node_id(), core_);
 
   for (const auto& id : node_ids) {
-    if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
+    if (core_->scene_manager()->GetSceneNodeById(id) == nullptr) {
       LOG(WARNING)
           << "PlayAnimationScriptExecutor: Cannot apply animation script '"
           << action.play_animation_script().script_id()
@@ -156,12 +153,11 @@ void PlayAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    const auto& script =
-        action.play_animation_script().has_script()
-            ? action.play_animation_script().script()
-            : Core::Instance().resource_manager().GetAnimationScript(
-                  action.play_animation_script().script_id());
-    Core::Instance().animator_manager().Play(script, id);
+    const auto& script = action.play_animation_script().has_script()
+                             ? action.play_animation_script().script()
+                             : core_->resource_manager()->GetAnimationScript(
+                                   action.play_animation_script().script_id());
+    core_->animator_manager()->Play(script, id);
   }
 }
 
@@ -173,10 +169,10 @@ Action PlayAnimationScriptExecutor::Reverse(const Action& action) const {
 
 void StopAnimationScriptExecutor::Execute(const Action& action) const {
   auto&& node_ids =
-      ResolveSceneNodes(action.stop_animation_script().scene_node_id());
+      ResolveSceneNodes(action.stop_animation_script().scene_node_id(), core_);
 
   for (const auto& id : node_ids) {
-    if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
+    if (core_->scene_manager()->GetSceneNodeById(id) == nullptr) {
       LOG(WARNING)
           << "StopAnimationScriptExecutor: Cannot stop animation script '"
           << action.stop_animation_script().script_id()
@@ -184,8 +180,8 @@ void StopAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    Core::Instance().animator_manager().Stop(
-        action.stop_animation_script().script_id(), id);
+    core_->animator_manager()->Stop(action.stop_animation_script().script_id(),
+                                    id);
   }
 }
 
@@ -197,10 +193,10 @@ Action StopAnimationScriptExecutor::Reverse(const Action& action) const {
 
 void PauseAnimationScriptExecutor::Execute(const Action& action) const {
   auto&& node_ids =
-      ResolveSceneNodes(action.pause_animation_script().scene_node_id());
+      ResolveSceneNodes(action.pause_animation_script().scene_node_id(), core_);
 
   for (const auto& id : node_ids) {
-    if (Core::Instance().scene_manager().GetSceneNodeById(id) == nullptr) {
+    if (core_->scene_manager()->GetSceneNodeById(id) == nullptr) {
       LOG(WARNING)
           << "PauseAnimationScriptExecutor: Cannot pause animation script '"
           << action.pause_animation_script().script_id()
@@ -208,7 +204,7 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    Core::Instance().animator_manager().Pause(
+    core_->animator_manager()->Pause(
         action.pause_animation_script().script_id(), id);
   }
 }
@@ -216,11 +212,9 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
 void PlayAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.play_audio();
   if (audio.has_track_id()) {
-    Core::Instance().audio_mixer().PlayMusic(audio.track_id(), audio.repeat(),
-                                             {});
+    core_->audio_mixer()->PlayMusic(audio.track_id(), audio.repeat(), {});
   } else {
-    Core::Instance().audio_mixer().PlaySound(audio.sfx_id(), audio.repeat(),
-                                             {});
+    core_->audio_mixer()->PlaySound(audio.sfx_id(), audio.repeat(), {});
   }
 }
 
@@ -233,9 +227,9 @@ Action PlayAudioExecutor::Reverse(const Action& action) const {
 void StopAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.stop_audio();
   if (audio.has_track_id()) {
-    Core::Instance().audio_mixer().StopMusic();
+    core_->audio_mixer()->StopMusic();
   } else if (audio.has_sfx_id()) {
-    Core::Instance().audio_mixer().StopSound(audio.sfx_id());
+    core_->audio_mixer()->StopSound(audio.sfx_id());
   }
 }
 
@@ -248,9 +242,9 @@ Action StopAudioExecutor::Reverse(const Action& action) const {
 void PauseAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.pause_audio();
   if (audio.has_track_id()) {
-    Core::Instance().audio_mixer().PauseMusic();
+    core_->audio_mixer()->PauseMusic();
   } else if (audio.has_sfx_id()) {
-    Core::Instance().audio_mixer().PauseSound(audio.sfx_id());
+    core_->audio_mixer()->PauseSound(audio.sfx_id());
   }
 }
 
@@ -263,9 +257,9 @@ Action PauseAudioExecutor::Reverse(const Action& action) const {
 void ResumeAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.resume_audio();
   if (audio.has_track_id()) {
-    Core::Instance().audio_mixer().ResumeMusic();
+    core_->audio_mixer()->ResumeMusic();
   } else if (audio.has_sfx_id()) {
-    Core::Instance().audio_mixer().ResumeSound(audio.sfx_id());
+    core_->audio_mixer()->ResumeSound(audio.sfx_id());
   }
 }
 
@@ -280,8 +274,8 @@ void DisplayTextExecutor::Execute(const Action& action) const {
 }
 
 void ScriptExecutor::Execute(const Action& action) const {
-  Core::Instance().script_manager().Call(action.call().module(),
-                                         action.call().function());
+  core_->script_manager()->Call(action.call().module(),
+                                action.call().function());
 }
 
 }  // namespace troll

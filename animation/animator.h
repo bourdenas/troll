@@ -15,7 +15,7 @@ namespace troll {
 class Animator {
  public:
   // Initialises the animator state.
-  void Start(const Animation& animation, SceneNode* scene_node);
+  void Start(const Animation& animation, SceneNode* scene_node, Core* core);
 
   // Stops all performers of this animation.
   void Stop(const SceneNode& scene_node);

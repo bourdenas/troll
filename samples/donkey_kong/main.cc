@@ -4,8 +4,9 @@
 #include "core/troll-core.h"
 
 int main(int argc, char *argv[]) {
-  troll::Core::Instance().Init(argv[0], "../samples/donkey_kong/data/");
-  troll::Core::Instance().Run();
-  troll::Core::Instance().CleanUp();
+  troll::TrollCore core;
+  core.Init(argv[0], "../samples/donkey_kong/data/");
+  core.Run();
+
   return 0;
 }

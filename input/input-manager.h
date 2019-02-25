@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "action/action-manager.h"
 #include "proto/input-event.pb.h"
 #include "proto/key-binding.pb.h"
 
@@ -14,7 +15,8 @@ namespace troll {
 
 class InputManager {
  public:
-  InputManager(const KeyBindings& key_bindings);
+  InputManager(const KeyBindings& key_bindings,
+               const ActionManager* action_manager);
   ~InputManager() = default;
 
   using InputHandler = std::function<void(const InputEvent&)>;
@@ -31,6 +33,8 @@ class InputManager {
 
  private:
   void HandleKey(const KeyEvent& event) const;
+
+  const ActionManager* action_manager_;
 
   // Set of activated games input contexts.
   std::unordered_set<std::string> active_contexts_ = {""};

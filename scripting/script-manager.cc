@@ -6,7 +6,6 @@
 
 #include "action/action-manager.h"
 #include "core/event-dispatcher.h"
-#include "core/troll-core.h"
 #include "input/input-manager.h"
 #include "proto/action.pb.h"
 #include "proto/input-event.pb.h"
@@ -14,6 +13,10 @@
 namespace troll {
 
 namespace {
+// TODO(bourdenas): Figure out a less hacky way to pass the Core instance to the
+// embedded python module.
+Core* core_instance;
+
 // Wraps python callbacks with a try/catch block for displaying run-time errors
 // that happen during python execution.
 void PythonCallbackWrapper(const std::function<void()>& python_handler) {
@@ -46,38 +49,39 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
   m.def("execute", [](const std::string& encoded_action) {
     Action action;
     action.ParseFromString(encoded_action);
-    Core::Instance().action_manager().Execute(action);
+    core_instance->action_manager()->Execute(action);
   });
 
   m.def("register_event_handler",
         [](const std::string& event_id, const std::function<void()>& handler,
            bool permanent) {
           if (permanent) {
-            return Core::Instance().event_dispatcher().RegisterPermanent(
+            return core_instance->event_dispatcher()->RegisterPermanent(
                 event_id, [handler]() { PythonCallbackWrapper(handler); });
           } else {
-            return Core::Instance().event_dispatcher().Register(
+            return core_instance->event_dispatcher()->Register(
                 event_id, [handler]() { PythonCallbackWrapper(handler); });
           }
         });
 
   m.def("cancel_event_handler",
         [](const std::string& event_id, int handler_id) {
-          Core::Instance().event_dispatcher().Unregister(event_id, handler_id);
+          core_instance->event_dispatcher()->Unregister(event_id, handler_id);
         });
 
   m.def("register_input_handler",
         [](const std::function<void(const pybind11::bytes&)>& handler) {
-          return Core::Instance().input_manager().RegisterHandler(
+          return core_instance->input_manager()->RegisterHandler(
               PythonInputHandlerWrapper(handler));
         });
 
   m.def("cancel_input_handler", [](int handler_id) {
-    Core::Instance().input_manager().UnregisterHandler(handler_id);
+    core_instance->input_manager()->UnregisterHandler(handler_id);
   });
 }
 
-ScriptManager::ScriptManager(const std::string& script_base_path) {
+ScriptManager::ScriptManager(const std::string& script_base_path, Core* core) {
+  core_instance = core;
   script_base_path_ = script_base_path;
 
   // Setup python module import paths appropriately.
@@ -90,6 +94,8 @@ ScriptManager::ScriptManager(const std::string& script_base_path) {
     sys_module_.attr("path").attr("append")(path);
   }
 }
+
+ScriptManager::~ScriptManager() { core_instance = nullptr; }
 
 void ScriptManager::Call(const std::string& module,
                          const std::string& function) {

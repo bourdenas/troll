@@ -9,8 +9,8 @@
 
 namespace troll {
 
-void Core::Init(const std::string& name,
-                const std::string& resource_base_path) {
+void TrollCore::Init(const std::string& name,
+                     const std::string& resource_base_path) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
   google::InitGoogleLogging(name.c_str());
 
@@ -26,20 +26,18 @@ void Core::Init(const std::string& name,
 
   audio_mixer_ = std::make_unique<AudioMixer>(resource_manager_.get());
   input_backend_ = std::make_unique<InputBackend>();
-  script_manager_ = std::make_unique<ScriptManager>(resource_base_path);
+  script_manager_ = std::make_unique<ScriptManager>(resource_base_path, this);
 
-  action_manager_ = std::make_unique<ActionManager>();
-  animator_manager_ = std::make_unique<AnimatorManager>();
-  input_manager_ =
-      std::make_unique<InputManager>(resource_manager_->GetKeyBindings());
+  action_manager_ = std::make_unique<ActionManager>(this);
+  animator_manager_ = std::make_unique<AnimatorManager>(this);
+  input_manager_ = std::make_unique<InputManager>(
+      resource_manager_->GetKeyBindings(), action_manager_.get());
 
   LoadScene(resource_manager_->LoadScene(
       absl::StrCat(resource_base_path, "scenes/main.scene")));
 }
 
-void Core::CleanUp() {}
-
-void Core::Run() {
+void TrollCore::Run() {
   int curr_time = SDL_GetTicks();
   int prev_time = curr_time;
 
@@ -54,18 +52,19 @@ void Core::Run() {
   }
 }
 
-void Core::Halt() { halt_ = true; }
+void TrollCore::Halt() { halt_ = true; }
 
-void Core::LoadScene(const Scene& scene) {
-  collision_checker_ = std::make_unique<CollisionChecker>();
+void TrollCore::LoadScene(const Scene& scene) {
+  scene_manager_ = std::make_unique<SceneManager>(resource_manager_.get(),
+                                                  renderer_.get(), this);
+  collision_checker_ = std::make_unique<CollisionChecker>(
+      scene_manager_.get(), action_manager_.get(), this);
   event_dispatcher_ = std::make_unique<EventDispatcher>();
-  scene_manager_ =
-      std::make_unique<SceneManager>(resource_manager_.get(), renderer_.get());
 
   scene_manager_->SetupScene(scene, script_manager_.get());
 }
 
-bool Core::InputHandling() {
+bool TrollCore::InputHandling() {
   if (halt_) {
     return false;
   }
@@ -80,13 +79,13 @@ bool Core::InputHandling() {
   return true;
 }
 
-void Core::FrameStarted(int time_since_last_frame) {
+void TrollCore::FrameStarted(int time_since_last_frame) {
   animator_manager_->Progress(time_since_last_frame);
   collision_checker_->CheckCollisions();
   event_dispatcher_->ProcessTriggeredEvents();
 }
 
-void Core::FrameEnded(int time_since_last_frame) {
+void TrollCore::FrameEnded(int time_since_last_frame) {
   ++fps_counter_.fp_count;
   fps_counter_.elapsed_time += time_since_last_frame;
 

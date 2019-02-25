@@ -10,7 +10,6 @@
 #include "core/collision-checker.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"
-#include "core/troll-core.h"
 #include "scripting/script-manager.h"
 #include "sdl/renderer.h"
 
@@ -54,7 +53,7 @@ void SceneManager::RemoveSceneNode(const std::string& id) {
 
 void SceneManager::Dirty(const SceneNode& scene_node) {
   dirty_boxes_.push_back(GetSceneNodeBoundingBox(scene_node));
-  Core::Instance().collision_checker().Dirty(scene_node);
+  core_->collision_checker()->Dirty(scene_node);
 }
 
 const SceneNode* SceneManager::GetSceneNodeById(const std::string& id) const {

@@ -5,17 +5,18 @@
 #include <unordered_map>
 
 #include "action/executor.h"
+#include "core/core.h"
 #include "proto/action.pb.h"
 
 namespace troll {
 
 class ActionManager {
  public:
-  ActionManager();
+  ActionManager(Core* core);
   ~ActionManager() = default;
 
-  void Execute(const Action& action);
-  Action Reverse(const Action& action);
+  void Execute(const Action& action) const;
+  Action Reverse(const Action& action) const;
 
   ActionManager(const ActionManager&) = delete;
   ActionManager& operator=(const ActionManager&) = delete;

@@ -7,7 +7,6 @@
 
 #include "core/event-dispatcher.h"
 #include "core/events.h"
-#include "core/troll-core.h"
 
 namespace troll {
 
@@ -34,7 +33,7 @@ auto MatchSceneNode(const std::string& scene_node_id) {
 void AnimatorManager::Play(const AnimationScript& script,
                            const std::string& scene_node_id) {
   running_scripts_.push_back(
-      std::make_unique<ScriptAnimator>(script, scene_node_id));
+      std::make_unique<ScriptAnimator>(script, scene_node_id, core_));
   running_scripts_.back()->Start();
 }
 
@@ -90,16 +89,15 @@ void AnimatorManager::Progress(int time_since_last_frame) {
 
   // Clean up finished scripts and fire events.
   std::vector<std::string> events;
-  const auto it =
-      std::remove_if(running_scripts_.begin(), running_scripts_.end(),
-                     [&events](auto&& script) {
-                       if (script->is_finished()) {
-                         Core::Instance().event_dispatcher().Emit(
-                             Events::OnAnimationScriptTermination(
-                                 script->scene_node_id(), script->script_id()));
-                       }
-                       return script->is_finished();
-                     });
+  const auto it = std::remove_if(
+      running_scripts_.begin(), running_scripts_.end(),
+      [this, &events](auto&& script) {
+        if (script->is_finished()) {
+          core_->event_dispatcher()->Emit(Events::OnAnimationScriptTermination(
+              script->scene_node_id(), script->script_id()));
+        }
+        return script->is_finished();
+      });
   running_scripts_.erase(it, running_scripts_.end());
 }
 

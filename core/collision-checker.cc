@@ -5,7 +5,6 @@
 #include "action/action-manager.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"
-#include "core/troll-core.h"
 
 namespace troll {
 
@@ -22,7 +21,7 @@ void CollisionChecker::Dirty(const SceneNode& node) {
 }
 
 void CollisionChecker::CheckCollisions() {
-  const auto& scene_nodes = Core::Instance().scene_manager().GetSceneNodes();
+  const auto& scene_nodes = scene_manager_->GetSceneNodes();
 
   std::unordered_set<const SceneNode*> checked_nodes;
   for (int i = 0; i < dirty_nodes_.size(); ++i) {
@@ -32,23 +31,19 @@ void CollisionChecker::CheckCollisions() {
     const auto result = checked_nodes.insert(&lhs);
     if (!result.second) continue;
 
-    const auto& lhs_aabb =
-        Core::Instance().scene_manager().GetSceneNodeBoundingBox(lhs);
-
+    const auto& lhs_aabb = scene_manager_->GetSceneNodeBoundingBox(lhs);
     for (const auto& rhs : scene_nodes) {
       // Skip if collision checking with self.
       if (&lhs == &rhs) continue;
 
-      const auto& rhs_aabb =
-          Core::Instance().scene_manager().GetSceneNodeBoundingBox(rhs);
-
+      const auto& rhs_aabb = scene_manager_->GetSceneNodeBoundingBox(rhs);
       bool collision = false;
       if (geo::Collide(lhs_aabb, rhs_aabb)) {
         const auto& lhs_mask =
-            Core::Instance().resource_manager().GetSpriteCollisionMask(
+            core_->resource_manager()->GetSpriteCollisionMask(
                 lhs.sprite_id(), lhs.frame_index());
         const auto& rhs_mask =
-            Core::Instance().resource_manager().GetSpriteCollisionMask(
+            core_->resource_manager()->GetSpriteCollisionMask(
                 rhs.sprite_id(), rhs.frame_index());
 
         collision = internal::SceneNodePixelsCollide(lhs_aabb, rhs_aabb,
@@ -83,7 +78,7 @@ void CollisionChecker::TriggerCollisionAction(
       continue;
     }
     for (const auto& action : collision.action()) {
-      Core::Instance().action_manager().Execute(action);
+      action_manager_->Execute(action);
     }
   }
   collision_context_.pop();
