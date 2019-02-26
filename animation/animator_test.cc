@@ -1,146 +1,162 @@
 #include "animation/animator.h"
 
-#include <glog/logging.h>
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 
 #include "core/scene-manager.h"
-#include "core/troll-core.h"
 #include "proto/animation.pb.h"
 #include "proto/scene-node.pb.h"
+#include "troll-test/test-core.h"
 #include "troll-test/test-util.h"
 #include "troll-test/testing-resource-manager.h"
 
 namespace troll {
 
-class AnimatorTest : public testing::Test {
- protected:
-  void SetUp() override {
-    scene_manager_ = new SceneManager();
-    Core::Instance().SetupTestSceneManager(scene_manager_);
+class AnimatorFixture {
+ public:
+  AnimatorFixture() {
+    testing_resource_manager_.SetTestSprite(
+        ParseProto<Sprite>("id: 'sprite_a' film{} film{} film{}"));
 
-    TestingResourceManager::SetTestSprite(ParseProto<Sprite>(R"(
-      id: ''
-      film{} film{} film{})"));
+    core_.set_resource_manager(&resource_manager_);
+    core_.set_scene_manager(&scene_manager_);
 
-    animation_ = ParseProto<Animation>(R"(
-      translation {
-        vec {
-          y: -2
-        }
-        delay: 10
-      })");
+    scene_node_ = ParseProto<SceneNode>("id: 'node_a' sprite_id: 'sprite_a'");
   }
 
-  void TearDown() override { ResourceManager::Instance().CleanUp(); }
+ protected:
+  TestCore core_;
+  ResourceManager resource_manager_;
+  SceneManager scene_manager_ =
+      SceneManager(&resource_manager_, nullptr, &core_);
 
-  Animation animation_;
+  TestingResourceManager testing_resource_manager_ =
+      TestingResourceManager(&resource_manager_);
+
   SceneNode scene_node_;
-  SceneManager* scene_manager_ = nullptr;
 };
 
-TEST_F(AnimatorTest, CompositeAnimationTerminatesWhenAnyPartTerminates) {
-  const auto composite_animation = ParseProto<Animation>(R"(
-    translation {
-      vec { x: 1 }
-      delay: 5
+SCENARIO_METHOD(AnimatorFixture,
+                "Composite animation terminates when any part terminates",
+                "[animator]") {
+  GIVEN("a composite animation that is conditioned on ANY") {
+    const auto composite_animation = ParseProto<Animation>(R"(
+        termination: ANY
+        translation {
+          vec { x: 1 }
+          delay: 10
+        }
+        frame_list {
+          frame: [ 0, 1, 2 ]
+          delay: 10
+          repeat: 2
+        })");
+
+    Animator animator;
+    animator.Start(composite_animation, &scene_node_, &core_);
+
+    WHEN("some progress is done") {
+      REQUIRE_FALSE(animator.Progress(10, &scene_node_));
+
+      THEN("the animation is applied") {
+        REQUIRE_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+            id: 'node_a' sprite_id: 'sprite_a'
+            frame_index: 1
+            position { x: 1 y: 0 z: 0 })")));
+
+        AND_WHEN("one of the parts is finished") {
+          REQUIRE(animator.Progress(40, &scene_node_));
+
+          THEN("the animator is finished") {
+            REQUIRE_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'node_a' sprite_id: 'sprite_a'
+                frame_index: 2
+                position { x: 5 y: 0 z: 0 })")));
+          }
+        }
+      }
     }
-    frame_range {
-      start_frame: 0
-      end_frame: 3
-      delay: 10
-      repeat: 2
-    })");
-
-  Animator animator;
-  animator.Start(composite_animation, &scene_node_);
-  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
-    frame_index: 0
-    )")));
-
-  // The FrameRange will be exectuted twice (60 msec in total) so the
-  // Translation will be executed 12 times till then.
-  EXPECT_FALSE(animator.Progress(20, &scene_node_));
-  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
-    frame_index: 2
-    position {
-      x: 4 y: 0 z: 0
-    })")));
-  EXPECT_TRUE(animator.Progress(30, &scene_node_));
-  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
-    frame_index: 2
-    position {
-      x: 10 y: 0 z: 0
-    })")));
+  }
 }
 
-TEST_F(AnimatorTest, CompositeAnimationTerminatesWhenAllPartsTerminate) {
-  const auto composite_animation = ParseProto<Animation>(R"(
-    termination: ALL
-    translation {
-      vec { x: 1 }
-      delay: 5
-      repeat: 1
+SCENARIO_METHOD(AnimatorFixture,
+                "Composite animation terminates when all parts terminates",
+                "[animator]") {
+  GIVEN("a composite animation that is conditioned on ALL") {
+    const auto composite_animation = ParseProto<Animation>(R"(
+        termination: ALL
+        translation {
+          vec { x: 1 }
+          delay: 10
+          repeat: 1
+        }
+        frame_list {
+          frame: [ 0, 1, 2 ]
+          delay: 10
+          repeat: 2
+        })");
+
+    Animator animator;
+    animator.Start(composite_animation, &scene_node_, &core_);
+
+    WHEN("the first animation is finished") {
+      REQUIRE_FALSE(animator.Progress(10, &scene_node_));
+
+      THEN("the animator is not done") {
+        REQUIRE_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+            id: 'node_a' sprite_id: 'sprite_a'
+            frame_index: 1
+            position { x: 1 y: 0 z: 0 })")));
+
+        AND_WHEN("all parts are finished") {
+          REQUIRE(animator.Progress(40, &scene_node_));
+
+          THEN("the animator is finished") {
+            REQUIRE_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'node_a' sprite_id: 'sprite_a'
+                frame_index: 2
+                position { x: 1 y: 0 z: 0 })")));
+          }
+        }
+      }
     }
-    frame_range {
-      start_frame: 0
-      end_frame: 3
-      delay: 10
-      repeat: 1
-    })");
-
-  Animator animator;
-  animator.Start(composite_animation, &scene_node_);
-  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
-    frame_index: 0
-    )")));
-
-  // The translation is done in its first execution. It is no longer applied but
-  // the frame_range is still running. Translation will be executed 12 times
-  // till then.
-  EXPECT_FALSE(animator.Progress(10, &scene_node_));
-  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
-    frame_index: 1
-    position {
-      x: 1 y: 0 z: 0
-    })")));
-  EXPECT_TRUE(animator.Progress(30, &scene_node_));
-  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
-    frame_index: 2
-    position {
-      x: 1 y: 0 z: 0
-    })")));
+  }
 }
 
-TEST_F(AnimatorTest, NonRepeatableAnimationTerminatesCompositeAnimation) {
-  const auto composite_animation = ParseProto<Animation>(R"(
-    translation {
-      vec { x: 1 }
-      delay: 5
-    }
-    frame_range {
-      start_frame: 0
-      end_frame: 3
-      delay: 10
-    }
-    timer {
-     delay: 25 
-    })");
+SCENARIO_METHOD(
+    AnimatorFixture,
+    "Composite animation terminates when a non-repeatable part finishes",
+    "[animator]") {
+  GIVEN("a composite animation that is conditioned on ALL") {
+    const auto composite_animation = ParseProto<Animation>(R"(
+        termination: ANY
+        translation {
+          vec { x: 1 }
+          delay: 10
+        }
+        frame_list {
+          frame: [ 0, 1, 2 ]
+          delay: 10
+          repeat: 2
+        }
+        timer {
+         delay: 30
+        })");
 
-  Animator animator;
-  animator.Start(composite_animation, &scene_node_);
-  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
-    frame_index: 0
-    )")));
+    Animator animator;
+    animator.Start(composite_animation, &scene_node_, &core_);
 
-  // Timer is non-repeatable so after its delay it will cause the composite
-  // animation to finish.
-  EXPECT_TRUE(animator.Progress(25, &scene_node_));
-  EXPECT_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
-    frame_index: 2
-    position {
-      x: 5 y: 0 z: 0
-    })")));
+    WHEN("the non-repeatable animation is finished (timer)") {
+      REQUIRE(animator.Progress(30, &scene_node_));
+
+      THEN("the animator is done") {
+        REQUIRE_THAT(scene_node_, EqualsProto(ParseProto<SceneNode>(R"(
+            id: 'node_a' sprite_id: 'sprite_a'
+            frame_index: 0
+            position { x: 3 y: 0 z: 0 })")));
+      }
+    }
+  }
 }
 
 }  // namespace troll

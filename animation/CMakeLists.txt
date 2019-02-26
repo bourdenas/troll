@@ -17,3 +17,11 @@ target_link_libraries(troll_animation
   troll_proto
   troll_sound
 )
+
+add_executable(animator_test "animator_test.cc")
+target_link_libraries(animator_test PRIVATE
+  troll_animation
+  troll_core
+  Catch2::Catch2
+)
+catch_discover_tests(animator_test)
