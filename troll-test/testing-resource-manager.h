@@ -8,19 +8,24 @@ namespace troll {
 
 class TestingResourceManager {
  public:
-  static void SetTestSprite(const Sprite& sprite) {
-    ResourceManager::Instance().sprites_[sprite.id()] = sprite;
-    auto& masks =
-        ResourceManager::Instance().sprite_collision_masks_[sprite.id()];
+  TestingResourceManager(ResourceManager* resource_manager)
+      : resource_manager_(resource_manager) {}
+
+  void SetTestSprite(const Sprite& sprite) {
+    resource_manager_->sprites_[sprite.id()] = sprite;
+    auto& masks = resource_manager_->sprite_collision_masks_[sprite.id()];
     for (const auto& film : sprite.film()) {
       masks.push_back(
           boost::dynamic_bitset<>(film.width() * film.height()).set());
     }
   }
 
-  static void SetTestAnimationScript(const AnimationScript& script) {
-    ResourceManager::Instance().scripts_[script.id()] = script;
+  void SetTestAnimationScript(const AnimationScript& script) {
+    resource_manager_->scripts_[script.id()] = script;
   }
+
+ private:
+  ResourceManager* resource_manager_;
 };
 
 }  // namespace troll

@@ -2,9 +2,6 @@
 
 #include <math.h>
 
-#include "core/resource-manager.h"
-#include "proto/sprite.pb.h"
-
 namespace troll {
 namespace geo {
 
