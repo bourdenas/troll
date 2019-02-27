@@ -25,3 +25,11 @@ target_link_libraries(animator_test PRIVATE
   Catch2::Catch2
 )
 catch_discover_tests(animator_test)
+
+add_executable(performer_test "performer_test.cc")
+target_link_libraries(performer_test PRIVATE
+  troll_animation
+  troll_core
+  Catch2::Catch2
+)
+catch_discover_tests(performer_test)
