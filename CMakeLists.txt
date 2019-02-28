@@ -34,9 +34,6 @@ find_package(Catch2 CONFIG REQUIRED)
 
 # Use -DBUILD_TESTING=OFF to disable tests.
 add_subdirectory(deps/abseil-cpp)
-if(!MSVC)
-  add_subdirectory(deps/googletest)
-endif()
 add_subdirectory(deps/pybind11)
 add_subdirectory(deps/range-v3)
 
