@@ -1,367 +1,399 @@
 #include "animation/script-animator.h"
 
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#define CATCH_CONFIG_MAIN
+#include <catch.hpp>
 
-#include "core/troll-core.h"
+#include "core/collision-checker.h"
+#include "core/event-dispatcher.h"
+#include "core/scene-manager.h"
 #include "proto/animation.pb.h"
 #include "proto/scene-node.pb.h"
+#include "troll-test/test-core.h"
 #include "troll-test/test-util.h"
 #include "troll-test/testing-resource-manager.h"
 
 namespace troll {
 
-class AnimatorScriptTest : public testing::Test {
- protected:
-  void SetUp() override {
-    scene_manager_ = new SceneManager();
-    Core::Instance().SetupTestSceneManager(scene_manager_);
+class ScriptAnimatorFixture {
+ public:
+  ScriptAnimatorFixture() {
+    testing_resource_manager_.SetTestSprite(ParseProto<Sprite>(R"(
+        id: 'sprite_a'
+        film{} film{} film{} film{} film{} film{} film{})"));
 
-    // Setup dummy sprite for 'test_node' with 5 films that are need for the
-    // frame range animations in the tests.
-    TestingResourceManager::SetTestSprite(ParseProto<Sprite>(R"(
-      id: ''
-      film {} film {} film {} film {} film {})"));
+    core_.set_resource_manager(&resource_manager_);
+    core_.set_scene_manager(&scene_manager_);
+    core_.set_collision_checker(&collision_checker_);
+    core_.set_event_dispatcher(&event_dispatcher_);
+
+    scene_manager_.AddSceneNode(
+        ParseProto<SceneNode>("id: 'node_a' sprite_id: 'sprite_a'"));
   }
 
-  SceneManager* scene_manager_ = nullptr;
+ protected:
+  TestCore core_;
+  ResourceManager resource_manager_;
+  SceneManager scene_manager_ =
+      SceneManager(&resource_manager_, nullptr, &core_);
+  CollisionChecker collision_checker_ =
+      CollisionChecker(&scene_manager_, nullptr, &core_);
+  EventDispatcher event_dispatcher_;
+
+  TestingResourceManager testing_resource_manager_ =
+      TestingResourceManager(&resource_manager_);
 };
 
-TEST_F(AnimatorScriptTest, RunScriptOnNonExistingSceneNode) {
-  const auto script = ParseProto<AnimationScript>(R"(
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-      }
-    })");
-  ScriptAnimator script_animator(script, "test_node");
+SCENARIO_METHOD(ScriptAnimatorFixture, "Script with single animation",
+                "[script_animator]") {
+  GIVEN("a single animation script") {
+    auto script = ParseProto<AnimationScript>(R"(
+        animation {
+          translation {
+            vec { x: 1 }
+            delay: 5
+          }
+        })");
 
-  script_animator.Start();
-  EXPECT_FALSE(script_animator.is_running());
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
-}
+    WHEN("started for running indefinitely") {
+      ScriptAnimator script_animator(script, "node_a", &core_);
+      script_animator.Start();
 
-TEST_F(AnimatorScriptTest, RunScriptWithSingleRepeatableAnimation) {
-  const auto script = ParseProto<AnimationScript>(R"(
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-      }
-    })");
-  ScriptAnimator script_animator(script, "test_node");
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
+      THEN("script runs forever") {
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
 
-  script_animator.Start();
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
+        script_animator.Progress(10);
+        REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                     EqualsProto(ParseProto<SceneNode>(
+                         "id: 'node_a' sprite_id: 'sprite_a' "
+                         "position { x: 2  y: 0  z: 0 }")));
 
-  script_animator.Progress(10);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 0  z:0 }
-                )")));
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
 
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
+        script_animator.Progress(500);
+        REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                     EqualsProto(ParseProto<SceneNode>(
+                         "id: 'node_a' sprite_id: 'sprite_a' "
+                         "position { x: 102  y: 0  z: 0 }")));
 
-  script_animator.Progress(5);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 3  y: 0  z:0 }
-                )")));
-}
-
-TEST_F(AnimatorScriptTest, RunScriptWithSingleOneOffAnimation) {
-  const auto script = ParseProto<AnimationScript>(R"(
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-        repeat: 1
-      }
-    })");
-  ScriptAnimator script_animator(script, "test_node");
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
-
-  script_animator.Start();
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
-
-  script_animator.Progress(10);
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 1  y: 0  z:0 }
-                )")));
-
-  EXPECT_FALSE(script_animator.is_running());
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
-
-  script_animator.Progress(10);
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 1  y: 0  z:0 }
-                )")));
-}
-
-TEST_F(AnimatorScriptTest, RunScriptWithSequencedAnimationThatDoesntFinish) {
-  const auto script = ParseProto<AnimationScript>(R"(
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
-        repeat: 2
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
       }
     }
-    animation {
-      frame_range {
-        start_frame: 0
-        end_frame: 3
-        delay: 10
-      }
-    })");
-  ScriptAnimator script_animator(script, "test_node");
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
 
-  script_animator.Start();
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
+    WHEN("started for running a few times") {
+      script.mutable_animation(0)->mutable_translation()->set_repeat(3);
+      ScriptAnimator script_animator(script, "node_a", &core_);
+      script_animator.Start();
 
-  script_animator.Progress(5);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 1  y: 0  z:0 }
-                )")));
+      THEN("script runs until it repeats enough times") {
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
 
-  script_animator.Progress(5);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 0  z:0 }
-                frame_index: 0
-                )")));
+        script_animator.Progress(10);
+        REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                     EqualsProto(ParseProto<SceneNode>(
+                         "id: 'node_a' sprite_id: 'sprite_a' "
+                         "position { x: 2  y: 0  z: 0 }")));
 
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
 
-  script_animator.Progress(20);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 0  z:0 }
-                frame_index: 2
-                )")));
+        script_animator.Progress(500);
+        REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                     EqualsProto(ParseProto<SceneNode>(
+                         "id: 'node_a' sprite_id: 'sprite_a' "
+                         "position { x: 3  y: 0  z: 0 }")));
 
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
+        REQUIRE_FALSE(script_animator.is_running());
+        REQUIRE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
 
-  script_animator.Progress(20);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 0  z:0 }
-                frame_index: 1
-                )")));
+        AND_WHEN("more progress is done on the finished animator") {
+          script_animator.Progress(10);
 
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
-}
+          THEN("it has no effect") {
+            REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                         EqualsProto(ParseProto<SceneNode>(
+                             "id: 'node_a' sprite_id: 'sprite_a' "
+                             "position { x: 3  y: 0  z: 0 }")));
 
-TEST_F(AnimatorScriptTest,
-       RunScriptWithSequencedCompositeAnimationThatFinishes) {
-  const auto script = ParseProto<AnimationScript>(R"(
-    animation {
-      translation {
-        vec { x: 1  y: 2 }
-        delay: 5
-        repeat: 2
-      }
-      frame_range {
-        start_frame: 2
-        end_frame: 5
-        delay: 10
+            REQUIRE_FALSE(script_animator.is_running());
+            REQUIRE(script_animator.is_finished());
+            REQUIRE_FALSE(script_animator.is_paused());
+          }
+        }
       }
     }
-    animation {
-      flash {
-        delay: 2
+  }
+}
+
+SCENARIO_METHOD(ScriptAnimatorFixture, "Script with multiple legs",
+                "[script_animator]") {
+  GIVEN("an animation script with multiple legs") {
+    auto script = ParseProto<AnimationScript>(R"(
+        animation {
+          translation {
+            vec { x: 1 }
+            delay: 5
+            repeat: 3
+          }
+          frame_list {
+            frame: [2, 3]
+            delay: 10
+          }
+        }
+        animation {
+          flash {
+            delay: 2
+            repeat: 3
+          }
+        })");
+
+    WHEN("started") {
+      ScriptAnimator script_animator(script, "node_a", &core_);
+      script_animator.Start();
+
+      THEN("script is running") {
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
+
+        AND_WHEN("the first leg finishes") {
+          script_animator.Progress(15);
+
+          THEN("script is still running") {
+            REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                         EqualsProto(ParseProto<SceneNode>(
+                             "id: 'node_a' sprite_id: 'sprite_a' "
+                             "frame_index: 2 "
+                             "position { x: 3  y: 0  z: 0 }")));
+
+            REQUIRE(script_animator.is_running());
+            REQUIRE_FALSE(script_animator.is_finished());
+            REQUIRE_FALSE(script_animator.is_paused());
+
+            AND_WHEN("the second leg finishes") {
+              script_animator.Progress(6);
+
+              THEN("the script terminates") {
+                REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                             EqualsProto(ParseProto<SceneNode>(
+                                 "id: 'node_a' sprite_id: 'sprite_a' "
+                                 "frame_index: 2 "
+                                 "visible: false "
+                                 "position { x: 3  y: 0  z: 0 }")));
+
+                REQUIRE_FALSE(script_animator.is_running());
+                REQUIRE(script_animator.is_finished());
+                REQUIRE_FALSE(script_animator.is_paused());
+              }
+            }
+          }
+        }
+      }
+    }
+
+    WHEN("started") {
+      ScriptAnimator script_animator(script, "node_a", &core_);
+      script_animator.Start();
+
+      THEN("script is running") {
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
+
+        AND_WHEN("the first leg overruns") {
+          script_animator.Progress(20);
+
+          // TODO(bourdenas): Script legs only transition across different
+          // Progress() calls. If for some reason rendering falls behind and has
+          // to catch up, it might be possible that it can jitter because
+          // remaining progress should be consumed by next leg, but instead is
+          // thrown away.
+          // NOTE: There is a similar bug on RepeatablePerformerBase::Progress()
+          // that does the same for restarting an animation.
+          THEN("script should transition to second leg, but it does not") {
+            REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                         EqualsProto(ParseProto<SceneNode>(
+                             "id: 'node_a' sprite_id: 'sprite_a' "
+                             "frame_index: 2 "
+                             "position { x: 3  y: 0  z: 0 }")));
+
+            REQUIRE(script_animator.is_running());
+            REQUIRE_FALSE(script_animator.is_finished());
+            REQUIRE_FALSE(script_animator.is_paused());
+
+            AND_WHEN("the second leg finishes") {
+              script_animator.Progress(6);
+
+              THEN("the script terminates") {
+                REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                             EqualsProto(ParseProto<SceneNode>(
+                                 "id: 'node_a' sprite_id: 'sprite_a' "
+                                 "frame_index: 2 "
+                                 "visible: false "
+                                 "position { x: 3  y: 0  z: 0 }")));
+
+                REQUIRE_FALSE(script_animator.is_running());
+                REQUIRE(script_animator.is_finished());
+                REQUIRE_FALSE(script_animator.is_paused());
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+SCENARIO_METHOD(ScriptAnimatorFixture, "Script is repeated",
+                "[script_animator]") {
+  GIVEN("a script that is repeatable") {
+    const auto script = ParseProto<AnimationScript>(R"(
         repeat: 2
+        animation {
+          translation {
+            vec { x: 1 }
+            delay: 5
+            repeat: 3
+          }
+        }
+        animation {
+          translation {
+            vec { y: 1 }
+            delay: 5
+            repeat: 3
+          }
+        })");
+
+    WHEN("started") {
+      ScriptAnimator script_animator(script, "node_a", &core_);
+      script_animator.Start();
+
+      THEN("runs its two legs but does not finish") {
+        script_animator.Progress(15);
+        REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                     EqualsProto(ParseProto<SceneNode>(
+                         "id: 'node_a' sprite_id: 'sprite_a' "
+                         "position { x: 3  y: 0  z: 0 }")));
+
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
+
+        script_animator.Progress(15);
+        REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                     EqualsProto(ParseProto<SceneNode>(
+                         "id: 'node_a' sprite_id: 'sprite_a' "
+                         "position { x: 3  y: 3  z: 0 }")));
+
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
+
+        AND_WHEN("runs the two legs again") {
+          THEN("it finishes") {
+            script_animator.Progress(15);
+            REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                         EqualsProto(ParseProto<SceneNode>(
+                             "id: 'node_a' sprite_id: 'sprite_a' "
+                             "position { x: 6  y: 3  z: 0 }")));
+
+            REQUIRE(script_animator.is_running());
+            REQUIRE_FALSE(script_animator.is_finished());
+            REQUIRE_FALSE(script_animator.is_paused());
+
+            script_animator.Progress(15);
+            REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                         EqualsProto(ParseProto<SceneNode>(
+                             "id: 'node_a' sprite_id: 'sprite_a' "
+                             "position { x: 6  y: 6  z: 0 }")));
+
+            REQUIRE_FALSE(script_animator.is_running());
+            REQUIRE(script_animator.is_finished());
+            REQUIRE_FALSE(script_animator.is_paused());
+          }
+        }
       }
-    })");
-  ScriptAnimator script_animator(script, "test_node");
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
-
-  script_animator.Start();
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
-
-  script_animator.Progress(10);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 4  z:0 }
-                frame_index: 2
-                )")));
-
-  script_animator.Progress(2);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 4  z:0 }
-                frame_index: 2
-                visible: false
-                )")));
-
-  script_animator.Progress(2);
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 4  z:0 }
-                frame_index: 2
-                visible: true
-                )")));
-
-  EXPECT_FALSE(script_animator.is_running());
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
-
-  script_animator.Progress(2);
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 4  z:0 }
-                frame_index: 2
-                visible: true
-                )")));
-
-  EXPECT_FALSE(script_animator.is_running());
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
+    }
+  }
 }
 
-TEST_F(AnimatorScriptTest, RunRepeatedScript) {
-  // Frame range animation is not repeatable, but the script itself is repeated
-  // twice.
-  const auto script = ParseProto<AnimationScript>(R"(
-    repeat: 2
-    animation {
-      translation {
-        vec { x: 1  y: 2 }
-        delay: 10
-        repeat: 3
+SCENARIO_METHOD(ScriptAnimatorFixture, "Scripts on nodes that die",
+                "[script_animator]") {
+  GIVEN("an animation script") {
+    const auto script = ParseProto<AnimationScript>(R"(
+      animation {
+        translation {
+          vec { x: 1 }
+          delay: 5
+        }
+      })");
+
+    WHEN("started on a non-existing scene node") {
+      ScriptAnimator script_animator(script, "non_existent_node", &core_);
+      script_animator.Start();
+
+      THEN("animation does not start") {
+        REQUIRE_FALSE(script_animator.is_running());
+        REQUIRE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
+
+        AND_WHEN("making progress on it") {
+          script_animator.Progress(5);
+
+          THEN(" has no effect") {
+            scene_manager_.GetSceneNodeById("non_existent_node") == nullptr;
+            REQUIRE_FALSE(script_animator.is_running());
+            REQUIRE(script_animator.is_finished());
+            REQUIRE_FALSE(script_animator.is_paused());
+          }
+        }
       }
-    })");
-  ScriptAnimator script_animator(script, "test_node");
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
+    }
 
-  script_animator.Start();
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
+    WHEN("started") {
+      ScriptAnimator script_animator(script, "node_a", &core_);
+      script_animator.Start();
 
-  script_animator.Progress(10);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 1  y: 2  z: 0}
-                )")));
+      THEN("animation runs") {
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
 
-  script_animator.Progress(20);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 3  y: 6  z: 0}
-                )")));
+        script_animator.Progress(10);
+        REQUIRE_THAT(*scene_manager_.GetSceneNodeById("node_a"),
+                     EqualsProto(ParseProto<SceneNode>(
+                         "id: 'node_a' sprite_id: 'sprite_a' "
+                         "position { x: 2  y: 0  z: 0 }")));
 
-  script_animator.Progress(30);
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 6  y: 12  z: 0}
-                )")));
+        REQUIRE(script_animator.is_running());
+        REQUIRE_FALSE(script_animator.is_finished());
+        REQUIRE_FALSE(script_animator.is_paused());
 
-  EXPECT_FALSE(script_animator.is_running());
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
+        AND_WHEN("its scene node is deleted") {
+          // Create a new scene manager as a hacky way to delete 'node_a'.
+          scene_manager_ = SceneManager(&resource_manager_, nullptr, &core_);
+          core_.set_scene_manager(&scene_manager_);
 
-  script_animator.Progress(10);
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 6  y: 12  z: 0}
-                )")));
-
-  EXPECT_FALSE(script_animator.is_running());
-  EXPECT_TRUE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
-}
-
-TEST_F(AnimatorScriptTest, RunScriptAnimationAndNodeIsDeleted) {
-  const auto script = ParseProto<AnimationScript>(R"(
-    animation {
-      translation {
-        vec { x: 1 }
-        delay: 5
+          THEN("the animator stops gracefully") {
+            script_animator.Progress(10);
+            scene_manager_.GetSceneNodeById("node_a") == nullptr;
+            REQUIRE_FALSE(script_animator.is_running());
+            REQUIRE(script_animator.is_finished());
+            REQUIRE_FALSE(script_animator.is_paused());
+          }
+        }
       }
-    })");
-  ScriptAnimator script_animator(script, "test_node");
-  scene_manager_->AddSceneNode(ParseProto<SceneNode>("id: 'test_node'"));
-
-  script_animator.Start();
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_FALSE(script_animator.is_paused());
-
-  script_animator.Progress(10);
-  EXPECT_FALSE(script_animator.is_finished());
-  EXPECT_THAT(*scene_manager_->GetSceneNodeById("test_node"),
-              EqualsProto(ParseProto<SceneNode>(R"(
-                id: 'test_node'
-                position { x: 2  y: 0  z:0 }
-                )")));
-  EXPECT_TRUE(script_animator.is_running());
-  EXPECT_FALSE(script_animator.is_finished());
-
-  // Create a new scene manager as a hacky way to delete the 'test_node'.
-  scene_manager_ = new SceneManager();
-  Core::Instance().SetupTestSceneManager(scene_manager_);
-
-  EXPECT_EQ(scene_manager_->GetSceneNodeById("test_node"), nullptr);
-  script_animator.Progress(10);
-  EXPECT_FALSE(script_animator.is_running());
-  EXPECT_TRUE(script_animator.is_finished());
+    }
+  }
 }
 
 }  // namespace troll
