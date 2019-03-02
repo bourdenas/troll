@@ -17,3 +17,36 @@ target_link_libraries(troll_animation
   troll_proto
   troll_sound
 )
+
+add_executable(animator-manager_test "animator-manager_test.cc")
+target_link_libraries(animator-manager_test PRIVATE
+  troll_animation
+  troll_core
+  Catch2::Catch2
+)
+catch_discover_tests(animator-manager_test)
+
+add_executable(animator_test "animator_test.cc")
+target_link_libraries(animator_test PRIVATE
+  troll_animation
+  troll_core
+  Catch2::Catch2
+)
+catch_discover_tests(animator_test)
+
+add_executable(performer_test "performer_test.cc")
+target_link_libraries(performer_test PRIVATE
+  troll_animation
+  troll_core
+  Catch2::Catch2
+)
+catch_discover_tests(performer_test)
+
+add_executable(script-animator_test "script-animator_test.cc")
+target_link_libraries(script-animator_test PRIVATE
+  troll_animation
+  troll_core
+  Catch2::Catch2
+)
+catch_discover_tests(script-animator_test)
+
