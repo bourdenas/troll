@@ -29,7 +29,6 @@ void TrollCore::Init(const std::string& name,
   script_manager_ = std::make_unique<ScriptManager>(resource_base_path, this);
 
   action_manager_ = std::make_unique<ActionManager>(this);
-  animator_manager_ = std::make_unique<AnimatorManager>(this);
   input_manager_ = std::make_unique<InputManager>(
       resource_manager_->GetKeyBindings(), action_manager_.get());
 
@@ -57,6 +56,7 @@ void TrollCore::Halt() { halt_ = true; }
 void TrollCore::LoadScene(const Scene& scene) {
   scene_manager_ = std::make_unique<SceneManager>(resource_manager_.get(),
                                                   renderer_.get(), this);
+  animator_manager_ = std::make_unique<AnimatorManager>(this);
   collision_checker_ = std::make_unique<CollisionChecker>(
       scene_manager_.get(), action_manager_.get(), this);
   event_dispatcher_ = std::make_unique<EventDispatcher>();
