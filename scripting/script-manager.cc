@@ -52,6 +52,10 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
     core_instance->action_manager()->Execute(action);
   });
 
+  m.def("transition_scene", [](const pybind11::object& scene) {
+    core_instance->script_manager()->ChangeScene(scene);
+  });
+
   m.def("register_event_handler",
         [](const std::string& event_id, const std::function<void()>& handler,
            bool permanent) {
@@ -97,14 +101,24 @@ ScriptManager::ScriptManager(const std::string& script_base_path, Core* core) {
 
 ScriptManager::~ScriptManager() { core_instance = nullptr; }
 
-void ScriptManager::Call(const std::string& module,
-                         const std::string& function) {
+void ScriptManager::CreateScene(const std::string& module,
+                                const std::string& scene_class) {
   const auto* py_module = ImportModule(module);
   try {
-    py_module->attr(function.c_str())();
+    auto&& scene = py_module->attr(scene_class.c_str())();
+    ChangeScene(scene);
   } catch (const pybind11::error_already_set& e) {
     LOG(ERROR) << "Python run-time error:\n" << e.what();
   }
+}
+
+void ScriptManager::ChangeScene(const pybind11::object& scene) {
+  if (scene_) {
+    scene_.attr("Cleanup")();
+  }
+  scene_ = scene;
+  scene_.attr("Build")();
+  scene_.attr("Setup")();
 }
 
 const pybind11::module* ScriptManager::ImportModule(const std::string& module) {
