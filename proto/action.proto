@@ -35,8 +35,6 @@ message Action {
     SfxAction resume_audio = 17;
 
     DisplayTextAction display_text = 18;
-
-    ScriptAction call = 19;
   }
 }
 
@@ -95,9 +93,4 @@ message DisplayTextAction {
   optional RGBa colour = 7;
   optional RGBa background_colour = 8;
   optional string font = 9;
-}
-
-message ScriptAction {
-  optional string module = 1;
-  optional string function = 2;
 }

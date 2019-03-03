@@ -273,9 +273,4 @@ void DisplayTextExecutor::Execute(const Action& action) const {
   // TODO(bourdenas): Implement show text.
 }
 
-void ScriptExecutor::Execute(const Action& action) const {
-  core_->script_manager()->Call(action.call().module(),
-                                action.call().function());
-}
-
 }  // namespace troll

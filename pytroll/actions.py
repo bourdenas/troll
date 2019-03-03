@@ -123,10 +123,3 @@ def OnDetaching(node_ids, sprite_ids, actions):
         action.on_detaching.sprite_id.extend(sprite_ids)
     action.on_detaching.action.extend(actions)
     return action
-
-
-def Call(module, function):
-    action = proto.action_pb2.Action()
-    action.call.module = module
-    action.call.function = function
-    return action
