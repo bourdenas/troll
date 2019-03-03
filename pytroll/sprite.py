@@ -48,7 +48,7 @@ class Sprite:
                 pytroll.events.AnimationScriptDone(self.id, script.id),
                 on_done)
 
-    def PlayAnimation(self, script_id, on_done=None):
+    def PlayAnimationById(self, script_id, on_done=None):
         action = pytroll.actions.PlayAnimation(self.id, script_id)
         troll.execute(action.SerializeToString())
         if on_done:
