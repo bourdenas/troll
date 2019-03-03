@@ -11,7 +11,7 @@ def ChangeScene(scene):
     return action
 
 
-def Create(node_id, sprite_id, frame_index, position):
+def Create(node_id, sprite_id, frame_index, position=(0, 0, 0,)):
     action = proto.action_pb2.Action()
     action.create_scene_node.scene_node.id = node_id
     action.create_scene_node.scene_node.sprite_id = sprite_id
