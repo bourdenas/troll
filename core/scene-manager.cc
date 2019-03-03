@@ -10,13 +10,11 @@
 #include "core/collision-checker.h"
 #include "core/geometry.h"
 #include "core/resource-manager.h"
-#include "scripting/script-manager.h"
 #include "sdl/renderer.h"
 
 namespace troll {
 
-void SceneManager::SetupScene(const Scene& scene,
-                              ScriptManager* script_manager) {
+void SceneManager::SetupScene(const Scene& scene) {
   scene_ = scene;
   renderer_->ClearScreen();
   renderer_->FillColour(scene_.bitmap_config().background_colour(),
@@ -26,10 +24,6 @@ void SceneManager::SetupScene(const Scene& scene,
     renderer_->BlitTexture(
         resource_manager_->GetTexture(scene_.bitmap_config().bitmap()), Box(),
         Box());
-  }
-
-  for (const auto& script : scene_.on_init()) {
-    script_manager->Call(script.module(), script.function());
   }
 }
 

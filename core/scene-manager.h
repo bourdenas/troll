@@ -25,7 +25,7 @@ class SceneManager {
                const Renderer* renderer, Core* core)
       : resource_manager_(resource_manager), renderer_(renderer), core_(core) {}
 
-  void SetupScene(const Scene& scene, ScriptManager* script_manager);
+  void SetupScene(const Scene& scene);
 
   void AddSceneNode(const SceneNode& node);
   void RemoveSceneNode(const std::string& id);

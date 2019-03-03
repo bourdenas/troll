@@ -61,7 +61,7 @@ void TrollCore::LoadScene(const Scene& scene) {
       scene_manager_.get(), action_manager_.get(), this);
   event_dispatcher_ = std::make_unique<EventDispatcher>();
 
-  scene_manager_->SetupScene(scene, script_manager_.get());
+  scene_manager_->SetupScene(scene);
 }
 
 bool TrollCore::InputHandling() {
