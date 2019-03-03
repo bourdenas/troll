@@ -9,22 +9,25 @@
 
 namespace troll {
 
-// Script execution engine that handles scripting modules and evaluates
-// expressions.
+// Script execution engine that handles scripting modules.
 class ScriptManager {
  public:
   ScriptManager(const std::string& script_base_path, Core* core);
   ~ScriptManager();
 
-  // Call an imported module's function in the scripting engine.
-  void Call(const std::string& module, const std::string& function);
+  // Instantiate a pytroll scene class from specified module.
+  void CreateScene(const std::string& module, const std::string& scene_class);
+  void ChangeScene(const pybind11::object& scene);
 
   ScriptManager(const ScriptManager&) = delete;
   ScriptManager& operator=(const ScriptManager&) = delete;
 
  private:
-  // Import a module that is in the import path.
+  // Import a module that can be found in the import path.
   const pybind11::module* ImportModule(const std::string& module);
+
+  // The python object that contains the current game scene.
+  pybind11::object scene_;
 
   std::string script_base_path_;
 

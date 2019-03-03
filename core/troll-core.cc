@@ -31,9 +31,6 @@ void TrollCore::Init(const std::string& name,
   action_manager_ = std::make_unique<ActionManager>(this);
   input_manager_ = std::make_unique<InputManager>(
       resource_manager_->GetKeyBindings(), action_manager_.get());
-
-  LoadScene(resource_manager_->LoadScene(
-      absl::StrCat(resource_base_path, "scenes/main.scene")));
 }
 
 void TrollCore::Run() {
@@ -61,7 +58,7 @@ void TrollCore::LoadScene(const Scene& scene) {
       scene_manager_.get(), action_manager_.get(), this);
   event_dispatcher_ = std::make_unique<EventDispatcher>();
 
-  scene_manager_->SetupScene(scene, script_manager_.get());
+  scene_manager_->SetupScene(scene);
 }
 
 bool TrollCore::InputHandling() {

@@ -189,16 +189,6 @@ class DisplayTextExecutor : public Executor {
   void Execute(const Action& action) const override;
 };
 
-class ScriptExecutor : public Executor {
- public:
-  ScriptExecutor(Core* core) : core_(core) {}
-
-  void Execute(const Action& action) const override;
-
- private:
-  Core* core_;
-};
-
 }  // namespace troll
 
 #endif  // TROLL_ACTION_EXECUTOR_H_

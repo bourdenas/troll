@@ -45,8 +45,6 @@ ActionManager::ActionManager(Core* core) {
 
   executors_.emplace(Action::kDisplayText,
                      std::make_unique<DisplayTextExecutor>());
-
-  executors_.emplace(Action::kCall, std::make_unique<ScriptExecutor>(core));
 }
 
 void ActionManager::Execute(const Action& action) const {
