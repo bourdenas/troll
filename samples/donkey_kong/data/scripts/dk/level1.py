@@ -50,12 +50,12 @@ class Level1Scene(pytroll.scene.PyTrollScene):
         [dk.sprites.Ladder(i).Create(pos, frame_index=0)
          for i, pos in enumerate(ladder_positions)]
 
-        dk.sprites.Princess('princess').Create((270, 50, -1), frame_index=1)
+        dk.sprites.Princess().Create((270, 50, -1), frame_index=1)
         dk.sprites.Barrel('stack').Create((80, 88, 0), frame_index=5)
         dk.sprites.Barrel('base').Create((100, 428, 0), frame_index=6)
 
-        donkey_kong = dk.sprites.DonkeyKong(
-            'dk').Create((126, 90, 0), frame_index=0)
+        donkey_kong = dk.sprites.DonkeyKong().Create(
+            (126, 90, 0), frame_index=0)
         donkey_kong.PlayAnimationById('dk_barrel_throw')
 
         pytroll.events.OnEvent(
@@ -65,8 +65,8 @@ class Level1Scene(pytroll.scene.PyTrollScene):
                 (215, 134, 0), frame_index=1).Roll(),
             permanent=True)
 
-        dk.controls.mario = dk.sprites.Mario(
-            'mario').Create((140, 428, 0), frame_index=15)
+        dk.controls.mario = dk.sprites.Mario().Create(
+            (140, 428, 0), frame_index=15)
 
         pytroll.audio.PlayMusic('main_loop', repeat=0)
 

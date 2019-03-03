@@ -3,22 +3,22 @@ import pytroll.sprite
 
 
 class Mario(pytroll.sprite.Sprite):
-    def __init__(self, id=''):
+    def __init__(self, id=None):
         pytroll.sprite.Sprite.__init__(self, id, 'mario')
 
 
 class Princess(pytroll.sprite.Sprite):
-    def __init__(self, id=''):
+    def __init__(self, id=None):
         pytroll.sprite.Sprite.__init__(self, id, 'princess')
 
 
 class DonkeyKong(pytroll.sprite.Sprite):
-    def __init__(self, id=''):
+    def __init__(self, id=None):
         pytroll.sprite.Sprite.__init__(self, id, 'dk')
 
 
 class PlatformPiece(pytroll.sprite.Sprite):
-    def __init__(self, id=''):
+    def __init__(self, id=None):
         pytroll.sprite.Sprite.__init__(self, id, 'platform')
 
 
@@ -57,13 +57,8 @@ class Ladder(pytroll.sprite.Sprite):
 
 
 class Barrel(pytroll.sprite.Sprite):
-    __barrel_serial = 0
-
     def __init__(self, id=None):
-        if not id:
-            id = Barrel.__barrel_serial
-            Barrel.__barrel_serial += 1
-        pytroll.sprite.Sprite.__init__(self, 'barrel_' + str(id), 'barrel')
+        pytroll.sprite.Sprite.__init__(self, id, 'barrel')
 
     def Roll(self):
         script = proto.animation_pb2.AnimationScript()

@@ -4,8 +4,14 @@ import troll
 
 
 class Sprite:
+    __sprite_unique_id = 0
+
     def __init__(self, id, sprite_id):
-        self.id = id
+        if id:
+            self.id = id
+        else:
+            self.id = sprite_id + str(Sprite.__sprite_unique_id)
+            Sprite.__sprite_unique_id += 1
         self.sprite_id = sprite_id
 
     def Create(self, position, frame_index=0):

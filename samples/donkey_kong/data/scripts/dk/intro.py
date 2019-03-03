@@ -41,7 +41,7 @@ class IntroScene(pytroll.scene.PyTrollScene):
         ladders = [dk.sprites.Ladder(i).Create(pos, frame_index=0)
                    for i, pos in enumerate(ladder_positions)]
 
-        donkey_kong = dk.sprites.DonkeyKong('dk')
+        donkey_kong = dk.sprites.DonkeyKong()
         donkey_kong.Create((300, 382, 0), frame_index=4)
         self.__Cutscene(donkey_kong, platforms, ladders)
 

@@ -13,7 +13,7 @@ class HeightScene(pytroll.scene.PyTrollScene):
         self.scene.viewport.height = 480
 
     def Setup(self):
-        donkey_kong = dk.sprites.DonkeyKong('dk')
+        donkey_kong = dk.sprites.DonkeyKong()
         donkey_kong.Create((300, 382, 0), frame_index=10)
         pytroll.audio.PlayMusic('height')
 
