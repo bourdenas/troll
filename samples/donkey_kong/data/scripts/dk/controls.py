@@ -4,31 +4,31 @@ mario = None
 
 __key_mapping = {
     ('LEFT', proto.key_binding_pb2.Trigger.PRESSED): [
-        lambda: mario.PlayAnimation('mario_move_left'),
+        lambda: mario.PlayAnimationById('mario_move_left'),
     ],
     ('LEFT', proto.key_binding_pb2.Trigger.RELEASED): [
         lambda: mario.StopAnimation('mario_move_left'),
     ],
     ('RIGHT', proto.key_binding_pb2.Trigger.PRESSED): [
-        lambda: mario.PlayAnimation('mario_move_right'),
+        lambda: mario.PlayAnimationById('mario_move_right'),
     ],
     ('RIGHT', proto.key_binding_pb2.Trigger.RELEASED): [
         lambda: mario.StopAnimation('mario_move_right'),
     ],
     ('UP', proto.key_binding_pb2.Trigger.PRESSED): [
-        lambda: mario.PlayAnimation('mario_climb_up'),
+        lambda: mario.PlayAnimationById('mario_climb_up'),
     ],
     ('UP', proto.key_binding_pb2.Trigger.RELEASED): [
         lambda: mario.StopAnimation('mario_climb_up'),
     ],
     ('DOWN', proto.key_binding_pb2.Trigger.PRESSED): [
-        lambda: mario.PlayAnimation('mario_climb_down'),
+        lambda: mario.PlayAnimationById('mario_climb_down'),
     ],
     ('DOWN', proto.key_binding_pb2.Trigger.RELEASED): [
         lambda: mario.StopAnimation('mario_climb_down'),
     ],
     ('SPACE', proto.key_binding_pb2.Trigger.PRESSED): [
-        lambda: mario.PlayAnimation('mario_jump'),
+        lambda: mario.PlayAnimationById('mario_jump'),
     ],
 }
 
