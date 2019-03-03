@@ -10,8 +10,6 @@ message Scene {
   optional Box viewport = 3;
 
   optional BitmapSceneManagerConfig bitmap_config = 4;
-
-  repeated InitScript on_init = 5;
 }
 
 message BitmapSceneManagerConfig {
@@ -20,9 +18,4 @@ message BitmapSceneManagerConfig {
 
   optional int32 width = 3;
   optional int32 height = 4;
-}
-
-message InitScript {
-  optional string module = 1;
-  optional string function = 2;
 }
