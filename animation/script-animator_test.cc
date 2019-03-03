@@ -350,7 +350,8 @@ SCENARIO_METHOD(ScriptAnimatorFixture, "Scripts on nodes that die",
           script_animator.Progress(5);
 
           THEN(" has no effect") {
-            scene_manager_.GetSceneNodeById("non_existent_node") == nullptr;
+            REQUIRE(scene_manager_.GetSceneNodeById("non_existent_node") ==
+                    nullptr);
             REQUIRE_FALSE(script_animator.is_running());
             REQUIRE(script_animator.is_finished());
             REQUIRE_FALSE(script_animator.is_paused());
@@ -385,7 +386,7 @@ SCENARIO_METHOD(ScriptAnimatorFixture, "Scripts on nodes that die",
 
           THEN("the animator stops gracefully") {
             script_animator.Progress(10);
-            scene_manager_.GetSceneNodeById("node_a") == nullptr;
+            REQUIRE(scene_manager_.GetSceneNodeById("node_a") == nullptr);
             REQUIRE_FALSE(script_animator.is_running());
             REQUIRE(script_animator.is_finished());
             REQUIRE_FALSE(script_animator.is_paused());
