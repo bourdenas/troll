@@ -121,8 +121,8 @@ bool CollisionChecker::NodesInCollisionCache(const SceneNode& left,
 
 namespace internal {
 bool SceneNodePixelsCollide(const Box& lhs_aabb, const Box& rhs_aabb,
-                            const boost::dynamic_bitset<>& lhs_collision_mask,
-                            const boost::dynamic_bitset<>& rhs_collision_mask) {
+                            const std::vector<bool>& lhs_collision_mask,
+                            const std::vector<bool>& rhs_collision_mask) {
   const auto intersection = geo::Intersection(lhs_aabb, rhs_aabb);
   const int lhs_rel_top = intersection.top() - lhs_aabb.top();
   const int lhs_rel_left = intersection.left() - lhs_aabb.left();

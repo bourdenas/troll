@@ -384,11 +384,15 @@ SCENARIO("Pixel-perfect collision", "[collisions]") {
     // 10011   01100
     // 11110   11111
     std::string tmp = "100001001111110";
-    boost::dynamic_bitset<> lhs_mask =
-        boost::dynamic_bitset<>(std::string(tmp.rbegin(), tmp.rend()));
+    std::vector<bool> lhs_mask;
+    for (auto c : tmp) {
+      lhs_mask.push_back(c == '1' ? true : false);
+    }
     tmp = "110000110011111";
-    boost::dynamic_bitset<> rhs_mask =
-        boost::dynamic_bitset<>(std::string(tmp.rbegin(), tmp.rend()));
+    std::vector<bool> rhs_mask;
+    for (auto c : tmp) {
+      rhs_mask.push_back(c == '1' ? true : false);
+    }
 
     WHEN("sprites are next to each other") {
       const auto lhs = ParseProto<Box>("left: 0  top: 0  width: 5  height: 3");

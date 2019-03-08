@@ -78,7 +78,7 @@ const Sprite& ResourceManager::GetSprite(const std::string& sprite_id) const {
   return it->second;
 }
 
-const boost::dynamic_bitset<>& ResourceManager::GetSpriteCollisionMask(
+const std::vector<bool>& ResourceManager::GetSpriteCollisionMask(
     const std::string& sprite_id, int frame_index) const {
   const auto it = sprite_collision_masks_.find(sprite_id);
   LOG_IF(FATAL, it == sprite_collision_masks_.end())

@@ -6,8 +6,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <boost/dynamic_bitset.hpp>
-
 #include "proto/animation.pb.h"
 #include "proto/key-binding.pb.h"
 #include "proto/scene.pb.h"
@@ -33,8 +31,8 @@ class ResourceManager {
   const KeyBindings& GetKeyBindings() const;
 
   const Sprite& GetSprite(const std::string& sprite_id) const;
-  const boost::dynamic_bitset<>& GetSpriteCollisionMask(
-      const std::string& sprite_id, int frame_index) const;
+  const std::vector<bool>& GetSpriteCollisionMask(const std::string& sprite_id,
+                                                  int frame_index) const;
 
   const AnimationScript& GetAnimationScript(const std::string& script_id) const;
 
@@ -59,7 +57,7 @@ class ResourceManager {
   KeyBindings key_bindings_;
 
   std::unordered_map<std::string, Sprite> sprites_;
-  std::unordered_map<std::string, std::vector<boost::dynamic_bitset<>>>
+  std::unordered_map<std::string, std::vector<std::vector<bool>>>
       sprite_collision_masks_;
 
   std::unordered_map<std::string, AnimationScript> scripts_;

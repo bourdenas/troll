@@ -5,8 +5,6 @@
 #include <stack>
 #include <vector>
 
-#include <boost/dynamic_bitset.hpp>
-
 #include "action/action-manager.h"
 #include "core/core.h"
 #include "core/scene-manager.h"
@@ -94,8 +92,8 @@ namespace internal {
 // Returns true if the input bounding boxes actaully collide based on supplied
 // collision masks.
 bool SceneNodePixelsCollide(const Box& lhs_aabb, const Box& rhs_aabb,
-                            const boost::dynamic_bitset<>& lhs_collision_mask,
-                            const boost::dynamic_bitset<>& rhs_collision_mask);
+                            const std::vector<bool>& lhs_collision_mask,
+                            const std::vector<bool>& rhs_collision_mask);
 }  // namespace internal
 
 }  // namespace troll

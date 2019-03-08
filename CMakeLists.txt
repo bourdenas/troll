@@ -1,4 +1,4 @@
-# cmake .. -DCMAKE_TOOLCHAIN_FILE=../../vcpkg/scripts/buildsystems/vcpkg.cmake
+# cmake .. -DCMAKE_TOOLCHAIN_FILE=D:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake
 cmake_minimum_required(VERSION 3.6)
 project(troll)
 
@@ -20,8 +20,6 @@ if(MSVC)
 endif()
 
 find_package(SDL2 REQUIRED)
-
-find_package(Boost REQUIRED) 
 
 find_package(glog REQUIRED) 
 

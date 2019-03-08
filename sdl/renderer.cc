@@ -47,7 +47,7 @@ bool Renderer::CreateWindow(int width, int height) {
   return true;
 }
 
-std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
+std::vector<std::vector<bool>> Renderer::GenerateCollisionMasks(
     const std::string& base_path, const Sprite& sprite) const {
   SDL_Surface* sprite_surface =
       IMG_Load(absl::StrCat(base_path, sprite.resource()).c_str());
@@ -73,11 +73,10 @@ std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
 
   const int surface_width = surface->pitch / bpp;
 
-  std::vector<boost::dynamic_bitset<>> collision_masks;
+  std::vector<std::vector<bool>> collision_masks;
   SDL_LockSurface(surface);
   for (const auto& film : sprite.film()) {
-    collision_masks.push_back(
-        boost::dynamic_bitset<>(film.width() * film.height()));
+    collision_masks.push_back(std::vector<bool>(film.width() * film.height()));
     auto& collision_mask = collision_masks.back();
 
     const Uint32* pixels = static_cast<const Uint32*>(surface->pixels);
@@ -86,8 +85,8 @@ std::vector<boost::dynamic_bitset<>> Renderer::GenerateCollisionMasks(
         const int surface_index = i * surface_width + j;
         const int mask_index =
             (i - film.top()) * film.width() + (j - film.left());
-        collision_mask[mask_index] =
-            pixels[surface_index] == colour_key ? 0 : 1;
+        collision_mask.insert(collision_mask.begin() + mask_index,
+                              pixels[surface_index] == colour_key ? 0 : 1);
       }
     }
   }

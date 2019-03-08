@@ -5,7 +5,6 @@
 #include <string>
 
 #include <SDL2/SDL.h>
-#include <boost/dynamic_bitset.hpp>
 
 #include "proto/primitives.pb.h"
 #include "proto/sprite.pb.h"
@@ -22,7 +21,7 @@ class Renderer {
 
   // Returns collision masks for each film in the sprite. Masks are auto-
   // generated from the sprite's image and colour key
-  std::vector<boost::dynamic_bitset<>> GenerateCollisionMasks(
+  std::vector<std::vector<bool>> GenerateCollisionMasks(
       const std::string& base_path, const Sprite& sprite) const;
 
   // Blit a texture area to the screen.

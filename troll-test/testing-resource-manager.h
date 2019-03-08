@@ -15,8 +15,7 @@ class TestingResourceManager {
     resource_manager_->sprites_[sprite.id()] = sprite;
     auto& masks = resource_manager_->sprite_collision_masks_[sprite.id()];
     for (const auto& film : sprite.film()) {
-      masks.push_back(
-          boost::dynamic_bitset<>(film.width() * film.height()).set());
+      masks.push_back(std::vector<bool>(film.width() * film.height(), true));
     }
   }
 
