@@ -1,28 +1,28 @@
-#ifndef TROLL_SCRIPTING_SCRIPT_MANAGER_H_
-#define TROLL_SCRIPTING_SCRIPT_MANAGER_H_
+#ifndef TROLL_PYTROLL_PYTHON_ENGINE_H_
+#define TROLL_PYTROLL_PYTHON_ENGINE_H_
 
 #include <unordered_map>
 
 #include <pybind11/embed.h>
 
 #include "core/core.h"
+#include "core/scripting-engine.h"
 
 namespace troll {
 
-// Script execution engine that handles scripting modules.
-class ScriptManager {
+// Python execution engine that handles scripting.
+class PythonEngine : public ScriptingEngine {
  public:
-  ScriptManager(const std::string& script_base_path, Core* core);
-  ~ScriptManager();
+  PythonEngine(const std::string& script_base_path, Core* core);
+  ~PythonEngine() override;
 
   // Instantiate a pytroll scene class from specified module.
-  void CreateScene(const std::string& module, const std::string& scene_class);
+  void CreateScene(const std::string& scene_id) override;
   void ChangeScene(const pybind11::object& scene);
 
-  ScriptManager(const ScriptManager&) = delete;
-  ScriptManager& operator=(const ScriptManager&) = delete;
-
  private:
+  void CreateScene(const std::string& module, const std::string& scene_class);
+
   // Import a module that can be found in the import path.
   const pybind11::module* ImportModule(const std::string& module);
 
@@ -39,4 +39,4 @@ class ScriptManager {
 
 }  // namespace troll
 
-#endif  // TROLL_SCRIPTING_SCRIPT_MANAGER_H_
+#endif  // TROLL_PYTROLL_PYTHON_ENGINE_H_

@@ -12,7 +12,7 @@
 #include "core/resource-manager.h"
 #include "core/scene-manager.h"
 #include "input/input-manager.h"
-#include "scripting/script-manager.h"
+#include "pytroll/python-engine.h"
 #include "sdl/input-backend.h"
 #include "sdl/renderer.h"
 #include "sound/audio-mixer.h"
@@ -46,7 +46,9 @@ class TrollCore : public Core {
     return resource_manager_.get();
   }
   SceneManager* scene_manager() override { return scene_manager_.get(); }
-  ScriptManager* script_manager() override { return script_manager_.get(); }
+  ScriptingEngine* scripting_engine() override {
+    return scripting_engine_.get();
+  }
   SoundLoader* sound_loader() override { return sound_loader_.get(); }
 
  private:
@@ -65,7 +67,7 @@ class TrollCore : public Core {
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<ResourceManager> resource_manager_;
   std::unique_ptr<SceneManager> scene_manager_;
-  std::unique_ptr<ScriptManager> script_manager_;
+  std::unique_ptr<ScriptingEngine> scripting_engine_;
   std::unique_ptr<SoundLoader> sound_loader_;
 
   struct FpsCounter {

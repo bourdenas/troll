@@ -43,7 +43,7 @@ add_subdirectory(animation)
 add_subdirectory(core)
 add_subdirectory(input)
 add_subdirectory(proto)
-add_subdirectory(scripting)
+add_subdirectory(pytroll)
 add_subdirectory(sdl)
 add_subdirectory(sound)
 

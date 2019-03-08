@@ -13,6 +13,5 @@ target_link_libraries(troll_action
   troll_animation
   troll_core
   troll_proto
-  troll_scripting
   troll_sound
 )

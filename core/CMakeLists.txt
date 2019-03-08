@@ -23,7 +23,7 @@ target_link_libraries(troll_core
   troll_animation
   troll_input
   troll_proto
-  troll_scripting
+  troll_python
   troll_sdl
   troll_sound
 )

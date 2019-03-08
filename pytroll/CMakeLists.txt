@@ -1,12 +1,12 @@
-project(scripting)
+project(pytroll)
 
 set(SOURCES
-  "script-manager.cc"
+  "python-engine.cc"
 )
 
-add_library(troll_scripting ${SOURCES})
+add_library(troll_python ${SOURCES})
 
-target_link_libraries(troll_scripting
+target_link_libraries(troll_python
   ${PYTHON_LIBRARY}
   absl::strings
   glog::glog

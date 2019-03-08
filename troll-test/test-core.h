@@ -20,7 +20,7 @@ class TestCore : public Core {
   Renderer* renderer() override { return renderer_; }
   ResourceManager* resource_manager() override { return resource_manager_; }
   SceneManager* scene_manager() override { return scene_manager_; }
-  ScriptManager* script_manager() override { return script_manager_; }
+  ScriptingEngine* scripting_engine() override { return scripting_engine_; }
   SoundLoader* sound_loader() override { return sound_loader_; }
 
   void set_action_manager(ActionManager* action_manager) {
@@ -49,8 +49,8 @@ class TestCore : public Core {
   void set_scene_manager(SceneManager* scene_manager) {
     scene_manager_ = scene_manager;
   }
-  void set_script_manager(ScriptManager* script_manager) {
-    script_manager_ = script_manager;
+  void set_scripting_engine(ScriptingEngine* scripting_engine) {
+    scripting_engine_ = scripting_engine;
   }
   void set_sound_loader(SoundLoader* sound_loader) {
     sound_loader_ = sound_loader;
@@ -67,7 +67,7 @@ class TestCore : public Core {
   Renderer* renderer_ = nullptr;
   ResourceManager* resource_manager_ = nullptr;
   SceneManager* scene_manager_ = nullptr;
-  ScriptManager* script_manager_ = nullptr;
+  ScriptingEngine* scripting_engine_ = nullptr;
   SoundLoader* sound_loader_ = nullptr;
 };
 

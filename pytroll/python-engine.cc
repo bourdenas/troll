@@ -1,6 +1,8 @@
-#include "scripting/script-manager.h"
+#include "pytroll/python-engine.h"
 
 #include <absl/strings/str_cat.h>
+#include <absl/strings/str_join.h>
+#include <absl/strings/str_split.h>
 #include <glog/logging.h>
 #include <pybind11/functional.h>
 
@@ -53,7 +55,8 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
   });
 
   m.def("transition_scene", [](const pybind11::object& scene) {
-    core_instance->script_manager()->ChangeScene(scene);
+    static_cast<PythonEngine*>(core_instance->scripting_engine())
+        ->ChangeScene(scene);
   });
 
   m.def("register_event_handler",
@@ -84,7 +87,7 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
   });
 }
 
-ScriptManager::ScriptManager(const std::string& script_base_path, Core* core) {
+PythonEngine::PythonEngine(const std::string& script_base_path, Core* core) {
   core_instance = core;
   script_base_path_ = script_base_path;
 
@@ -99,10 +102,17 @@ ScriptManager::ScriptManager(const std::string& script_base_path, Core* core) {
   }
 }
 
-ScriptManager::~ScriptManager() { core_instance = nullptr; }
+PythonEngine::~PythonEngine() { core_instance = nullptr; }
 
-void ScriptManager::CreateScene(const std::string& module,
-                                const std::string& scene_class) {
+void PythonEngine::CreateScene(const std::string& scene_id) {
+  // Expeted format is FQN of Python scene class, e.g. "dk.intro.IntroScene".
+  std::vector<std::string> tokens = absl::StrSplit(scene_id, '.');
+  CreateScene(absl::StrJoin(tokens.begin(), tokens.end() - 1, "."),
+              tokens.back());
+}
+
+void PythonEngine::CreateScene(const std::string& module,
+                               const std::string& scene_class) {
   const auto* py_module = ImportModule(module);
   try {
     auto&& scene = py_module->attr(scene_class.c_str())();
@@ -112,7 +122,7 @@ void ScriptManager::CreateScene(const std::string& module,
   }
 }
 
-void ScriptManager::ChangeScene(const pybind11::object& scene) {
+void PythonEngine::ChangeScene(const pybind11::object& scene) {
   if (scene_) {
     scene_.attr("Cleanup")();
   }
@@ -121,7 +131,7 @@ void ScriptManager::ChangeScene(const pybind11::object& scene) {
   scene_.attr("Setup")();
 }
 
-const pybind11::module* ScriptManager::ImportModule(const std::string& module) {
+const pybind11::module* PythonEngine::ImportModule(const std::string& module) {
   const auto it = modules_.find(module);
   if (it != modules_.end()) {
     return &it->second;

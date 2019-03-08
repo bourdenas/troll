@@ -8,7 +8,6 @@
 #include "core/core.h"
 #include "core/resource-manager.h"
 #include "core/scene-node-query.h"
-#include "scripting/script-manager.h"
 #include "sound/audio-mixer.h"
 
 namespace troll {

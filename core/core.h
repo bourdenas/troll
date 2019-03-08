@@ -15,7 +15,7 @@ class InputManager;
 class Renderer;
 class ResourceManager;
 class SceneManager;
-class ScriptManager;
+class ScriptingEngine;
 class SoundLoader;
 
 class Core {
@@ -36,7 +36,7 @@ class Core {
   virtual Renderer* renderer() = 0;
   virtual ResourceManager* resource_manager() = 0;
   virtual SceneManager* scene_manager() = 0;
-  virtual ScriptManager* script_manager() = 0;
+  virtual ScriptingEngine* scripting_engine() = 0;
   virtual SoundLoader* sound_loader() = 0;
 
   Core(const Core&) = delete;

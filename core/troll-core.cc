@@ -26,7 +26,7 @@ void TrollCore::Init(const std::string& name,
 
   audio_mixer_ = std::make_unique<AudioMixer>(resource_manager_.get());
   input_backend_ = std::make_unique<InputBackend>();
-  script_manager_ = std::make_unique<ScriptManager>(resource_base_path, this);
+  scripting_engine_ = std::make_unique<PythonEngine>(resource_base_path, this);
 
   action_manager_ = std::make_unique<ActionManager>(this);
   input_manager_ = std::make_unique<InputManager>(
