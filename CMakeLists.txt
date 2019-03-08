@@ -13,8 +13,6 @@ include_directories(".")
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 if(MSVC)
-  # Visual Studio compiler cannot compile range-v3 library, use alternative.
-  include_directories("../vcpkg/packages/range-v3-vs2015_x86-windows/include")
   # vcpkg is unable to find SDL2-{image,ttf,mixer}, hard-link lib path.
   link_directories("../vcpkg/installed/x86-windows/lib")
 endif()
