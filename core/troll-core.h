@@ -11,8 +11,8 @@
 #include "core/event-dispatcher.h"
 #include "core/resource-manager.h"
 #include "core/scene-manager.h"
+#include "core/scripting-engine.h"
 #include "input/input-manager.h"
-#include "pytroll/python-engine.h"
 #include "sdl/input-backend.h"
 #include "sdl/renderer.h"
 #include "sound/audio-mixer.h"
@@ -22,7 +22,9 @@ namespace troll {
 
 class TrollCore : public Core {
  public:
-  void Init(const std::string& name, const std::string& resource_base_path);
+  // Takes ownership of ScriptingEngine.
+  void Init(const std::string& name, const std::string& resource_base_path,
+            ScriptingEngine* engine);
 
   void Run();
   void Halt() override;

@@ -1,5 +1,6 @@
 #include "core/troll-core.h"
 
+#include <absl/memory/memory.h>
 #include <absl/strings/str_cat.h>
 #include <glog/logging.h>
 
@@ -10,7 +11,8 @@
 namespace troll {
 
 void TrollCore::Init(const std::string& name,
-                     const std::string& resource_base_path) {
+                     const std::string& resource_base_path,
+                     ScriptingEngine* engine) {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
   google::InitGoogleLogging(name.c_str());
 
@@ -26,7 +28,7 @@ void TrollCore::Init(const std::string& name,
 
   audio_mixer_ = std::make_unique<AudioMixer>(resource_manager_.get());
   input_backend_ = std::make_unique<InputBackend>();
-  scripting_engine_ = std::make_unique<PythonEngine>(resource_base_path, this);
+  scripting_engine_ = absl::WrapUnique(engine);
 
   action_manager_ = std::make_unique<ActionManager>(this);
   input_manager_ = std::make_unique<InputManager>(
