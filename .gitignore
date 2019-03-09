@@ -42,3 +42,9 @@ samples/donkey_kong/data/resources/
 *.sublime-workspace
 *.sublime-project
 \.vscode/
+
+dart_troll/pubspec\.lock
+
+proto/lib/
+
+dart_troll/\.packages
