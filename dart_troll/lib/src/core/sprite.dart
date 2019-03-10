@@ -1,5 +1,3 @@
-library dart_troll;
-
 import 'package:dart_troll/dart_troll.dart' as troll;
 import 'package:dart_troll/src/proto/action.pb.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
@@ -14,10 +12,16 @@ class Sprite {
   String id;
   String spriteId;
 
-  Sprite(this.id, this.spriteId);
+  static int _sprite_unique_id = 0;
+
+  Sprite(this.id, this.spriteId) {
+    if (id == null) {
+      id = spriteId + '_' + (_sprite_unique_id++).toString();
+    }
+  }
 
   /// Create a sprite on specified [position] with given [frameIndex].
-  void create(List<double> position, int frameIndex) {
+  void create(List<int> position, int frameIndex) {
     final action = Action()
       ..createSceneNode = (SceneNodeAction()
         ..sceneNode = (SceneNode()
@@ -37,7 +41,7 @@ class Sprite {
   }
 
   /// Position the sprite at specific coordinates.
-  void position(List<double> at) {
+  void position(List<int> at) {
     final action = Action()
       ..positionSceneNode = (SceneNodeVectorAction()
         ..sceneNodeId = id
@@ -46,7 +50,7 @@ class Sprite {
   }
 
   /// Move the sprite to direction specified by [vec].
-  void move(List<double> vec) {
+  void move(List<int> vec) {
     final action = Action()
       ..moveSceneNode = (SceneNodeVectorAction()
         ..sceneNodeId = id
@@ -135,15 +139,15 @@ class Sprite {
 ///
 /// Throws [ArgumentError] if the list does not have proper size (2 or 3).
 /// Treats the third dimension as optional.
-Vector _makeVector(List<double> list) {
+Vector _makeVector(List<int> list) {
   if (list.length < 2 || list.length > 3) {
     throw ArgumentError('list size for position have length 2 or 3');
   }
 
   var vec = Vector()
-    ..x = list[0]
-    ..y = list[1];
+    ..x = list[0].toDouble()
+    ..y = list[1].toDouble();
 
-  if (list.length == 3) vec.z = list[2];
+  if (list.length == 3) vec.z = list[2].toDouble();
   return vec;
 }
