@@ -48,3 +48,5 @@ dart_troll/pubspec\.lock
 proto/lib/
 
 dart_troll/\.packages
+
+dart_troll/lib/src/proto/
