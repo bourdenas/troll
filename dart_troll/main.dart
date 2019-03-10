@@ -7,7 +7,8 @@ void main() {
   troll.init("Dart Kong", "../samples/donkey_kong/data/");
 
   final intro = IntroScene();
-  intro.Transition();
+  intro.transition();
+  intro.setup();
 
   troll.run();
 
