@@ -1,7 +1,7 @@
 import 'package:dart_troll/dart_troll.dart' as troll;
+import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/action.pb.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
-import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene-node.pb.dart';
 
 /// Sprite representation in Troll engine.
@@ -28,7 +28,7 @@ class Sprite {
           ..id = id
           ..spriteId = spriteId
           ..frameIndex = frameIndex
-          ..position = _makeVector(position)));
+          ..position = makeVector(position)));
     troll.execute(action.writeToBuffer());
   }
 
@@ -45,7 +45,7 @@ class Sprite {
     final action = Action()
       ..positionSceneNode = (SceneNodeVectorAction()
         ..sceneNodeId = id
-        ..vec = _makeVector(at));
+        ..vec = makeVector(at));
     troll.execute(action.writeToBuffer());
   }
 
@@ -54,7 +54,7 @@ class Sprite {
     final action = Action()
       ..moveSceneNode = (SceneNodeVectorAction()
         ..sceneNodeId = id
-        ..vec = _makeVector(vec));
+        ..vec = makeVector(vec));
     troll.execute(action.writeToBuffer());
   }
 
@@ -133,21 +133,4 @@ class Sprite {
         ..sceneNodeId = id);
     troll.execute(action.writeToBuffer());
   }
-}
-
-/// Returns a Vector from input list.
-///
-/// Throws [ArgumentError] if the list does not have proper size (2 or 3).
-/// Treats the third dimension as optional.
-Vector _makeVector(List<int> list) {
-  if (list.length < 2 || list.length > 3) {
-    throw ArgumentError('list size for position have length 2 or 3');
-  }
-
-  var vec = Vector()
-    ..x = list[0].toDouble()
-    ..y = list[1].toDouble();
-
-  if (list.length == 3) vec.z = list[2].toDouble();
-  return vec;
 }
