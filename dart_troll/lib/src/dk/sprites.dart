@@ -1,5 +1,9 @@
 import 'package:dart_troll/src/core/sprite.dart';
 
+class DonkeyKong extends Sprite {
+  DonkeyKong() : super(null, 'dk');
+}
+
 class PlatformPiece extends Sprite {
   PlatformPiece() : super(null, 'platform') {}
 }

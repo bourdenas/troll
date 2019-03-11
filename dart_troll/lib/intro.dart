@@ -1,11 +1,13 @@
 import 'package:dart_troll/src/core/scene.dart';
+import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/dk/sprites.dart';
+import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
-import 'package:dart_troll/src/proto/scene.pb.dart' as troll_proto;
+import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 
 class IntroScene extends Scene {
   IntroScene() {
-    scene = troll_proto.Scene()
+    scene = proto.Scene()
       ..id = 'intro'
       ..viewport = (Box()
         ..width = 640
@@ -54,6 +56,30 @@ class IntroScene extends Scene {
     ladderPositions.forEach((position) {
       Ladder().create(position, 0);
     });
+
+    final script = AnimationScript()
+      ..id = 'intro'
+      ..animation.addAll([
+        Animation()..runScript = (RunScriptAnimation()..scriptId = 'dk_climb'),
+        Animation()..timer = (TimerAnimation()..delay = 1000),
+        Animation()
+          ..runScript = (RunScriptAnimation()..scriptId = 'dk_landing'),
+        Animation()..timer = (TimerAnimation()..delay = 300),
+        Animation()
+          ..runScript = (RunScriptAnimation()..scriptId = 'dk_jump')
+          ..goTo = (GotoAnimation()
+            ..destination = makeVector([130, 90])
+            ..step = 1
+            ..delay = 18)
+          ..termination = Animation_TerminationCondition.ALL,
+        Animation()..timer = (TimerAnimation()..delay = 300),
+        Animation()..runScript = (RunScriptAnimation()..scriptId = 'dk_taunt'),
+        Animation()..timer = (TimerAnimation()..delay = 1000),
+      ]);
+
+    final dk = DonkeyKong();
+    dk.create([300, 382, 0], 4);
+    dk.playAnimationScript(script, null);
   }
 }
 
