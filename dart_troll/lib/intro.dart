@@ -16,7 +16,7 @@ class IntroScene extends Scene {
 
   void setup() {
     final platformSpecs = [
-      _PlatformSpec(3, [262, 97, -3]),
+      _PlatformSpec(3, [230, 97, -3]),
       _PlatformSpec(13, [80, 155, -3]),
       _PlatformSpec(13, [112, 210, -3]),
       _PlatformSpec(13, [80, 275, -3]),
@@ -25,11 +25,15 @@ class IntroScene extends Scene {
       _PlatformSpec(14, [80, 455, -3]),
     ];
 
-    final platforms = platformSpecs.map<Platform>((spec) {
-      final platform = Platform(spec.size);
-      platform.create(spec.position);
-      return platform;
-    }).toList();
+    final platforms = platformSpecs
+        .asMap()
+        .map((index, spec) {
+          final platform = Platform(index, spec.size);
+          platform.create(spec.position);
+          return MapEntry(index, platform);
+        })
+        .values
+        .toList();
 
     final ladderPositions = [
       [210, 72, -1],
@@ -88,6 +92,14 @@ class IntroScene extends Scene {
     final dk = DonkeyKong();
     dk.create([300, 382, 0], 4);
     dk.playAnimationScript(script, null);
+    dk.onScriptDone('dk_landing', () {
+      Princess().create([270, 50, -1], 1);
+      platforms[1].collapse();
+      for (int i = 4; i < 7; ++i) {
+        ladders[i * 2].destroy();
+        ladders[i * 2 + 1].destroy();
+      }
+    });
   }
 }
 
