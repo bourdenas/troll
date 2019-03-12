@@ -93,7 +93,9 @@ class Sprite {
         ..sceneNodeId = id);
     troll.execute(action.writeToBuffer());
 
-    // TODO(bourdenas): Implement onDone when events are available in Dart.
+    if (onDone != null) {
+      onScriptDone(script.id, onDone);
+    }
   }
 
   /// Look up an animation script from resources and play it on the sprite.
@@ -107,7 +109,9 @@ class Sprite {
         ..sceneNodeId = id);
     troll.execute(action.writeToBuffer());
 
-    // TODO(bourdenas): Implement onDone when events are available in Dart.
+    if (onDone != null) {
+      onScriptDone(scriptId, onDone);
+    }
   }
 
   /// Stop an active animation script on the sprite.
@@ -132,5 +136,10 @@ class Sprite {
         ..scriptId = scriptId
         ..sceneNodeId = id);
     troll.execute(action.writeToBuffer());
+  }
+
+  /// Invokes [callback] when [scriptId] on sprite finishes.
+  void onScriptDone(String scriptId, Function callback) {
+    troll.registerEventHandler(id + '.' + scriptId + '.done', callback, false);
   }
 }
