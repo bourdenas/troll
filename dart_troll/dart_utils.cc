@@ -34,6 +34,18 @@ std::string DownloadString(Dart_Handle dart_string) {
   return std::string(str);
 }
 
+int DownloadInt(Dart_Handle dart_int) {
+  int64_t value;
+  HandleError(Dart_IntegerToInt64(dart_int, &value));
+  return static_cast<int>(value);
+}
+
+bool DownloadBoolean(Dart_Handle dart_bool) {
+  bool value;
+  HandleError(Dart_BooleanValue(dart_bool, &value));
+  return value;
+}
+
 Dart_Handle UploadBuffer(const uint8_t* buffer, int size) {
   Dart_Handle array = Dart_NewTypedData(Dart_TypedData_kUint8, size);
   if (size <= 0) return array;

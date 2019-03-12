@@ -16,6 +16,9 @@ void DartArgsError(Dart_NativeArguments args, std::string_view func_name,
 Dart_Handle UploadString(std::string_view string);
 std::string DownloadString(Dart_Handle dart_string);
 
+int DownloadInt(Dart_Handle dart_int);
+bool DownloadBoolean(Dart_Handle dart_bool);
+
 Dart_Handle UploadBuffer(const uint8_t* buffer, int size);
 
 template <typename InputProto>

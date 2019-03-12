@@ -46,6 +46,45 @@ void NativeExecute(Dart_NativeArguments arguments) {
   core->action_manager()->Execute(action);
 }
 
+// Register an event handler.
+void NativeRegisterEventHandler(Dart_NativeArguments arguments) {
+  const Dart_Handle event_id =
+      HandleError(Dart_GetNativeArgument(arguments, 0));
+  const Dart_Handle handler = HandleError(Dart_GetNativeArgument(arguments, 1));
+  const Dart_Handle permanent =
+      HandleError(Dart_GetNativeArgument(arguments, 2));
+
+  if (!Dart_IsClosure(handler)) {
+    DartArgsError(arguments, "registerEventHandler", "handler");
+    return;
+  }
+
+  int handler_id;
+  if (DownloadBoolean(permanent)) {
+    handler_id = core->event_dispatcher()->RegisterPermanent(
+        DownloadString(event_id),
+        [handler]() { HandleError(Dart_InvokeClosure(handler, 0, nullptr)); });
+  } else {
+    handler_id = core->event_dispatcher()->Register(
+        DownloadString(event_id),
+        [handler]() { HandleError(Dart_InvokeClosure(handler, 0, nullptr)); });
+  }
+
+  Dart_Handle result = HandleError(Dart_NewInteger(handler_id));
+  Dart_SetReturnValue(arguments, result);
+}
+
+// Unregister an event handler.
+void NativeUnregisterEventHandler(Dart_NativeArguments arguments) {
+  const Dart_Handle event_id =
+      HandleError(Dart_GetNativeArgument(arguments, 0));
+  const Dart_Handle handler_id =
+      HandleError(Dart_GetNativeArgument(arguments, 1));
+
+  core->event_dispatcher()->Unregister(DownloadString(event_id),
+                                       DownloadInt(handler_id));
+}
+
 // Resolves Darts calls to native functions by name.
 Dart_NativeFunction ResolveName(Dart_Handle name, int argc,
                                 bool* auto_setup_scope) {
@@ -60,6 +99,12 @@ Dart_NativeFunction ResolveName(Dart_Handle name, int argc,
   }
   if (func_name == "NativeExecute") {
     return NativeExecute;
+  }
+  if (func_name == "NativeRegisterEventHandler") {
+    return NativeRegisterEventHandler;
+  }
+  if (func_name == "NativeUnregisterEventHandler") {
+    return NativeUnregisterEventHandler;
   }
 
   return nullptr;
