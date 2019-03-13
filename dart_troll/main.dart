@@ -1,5 +1,5 @@
 import 'lib/dart_troll.dart' as troll;
-import 'lib/intro.dart';
+import 'lib/src/dk/intro.dart';
 
 void main() {
   print('Hello, Troll!');
