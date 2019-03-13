@@ -9,8 +9,8 @@ void run() native "NativeRun";
 
 void execute(Uint8List action) native "NativeExecute";
 
-int registerEventHandler(String event_id, Function handler, bool permanent)
-    native "NativeRegisterEventHandler";
+int registerEventHandler(String event_id, Function handler,
+    {bool permanent = false}) native "NativeRegisterEventHandler";
 
 int unregisterEventHandler(String event_id, int handler_id)
     native "NativeUnregisterEventHandler";

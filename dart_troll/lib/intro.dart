@@ -58,15 +58,15 @@ class IntroScene extends Scene {
     ];
 
     final ladders = ladderPositions.reversed.map<Ladder>((position) {
-      return Ladder()..create(position, 0);
+      return Ladder()..create(position);
     }).toList();
 
     final ladderFadingScript = AnimationScript()
       ..animation.add(Animation()..flash = (FlashAnimation()..repeat = 1));
     for (var i = 0; i < 4; ++i) {
       ladderFadingScript.animation[0].flash.delay = 700 * (i + 1);
-      ladders[i * 2].playAnimationScript(ladderFadingScript, null);
-      ladders[i * 2 + 1].playAnimationScript(ladderFadingScript, null);
+      ladders[i * 2].playAnimationScript(ladderFadingScript);
+      ladders[i * 2 + 1].playAnimationScript(ladderFadingScript);
     }
 
     final script = AnimationScript()
@@ -90,10 +90,10 @@ class IntroScene extends Scene {
       ]);
 
     final dk = DonkeyKong();
-    dk.create([300, 382, 0], 4);
-    dk.playAnimationScript(script, null);
+    dk.create([300, 382, 0], frameIndex: 4);
+    dk.playAnimationScript(script);
     dk.onScriptDone('dk_landing', () {
-      Princess().create([270, 50, -1], 1);
+      Princess().create([270, 50, -1], frameIndex: 1);
       platforms[1].collapse();
       for (int i = 4; i < 7; ++i) {
         ladders[i * 2].destroy();
@@ -102,13 +102,13 @@ class IntroScene extends Scene {
     });
     dk.onScriptDone('dk_jump', () {
       platforms[2].collapse();
-      dk.playAnimationScriptById('dk_jump', () {
+      dk.playAnimationScriptById('dk_jump', onDone: () {
         platforms[3].collapse();
-        dk.playAnimationScriptById('dk_jump', () {
+        dk.playAnimationScriptById('dk_jump', onDone: () {
           platforms[4].collapse();
-          dk.playAnimationScriptById('dk_jump', () {
+          dk.playAnimationScriptById('dk_jump', onDone: () {
             platforms[5].collapse();
-            dk.playAnimationScriptById('dk_jump', () {
+            dk.playAnimationScriptById('dk_jump', onDone: () {
               platforms[6].collapse();
             });
           });

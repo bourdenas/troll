@@ -32,7 +32,7 @@ class Platform {
   void create(List<int> position) {
     for (final piece in pieces) {
       position[0] += platformWidth;
-      piece.create(position, 0);
+      piece.create(position);
     }
   }
 

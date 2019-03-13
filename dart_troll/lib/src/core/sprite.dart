@@ -21,7 +21,7 @@ class Sprite {
   }
 
   /// Create a sprite on specified [position] with given [frameIndex].
-  void create(List<int> position, int frameIndex) {
+  void create(List<int> position, {int frameIndex = 0}) {
     final action = Action()
       ..createSceneNode = (SceneNodeAction()
         ..sceneNode = (SceneNode()
@@ -86,7 +86,7 @@ class Sprite {
   ///
   ///  If [onDone] is provided it will be invoked when the script finishes
   ///  execution.
-  void playAnimationScript(AnimationScript script, Function onDone) {
+  void playAnimationScript(AnimationScript script, {Function onDone}) {
     final action = Action()
       ..playAnimationScript = (AnimationScriptAction()
         ..script = script
@@ -102,7 +102,7 @@ class Sprite {
   ///
   /// If  [onDone] is provided it will be invoked when the script finishes
   /// execution.
-  void playAnimationScriptById(String scriptId, Function onDone) {
+  void playAnimationScriptById(String scriptId, {Function onDone}) {
     final action = Action()
       ..playAnimationScript = (AnimationScriptAction()
         ..scriptId = scriptId
@@ -140,6 +140,6 @@ class Sprite {
 
   /// Invokes [callback] when [scriptId] on sprite finishes.
   void onScriptDone(String scriptId, Function callback) {
-    troll.registerEventHandler(id + '.' + scriptId + '.done', callback, false);
+    troll.registerEventHandler(id + '.' + scriptId + '.done', callback);
   }
 }
