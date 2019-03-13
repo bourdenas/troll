@@ -46,6 +46,57 @@ void NativeExecute(Dart_NativeArguments arguments) {
   core->action_manager()->Execute(action);
 }
 
+// Wrapper of Dart event handler closure that takes care of its lifetime.
+struct DartEventHandler {
+  DartEventHandler(Dart_Handle handler)
+      : handler_(Dart_NewPersistentHandle(handler)) {}
+
+  DartEventHandler(DartEventHandler&& other) : handler_(other.handler_) {
+    other.handler_ = nullptr;
+  }
+
+  DartEventHandler(const DartEventHandler& other) : handler_(other.handler_) {
+    const_cast<DartEventHandler&>(other).handler_ = nullptr;
+  }
+
+  ~DartEventHandler() {
+    if (handler_ != nullptr) {
+      Dart_DeletePersistentHandle(handler_);
+    }
+  }
+
+  DartEventHandler& operator=(DartEventHandler&& other) {
+    if (this != &other) {
+      if (handler_ != nullptr) {
+        Dart_DeletePersistentHandle(handler_);
+      }
+      handler_ = other.handler_;
+      other.handler_ = nullptr;
+    }
+
+    return *this;
+  }
+
+  DartEventHandler& operator=(const DartEventHandler& other) {
+    if (this != &other) {
+      if (handler_ != nullptr) {
+        Dart_DeletePersistentHandle(handler_);
+      }
+      handler_ = other.handler_;
+      const_cast<DartEventHandler&>(other).handler_ = nullptr;
+    }
+
+    return *this;
+  }
+
+  void operator()() const {
+    HandleError(Dart_InvokeClosure(handler_, 0, nullptr));
+  }
+
+ private:
+  Dart_PersistentHandle handler_;
+};
+
 // Register an event handler.
 void NativeRegisterEventHandler(Dart_NativeArguments arguments) {
   const Dart_Handle event_id =
@@ -62,12 +113,10 @@ void NativeRegisterEventHandler(Dart_NativeArguments arguments) {
   int handler_id;
   if (DownloadBoolean(permanent)) {
     handler_id = core->event_dispatcher()->RegisterPermanent(
-        DownloadString(event_id),
-        [handler]() { HandleError(Dart_InvokeClosure(handler, 0, nullptr)); });
+        DownloadString(event_id), DartEventHandler(handler));
   } else {
-    handler_id = core->event_dispatcher()->Register(
-        DownloadString(event_id),
-        [handler]() { HandleError(Dart_InvokeClosure(handler, 0, nullptr)); });
+    handler_id = core->event_dispatcher()->Register(DownloadString(event_id),
+                                                    DartEventHandler(handler));
   }
 
   Dart_Handle result = HandleError(Dart_NewInteger(handler_id));
