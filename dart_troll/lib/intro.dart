@@ -100,6 +100,21 @@ class IntroScene extends Scene {
         ladders[i * 2 + 1].destroy();
       }
     });
+    dk.onScriptDone('dk_jump', () {
+      platforms[2].collapse();
+      dk.playAnimationScriptById('dk_jump', () {
+        platforms[3].collapse();
+        dk.playAnimationScriptById('dk_jump', () {
+          platforms[4].collapse();
+          dk.playAnimationScriptById('dk_jump', () {
+            platforms[5].collapse();
+            dk.playAnimationScriptById('dk_jump', () {
+              platforms[6].collapse();
+            });
+          });
+        });
+      });
+    });
   }
 }
 
