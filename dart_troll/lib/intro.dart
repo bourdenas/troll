@@ -1,3 +1,4 @@
+import 'package:dart_troll/height.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/core/util.dart';
@@ -92,7 +93,11 @@ class IntroScene extends Scene {
 
     final dk = DonkeyKong()
       ..create([300, 382, 0], frameIndex: 4)
-      ..playAnimationScript(script);
+      ..playAnimationScript(script, onDone: () {
+        HeightScene()
+          ..transition()
+          ..setup();
+      });
 
     dk.onScriptDone('dk_landing', () {
       Princess().create([270, 50, -1], frameIndex: 1);
