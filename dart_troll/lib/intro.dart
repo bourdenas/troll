@@ -1,3 +1,4 @@
+import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/dk/sprites.dart';
@@ -89,9 +90,10 @@ class IntroScene extends Scene {
         Animation()..timer = (TimerAnimation()..delay = 1000),
       ]);
 
-    final dk = DonkeyKong();
-    dk.create([300, 382, 0], frameIndex: 4);
-    dk.playAnimationScript(script);
+    final dk = DonkeyKong()
+      ..create([300, 382, 0], frameIndex: 4)
+      ..playAnimationScript(script);
+
     dk.onScriptDone('dk_landing', () {
       Princess().create([270, 50, -1], frameIndex: 1);
       platforms[1].collapse();
@@ -100,6 +102,7 @@ class IntroScene extends Scene {
         ladders[i * 2 + 1].destroy();
       }
     });
+
     dk.onScriptDone('dk_jump', () {
       platforms[2].collapse();
       dk.playAnimationScriptById('dk_jump', onDone: () {
@@ -115,6 +118,8 @@ class IntroScene extends Scene {
         });
       });
     });
+
+    playMusic('intro');
   }
 }
 
