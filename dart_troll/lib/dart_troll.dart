@@ -14,3 +14,8 @@ int registerEventHandler(String event_id, Function handler,
 
 int unregisterEventHandler(String event_id, int handler_id)
     native "NativeUnregisterEventHandler";
+
+int registerInputHandler(Function handler) native "NativeRegisterInputHandler";
+
+int unregisterInputHandler(int handler_id)
+    native "NativeUnregisterInputHandler";

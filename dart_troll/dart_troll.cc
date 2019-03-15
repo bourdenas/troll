@@ -2,8 +2,10 @@
 
 #include <dart_api.h>
 
+#include "core/event-dispatcher.h"
 #include "core/troll-core.h"
 #include "dart_troll/dart_utils.h"
+#include "input/input-manager.h"
 
 namespace troll {
 Dart_NativeFunction ResolveName(Dart_Handle name, int argc,
@@ -46,26 +48,31 @@ void NativeExecute(Dart_NativeArguments arguments) {
   core->action_manager()->Execute(action);
 }
 
-// Wrapper of Dart event handler closure that takes care of its lifetime.
-struct DartEventHandler {
-  DartEventHandler(Dart_Handle handler)
+// Wrapper of Dart callbacks. The wrapper manages the lifetime of Dart closures
+// that need to be persistent objects, but should be deleted when no longer used
+// by native code to avoid memory leaks.
+// This class actually wraps different type of callbacks and provides an
+// overloaded operator() for each different type of supported callbacks.
+struct DartCallbackWrapper {
+  DartCallbackWrapper(Dart_Handle handler)
       : handler_(Dart_NewPersistentHandle(handler)) {}
 
-  DartEventHandler(DartEventHandler&& other) : handler_(other.handler_) {
+  DartCallbackWrapper(DartCallbackWrapper&& other) : handler_(other.handler_) {
     other.handler_ = nullptr;
   }
 
-  DartEventHandler(const DartEventHandler& other) : handler_(other.handler_) {
-    const_cast<DartEventHandler&>(other).handler_ = nullptr;
+  DartCallbackWrapper(const DartCallbackWrapper& other)
+      : handler_(other.handler_) {
+    const_cast<DartCallbackWrapper&>(other).handler_ = nullptr;
   }
 
-  ~DartEventHandler() {
+  ~DartCallbackWrapper() {
     if (handler_ != nullptr) {
       Dart_DeletePersistentHandle(handler_);
     }
   }
 
-  DartEventHandler& operator=(DartEventHandler&& other) {
+  DartCallbackWrapper& operator=(DartCallbackWrapper&& other) {
     if (this != &other) {
       if (handler_ != nullptr) {
         Dart_DeletePersistentHandle(handler_);
@@ -77,13 +84,13 @@ struct DartEventHandler {
     return *this;
   }
 
-  DartEventHandler& operator=(const DartEventHandler& other) {
+  DartCallbackWrapper& operator=(const DartCallbackWrapper& other) {
     if (this != &other) {
       if (handler_ != nullptr) {
         Dart_DeletePersistentHandle(handler_);
       }
       handler_ = other.handler_;
-      const_cast<DartEventHandler&>(other).handler_ = nullptr;
+      const_cast<DartCallbackWrapper&>(other).handler_ = nullptr;
     }
 
     return *this;
@@ -93,9 +100,16 @@ struct DartEventHandler {
     HandleError(Dart_InvokeClosure(handler_, 0, nullptr));
   }
 
+  void operator()(const InputEvent& input_event) const {
+    Dart_Handle arguments[] = {
+        HandleError(UploadProtoValue(input_event)),
+    };
+    HandleError(Dart_InvokeClosure(handler_, 1, arguments));
+  }
+
  private:
   Dart_PersistentHandle handler_;
-};
+};  // namespace troll
 
 // Register an event handler.
 void NativeRegisterEventHandler(Dart_NativeArguments arguments) {
@@ -113,10 +127,10 @@ void NativeRegisterEventHandler(Dart_NativeArguments arguments) {
   int handler_id;
   if (DownloadBoolean(permanent)) {
     handler_id = core->event_dispatcher()->RegisterPermanent(
-        DownloadString(event_id), DartEventHandler(handler));
+        DownloadString(event_id), DartCallbackWrapper(handler));
   } else {
-    handler_id = core->event_dispatcher()->Register(DownloadString(event_id),
-                                                    DartEventHandler(handler));
+    handler_id = core->event_dispatcher()->Register(
+        DownloadString(event_id), DartCallbackWrapper(handler));
   }
 
   Dart_Handle result = HandleError(Dart_NewInteger(handler_id));
@@ -132,6 +146,29 @@ void NativeUnregisterEventHandler(Dart_NativeArguments arguments) {
 
   core->event_dispatcher()->Unregister(DownloadString(event_id),
                                        DownloadInt(handler_id));
+}
+
+// Register an event handler.
+void NativeRegisterInputHandler(Dart_NativeArguments arguments) {
+  const Dart_Handle handler = HandleError(Dart_GetNativeArgument(arguments, 0));
+
+  if (!Dart_IsClosure(handler)) {
+    DartArgsError(arguments, "registerInpuHandler", "handler");
+    return;
+  }
+
+  const auto handler_id =
+      core->input_manager()->RegisterHandler(DartCallbackWrapper(handler));
+
+  Dart_Handle result = HandleError(Dart_NewInteger(handler_id));
+  Dart_SetReturnValue(arguments, result);
+}
+
+void NativeUnregisterInputHandler(Dart_NativeArguments arguments) {
+  const Dart_Handle handler_id =
+      HandleError(Dart_GetNativeArgument(arguments, 0));
+
+  core->input_manager()->UnregisterHandler(DownloadInt(handler_id));
 }
 
 // Resolves Darts calls to native functions by name.
@@ -154,6 +191,12 @@ Dart_NativeFunction ResolveName(Dart_Handle name, int argc,
   }
   if (func_name == "NativeUnregisterEventHandler") {
     return NativeUnregisterEventHandler;
+  }
+  if (func_name == "NativeRegisterInputHandler") {
+    return NativeRegisterInputHandler;
+  }
+  if (func_name == "NativeUnregisterInputHandler") {
+    return NativeUnregisterInputHandler;
   }
 
   return nullptr;

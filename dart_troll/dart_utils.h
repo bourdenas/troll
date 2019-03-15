@@ -23,8 +23,10 @@ Dart_Handle UploadBuffer(const uint8_t* buffer, int size);
 
 template <typename InputProto>
 Dart_Handle UploadProtoValue(const InputProto& input) {
-  std::string buffer = input.SerialiseAsString();
-  return UploadDartBuffer(buffer.data(), buffer.size());
+  std::string buffer;
+  input.SerializeToString(&buffer);
+  return UploadBuffer(reinterpret_cast<uint8_t*>(buffer.data()),
+                      static_cast<int>(buffer.size()));
 }
 
 template <typename OutputProto>
