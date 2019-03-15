@@ -2,18 +2,21 @@ import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/dk/sprites.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
+import 'package:dart_troll/src/proto/input-event.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 
 class HeightScene extends Scene {
-  HeightScene() {
-    scene = proto.Scene()
+  @override
+  proto.Scene sceneDefinition() {
+    return proto.Scene()
       ..id = 'height'
       ..viewport = (Box()
         ..width = 640
         ..height = 480);
   }
 
+  @override
   void setup() {
     final script = AnimationScript()
       ..id = 'height'
@@ -27,4 +30,7 @@ class HeightScene extends Scene {
 
     playMusic('height');
   }
+
+  @override
+  void handleInput(InputEvent event) {}
 }

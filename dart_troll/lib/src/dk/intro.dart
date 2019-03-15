@@ -4,18 +4,22 @@ import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/dk/height.dart';
 import 'package:dart_troll/src/dk/sprites.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
+import 'package:dart_troll/src/proto/input-event.pb.dart';
+import 'package:dart_troll/src/proto/key-binding.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 
 class IntroScene extends Scene {
-  IntroScene() {
-    scene = proto.Scene()
+  @override
+  proto.Scene sceneDefinition() {
+    return proto.Scene()
       ..id = 'intro'
       ..viewport = (Box()
         ..width = 640
         ..height = 480);
   }
 
+  @override
   void setup() {
     final platformSpecs = [
       _PlatformSpec(3, [230, 97, -3]),
@@ -94,9 +98,7 @@ class IntroScene extends Scene {
     final dk = DonkeyKong()
       ..create([300, 382, 0], frameIndex: 4)
       ..playAnimationScript(script, onDone: () {
-        HeightScene()
-          ..transition()
-          ..setup();
+        transition(HeightScene());
       });
 
     dk.onScriptDone('dk_landing', () {
@@ -125,6 +127,14 @@ class IntroScene extends Scene {
     });
 
     playMusic('intro');
+  }
+
+  @override
+  void handleInput(InputEvent event) {
+    if (event.keyEvent.key == 'SPACE' &&
+        event.keyEvent.keyState == Trigger_KeyState.PRESSED) {
+      transition(HeightScene());
+    }
   }
 }
 

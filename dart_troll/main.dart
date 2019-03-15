@@ -6,9 +6,7 @@ void main() {
 
   troll.init("Dart Kong", "../samples/donkey_kong/data/");
 
-  IntroScene()
-    ..transition()
-    ..setup();
+  IntroScene().start();
 
   troll.run();
 
