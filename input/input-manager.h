@@ -26,7 +26,7 @@ class InputManager {
   void ActivateContext(const std::string& context_id);
   void DeactivateContext(const std::string& context_id);
 
-  void Handle(const InputEvent& event) const;
+  void Handle(const InputEvent& event);
 
   InputManager(const InputManager&) = delete;
   InputManager& operator=(const InputManager&) = delete;
@@ -44,6 +44,10 @@ class InputManager {
 
   // Registered input handlers.
   std::unordered_map<int, InputHandler> input_handlers_;
+
+  // Handler ids that should be removed. Removal is delayed because it may
+  // happen during handling loop.
+  std::vector<int> lame_duck_handlers_;
 };
 
 }  // namespace troll

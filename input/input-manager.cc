@@ -71,7 +71,7 @@ int InputManager::RegisterHandler(const InputHandler& handler) {
 }
 
 void InputManager::UnregisterHandler(int handler_id) {
-  input_handlers_.erase(handler_id);
+  lame_duck_handlers_.push_back(handler_id);
 }
 
 void InputManager::ActivateContext(const std::string& context_id) {
@@ -82,7 +82,7 @@ void InputManager::DeactivateContext(const std::string& context_id) {
   active_contexts_.erase(context_id);
 }
 
-void InputManager::Handle(const InputEvent& event) const {
+void InputManager::Handle(const InputEvent& event) {
   if (event.has_key_event()) {
     HandleKey(event.key_event());
   }
@@ -90,6 +90,11 @@ void InputManager::Handle(const InputEvent& event) const {
   // Trigger external input handlers.
   for (const auto& handler : input_handlers_ | ranges::view::values) {
     handler(event);
+  }
+
+  if (!lame_duck_handlers_.empty()) {
+    for (auto handler_id : lame_duck_handlers_)
+      input_handlers_.erase(handler_id);
   }
 }
 
