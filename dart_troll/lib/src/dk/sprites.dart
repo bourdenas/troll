@@ -1,4 +1,6 @@
+import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/core/sprite.dart';
+import 'package:dart_troll/src/proto/animation.pb.dart';
 
 class Mario extends Sprite {
   Mario() : super(null, 'mario');
@@ -60,4 +62,24 @@ class Platform {
 
 class Ladder extends Sprite {
   Ladder() : super(null, 'ladder');
+}
+
+class Barrel extends Sprite {
+  Barrel() : super(null, 'barrel');
+
+  void Roll() {
+    final script = AnimationScript()
+      ..id = 'barrel_roll'
+      ..animation.addAll([
+        Animation()
+          ..translation = (VectorAnimation()
+            ..vec = makeVector([2, 0])
+            ..delay = 30)
+          ..frameRange = (FrameRangeAnimation()
+            ..startFrame = 1
+            ..endFrame = 5
+            ..delay = 200),
+      ]);
+    playAnimationScript(script);
+  }
 }
