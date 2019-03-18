@@ -1,6 +1,7 @@
 #include <string>
 
 #include <dart_api.h>
+#include <glog/logging.h>
 
 #include "core/event-dispatcher.h"
 #include "core/troll-core.h"
@@ -55,61 +56,40 @@ void NativeExecute(Dart_NativeArguments arguments) {
 // overloaded operator() for each different type of supported callbacks.
 struct DartCallbackWrapper {
   DartCallbackWrapper(Dart_Handle handler)
-      : handler_(Dart_NewPersistentHandle(handler)) {}
-
-  DartCallbackWrapper(DartCallbackWrapper&& other) : handler_(other.handler_) {
-    other.handler_ = nullptr;
-  }
-
-  DartCallbackWrapper(const DartCallbackWrapper& other)
-      : handler_(other.handler_) {
-    const_cast<DartCallbackWrapper&>(other).handler_ = nullptr;
-  }
-
-  ~DartCallbackWrapper() {
-    if (handler_ != nullptr) {
-      Dart_DeletePersistentHandle(handler_);
-    }
-  }
-
-  DartCallbackWrapper& operator=(DartCallbackWrapper&& other) {
-    if (this != &other) {
-      if (handler_ != nullptr) {
-        Dart_DeletePersistentHandle(handler_);
-      }
-      handler_ = other.handler_;
-      other.handler_ = nullptr;
-    }
-
-    return *this;
-  }
-
-  DartCallbackWrapper& operator=(const DartCallbackWrapper& other) {
-    if (this != &other) {
-      if (handler_ != nullptr) {
-        Dart_DeletePersistentHandle(handler_);
-      }
-      handler_ = other.handler_;
-      const_cast<DartCallbackWrapper&>(other).handler_ = nullptr;
-    }
-
-    return *this;
-  }
+      : handler_(std::make_shared<PersistentHandle>(handler)) {}
 
   void operator()() const {
-    HandleError(Dart_InvokeClosure(handler_, 0, nullptr));
+    HandleError(Dart_InvokeClosure(handler_->handle(), 0, nullptr));
   }
 
   void operator()(const InputEvent& input_event) const {
     Dart_Handle arguments[] = {
         HandleError(UploadProtoValue(input_event)),
     };
-    HandleError(Dart_InvokeClosure(handler_, 1, arguments));
+    HandleError(Dart_InvokeClosure(handler_->handle(), 1, arguments));
   }
 
  private:
-  Dart_PersistentHandle handler_;
-};  // namespace troll
+  struct PersistentHandle {
+    explicit PersistentHandle(Dart_Handle handle)
+        : handle_(Dart_NewPersistentHandle(handle)) {}
+    ~PersistentHandle() {
+      if (handle_ != nullptr) {
+        Dart_DeletePersistentHandle(handle_);
+      }
+    }
+
+    Dart_PersistentHandle handle() const { return handle_; }
+
+    PersistentHandle(const PersistentHandle&) = delete;
+    PersistentHandle& operator=(const PersistentHandle&) = delete;
+
+   private:
+    Dart_PersistentHandle handle_;
+  };
+
+  std::shared_ptr<PersistentHandle> handler_;
+};
 
 // Register an event handler.
 void NativeRegisterEventHandler(Dart_NativeArguments arguments) {
