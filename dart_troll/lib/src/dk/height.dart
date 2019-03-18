@@ -1,5 +1,6 @@
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
+import 'package:dart_troll/src/dk/level1.dart';
 import 'package:dart_troll/src/dk/sprites.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/input-event.pb.dart';
@@ -26,7 +27,9 @@ class HeightScene extends Scene {
 
     DonkeyKong()
       ..create([300, 282], frameIndex: 10)
-      ..playAnimationScript(script);
+      ..playAnimationScript(script, onDone: () {
+        transition(Level1Scene());
+      });
 
     playMusic('height');
   }
