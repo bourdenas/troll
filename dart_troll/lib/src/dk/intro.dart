@@ -75,7 +75,7 @@ class IntroScene extends Scene {
       ladders[i * 2 + 1].playAnimationScript(ladderFadingScript);
     }
 
-    final script = AnimationScript()
+    final introScript = AnimationScript()
       ..id = 'intro'
       ..animation.addAll([
         Animation()..runScript = (RunScriptAnimation()..scriptId = 'dk_climb'),
@@ -97,7 +97,7 @@ class IntroScene extends Scene {
 
     final dk = DonkeyKong()
       ..create([300, 382, 0], frameIndex: 4)
-      ..playAnimationScript(script, onDone: () {
+      ..playAnimationScript(introScript, onDone: () {
         transition(HeightScene());
       });
 
@@ -110,20 +110,12 @@ class IntroScene extends Scene {
       }
     });
 
+    int count = 2;
+    dk.onScriptRewind('dk_jump', () {
+      platforms[count++].collapse();
+    });
     dk.onScriptDone('dk_jump', () {
-      platforms[2].collapse();
-      dk.playAnimationScriptById('dk_jump', onDone: () {
-        platforms[3].collapse();
-        dk.playAnimationScriptById('dk_jump', onDone: () {
-          platforms[4].collapse();
-          dk.playAnimationScriptById('dk_jump', onDone: () {
-            platforms[5].collapse();
-            dk.playAnimationScriptById('dk_jump', onDone: () {
-              platforms[6].collapse();
-            });
-          });
-        });
-      });
+      platforms[count++].collapse();
     });
 
     playMusic('intro');
