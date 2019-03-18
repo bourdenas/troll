@@ -86,7 +86,8 @@ class Sprite {
   ///
   ///  If [onDone] is provided it will be invoked when the script finishes
   ///  execution.
-  void playAnimationScript(AnimationScript script, {Function onDone}) {
+  void playAnimationScript(AnimationScript script,
+      {Function onDone, Function onRewind, Map<String, Function> onPartDone}) {
     final action = Action()
       ..playAnimationScript = (AnimationScriptAction()
         ..script = script
@@ -96,13 +97,20 @@ class Sprite {
     if (onDone != null) {
       onScriptDone(script.id, onDone);
     }
+    if (onRewind != null) {
+      onScriptRewind(script.id, onRewind);
+    }
+    if (onPartDone != null) {
+      onScriptPartDone(script.id, onPartDone);
+    }
   }
 
   /// Look up an animation script from resources and play it on the sprite.
   ///
   /// If  [onDone] is provided it will be invoked when the script finishes
   /// execution.
-  void playAnimationScriptById(String scriptId, {Function onDone}) {
+  void playAnimationScriptById(String scriptId,
+      {Function onDone, Function onRewind, Map<String, Function> onPartDone}) {
     final action = Action()
       ..playAnimationScript = (AnimationScriptAction()
         ..scriptId = scriptId
@@ -111,6 +119,12 @@ class Sprite {
 
     if (onDone != null) {
       onScriptDone(scriptId, onDone);
+    }
+    if (onRewind != null) {
+      onScriptRewind(scriptId, onRewind);
+    }
+    if (onPartDone != null) {
+      onScriptPartDone(scriptId, onPartDone);
     }
   }
 
@@ -127,8 +141,6 @@ class Sprite {
 
   /// Puase an active animation script on the sprite.
   ///
-  /// If [onDone] was provided during [playAnimationSript], it will be invoked.
-  ///
   /// TODO(bourdenas): Allow resume with [playAnimationScriptById].
   void pauseAnimationScript(String scriptId) {
     final action = Action()
@@ -141,5 +153,21 @@ class Sprite {
   /// Invokes [callback] when [scriptId] on sprite finishes.
   void onScriptDone(String scriptId, Function callback) {
     troll.registerEventHandler(id + '.' + scriptId + '.done', callback);
+  }
+
+  /// Invokes [callback] when [scriptId] on sprite rewinds (finishes and
+  /// starts again).
+  void onScriptRewind(String scriptId, Function callback) {
+    troll.registerEventHandler(id + '.' + scriptId + '.rewind', callback,
+        permanent: true);
+  }
+
+  /// Invokes associatied callbacks when parts of [scriptId] on sprite finish.
+  void onScriptPartDone(String scriptId, Map<String, Function> callbacks) {
+    callbacks.forEach((part, callback) {
+      troll.registerEventHandler(
+          id + '.' + scriptId + '.' + part + '.done', callback,
+          permanent: true);
+    });
   }
 }
