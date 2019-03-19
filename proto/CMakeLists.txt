@@ -25,6 +25,9 @@ add_library(troll_proto ${PROTO_HEADER} ${PROTO_SRC})
 # expects them in <project_root>/proto/. For now generated manually by invoking
 # protoc from terminal.
 
+# Dart protos:
+# protoc --plugin=protoc-gen-dart=C:\Users\bourd\AppData\Roaming\Pub\Cache\bin\protoc-gen-dart.bat --dart_out=../dart_troll/lib/src/proto @protos
+
 target_link_libraries(troll_proto
   ${PROTOBUF_LIBRARY}
 )

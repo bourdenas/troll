@@ -14,7 +14,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 if(MSVC)
   # vcpkg is unable to find SDL2-{image,ttf,mixer}, hard-link lib path.
-  link_directories("../vcpkg/installed/x86-windows/lib")
+  # link_directories("../vcpkg/installed/x86-windows/lib")
+  link_directories("../vcpkg/installed/x64-windows/lib")
 endif()
 
 find_package(SDL2 REQUIRED)
@@ -24,13 +25,11 @@ find_package(glog REQUIRED)
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 
-find_package(PythonLibs REQUIRED)
 
 find_package(Catch2 CONFIG REQUIRED)
 
 # Use -DBUILD_TESTING=OFF to disable tests.
 add_subdirectory(deps/abseil-cpp)
-add_subdirectory(deps/pybind11)
 add_subdirectory(deps/range-v3)
 
 enable_testing()
@@ -41,10 +40,16 @@ include(Catch)
 add_subdirectory(action)
 add_subdirectory(animation)
 add_subdirectory(core)
+add_subdirectory(dart_troll)
 add_subdirectory(input)
 add_subdirectory(proto)
-add_subdirectory(pytroll)
 add_subdirectory(sdl)
 add_subdirectory(sound)
 
-add_subdirectory(samples/donkey_kong)
+if (PYTROLL)
+  find_package(PythonLibs REQUIRED)
+  add_subdirectory(deps/pybind11)
+  add_subdirectory(pytroll)
+
+  add_subdirectory(samples/donkey_kong)
+endif()

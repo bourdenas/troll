@@ -70,7 +70,7 @@ bool ScriptAnimator::MoveToNextAnimation(SceneNode* scene_node) {
 
   if (next_animation_index_ == script_.animation().size()) {
     core_->event_dispatcher()->Emit(
-        Events::OnAnimationScriptRepeat(scene_node->id(), script_.id()));
+        Events::OnAnimationScriptRewind(scene_node->id(), script_.id()));
     next_animation_index_ = 0;
   }
 

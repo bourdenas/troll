@@ -1,0 +1,5 @@
+name:
+  dart_troll
+
+dependencies:
+  protobuf: ^0.13.4
