@@ -1,5 +1,10 @@
 name:
   dart_troll
 
+environment:
+  sdk: ^2.0.0
+
 dependencies:
-  protobuf: ^0.13.4
+  protobuf:
+
+publish_to: none

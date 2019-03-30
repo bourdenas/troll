@@ -1,7 +1,7 @@
+import 'package:dart_dk/level1.dart';
+import 'package:dart_dk/sprites.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
-import 'package:dart_troll/src/dk/level1.dart';
-import 'package:dart_troll/src/dk/sprites.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/input-event.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';

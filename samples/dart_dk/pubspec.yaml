@@ -1,0 +1,15 @@
+name:
+  dart_dk
+
+environment:
+  sdk: ^2.0.0
+
+executables:
+  donkey_kong: main
+
+dependencies:
+  protobuf:
+  dart_troll:
+    path: ../../dart_troll
+
+publish_to: none
