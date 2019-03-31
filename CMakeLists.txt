@@ -1,4 +1,3 @@
-# cmake .. -DCMAKE_TOOLCHAIN_FILE=D:/dev/vcpkg/scripts/buildsystems/vcpkg.cmake
 cmake_minimum_required(VERSION 3.6)
 project(troll)
 
@@ -14,8 +13,13 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 if(MSVC)
   # vcpkg is unable to find SDL2-{image,ttf,mixer}, hard-link lib path.
-  # link_directories("../vcpkg/installed/x86-windows/lib")
-  link_directories("../vcpkg/installed/x64-windows/lib")
+  if (PYTROLL)
+    link_directories("../vcpkg/installed/x86-windows/lib")
+  endif()
+  
+  if (DART_TROLL)
+    link_directories("../vcpkg/installed/x64-windows/lib")
+  endif()
 endif()
 
 find_package(SDL2 REQUIRED)
@@ -40,11 +44,14 @@ include(Catch)
 add_subdirectory(action)
 add_subdirectory(animation)
 add_subdirectory(core)
-add_subdirectory(dart_troll)
 add_subdirectory(input)
 add_subdirectory(proto)
 add_subdirectory(sdl)
 add_subdirectory(sound)
+
+if (DART_TROLL)
+  add_subdirectory(dart_troll)
+endif()
 
 if (PYTROLL)
   find_package(PythonLibs REQUIRED)
