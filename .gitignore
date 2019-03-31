@@ -54,3 +54,5 @@ dart_troll/lib/src/proto/
 *.lock
 
 samples/dart_dk/\.packages
+
+build32/
