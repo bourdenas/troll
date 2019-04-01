@@ -1,8 +1,6 @@
 import 'package:dart_dk/sprites.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
-import 'package:dart_troll/src/proto/input-event.pb.dart';
-import 'package:dart_troll/src/proto/key-binding.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 
@@ -93,56 +91,23 @@ class Level1Scene extends Scene {
 
     playMusic('main_loop', repeat: 0);
 
-    keyMapping = {
-      'LEFT': KeyTrigger(() {
-        mario.playAnimationScriptById('mario_move_left');
-      }, () {
-        mario.stopAnimationScript('mario_move_left');
-      }),
-      'RIGHT': KeyTrigger(() {
-        mario.playAnimationScriptById('mario_move_right');
-      }, () {
-        mario.stopAnimationScript('mario_move_right');
-      }),
-      'UP': KeyTrigger(() {
-        mario.playAnimationScriptById('mario_climb_up');
-      }, () {
-        mario.stopAnimationScript('mario_climb_up');
-      }),
-      'DOWN': KeyTrigger(() {
-        mario.playAnimationScriptById('mario_climb_down');
-      }, () {
-        mario.stopAnimationScript('mario_climb_down');
-      }),
-      'SPACE': KeyTrigger(() {
-        mario.playAnimationScriptById('mario_jump');
-      }, () {}),
-    };
-  }
-
-  @override
-  void handleInput(InputEvent event) {
-    if (!event.hasKeyEvent()) return;
-
-    print(event);
-    if (event.keyEvent.keyState == Trigger_KeyState.NONE) return;
-    final trigger = keyMapping[event.keyEvent.key];
-    if (trigger == null) return;
-
-    event.keyEvent.keyState == Trigger_KeyState.PRESSED
-        ? trigger.onPressed()
-        : trigger.onReleased();
+    registerKey('LEFT',
+        onPressed: () => mario.playAnimationScriptById('mario_move_left'),
+        onReleased: () => mario.stopAnimationScript('mario_move_left'));
+    registerKey('RIGHT',
+        onPressed: () => mario.playAnimationScriptById('mario_move_right'),
+        onReleased: () => mario.stopAnimationScript('mario_move_right'));
+    registerKey('UP',
+        onPressed: () => mario.playAnimationScriptById('mario_climb_up'),
+        onReleased: () => mario.stopAnimationScript('mario_climb_up'));
+    registerKey('DOWN',
+        onPressed: () => mario.playAnimationScriptById('mario_climb_down'),
+        onReleased: () => mario.stopAnimationScript('mario_climb_down'));
+    registerKey('SPACE',
+        onPressed: () => mario.playAnimationScriptById('mario_jump'));
   }
 
   Mario mario = null;
-  Map<String, KeyTrigger> keyMapping;
-}
-
-class KeyTrigger {
-  Function onPressed;
-  Function onReleased;
-
-  KeyTrigger(this.onPressed, this.onReleased);
 }
 
 class _PlatformSpec {

@@ -4,8 +4,6 @@ import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
-import 'package:dart_troll/src/proto/input-event.pb.dart';
-import 'package:dart_troll/src/proto/key-binding.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 
@@ -119,14 +117,8 @@ class IntroScene extends Scene {
     });
 
     playMusic('intro');
-  }
 
-  @override
-  void handleInput(InputEvent event) {
-    if (event.keyEvent.key == 'SPACE' &&
-        event.keyEvent.keyState == Trigger_KeyState.PRESSED) {
-      transition(HeightScene());
-    }
+    registerKey('SPACE', onPressed: () => transition(HeightScene()));
   }
 }
 
