@@ -15,9 +15,7 @@ class Sprite {
   static int _sprite_unique_id = 0;
 
   Sprite(this.id, this.spriteId) {
-    if (id == null) {
-      id = spriteId + '_' + (_sprite_unique_id++).toString();
-    }
+    id ??= spriteId + '_' + (_sprite_unique_id++).toString();
   }
 
   /// Create a sprite on specified [position] with given [frameIndex].

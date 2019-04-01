@@ -26,9 +26,7 @@ class Platform {
   static int platformWidth = 32;
 
   Platform(this.index, this.size) {
-    pieces = List<PlatformPiece>.generate(size, (index) {
-      return PlatformPiece();
-    });
+    pieces = List<PlatformPiece>.generate(size, (index) => PlatformPiece());
   }
 
   void create(List<int> position) {

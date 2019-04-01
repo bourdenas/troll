@@ -31,11 +31,8 @@ class IntroScene extends Scene {
 
     final platforms = platformSpecs
         .asMap()
-        .map((index, spec) {
-          final platform = Platform(index, spec.size);
-          platform.create(spec.position);
-          return MapEntry(index, platform);
-        })
+        .map((index, spec) =>
+            MapEntry(index, Platform(index, spec.size)..create(spec.position)))
         .values
         .toList();
 
@@ -61,9 +58,9 @@ class IntroScene extends Scene {
       [338, 410, -1],
     ];
 
-    final ladders = ladderPositions.reversed.map<Ladder>((position) {
-      return Ladder()..create(position);
-    }).toList();
+    final ladders = ladderPositions.reversed
+        .map<Ladder>((position) => Ladder()..create(position))
+        .toList();
 
     final ladderFadingScript = AnimationScript()
       ..animation.add(Animation()..flash = (FlashAnimation()..repeat = 1));
@@ -109,12 +106,8 @@ class IntroScene extends Scene {
     });
 
     int count = 2;
-    dk.onScriptRewind('dk_jump', () {
-      platforms[count++].collapse();
-    });
-    dk.onScriptDone('dk_jump', () {
-      platforms[count++].collapse();
-    });
+    dk.onScriptRewind('dk_jump', () => platforms[count++].collapse());
+    dk.onScriptDone('dk_jump', () => platforms[count++].collapse());
 
     playMusic('intro');
 

@@ -26,9 +26,7 @@ class HeightScene extends Scene {
 
     DonkeyKong()
       ..create([300, 282], frameIndex: 10)
-      ..playAnimationScript(script, onDone: () {
-        transition(Level1Scene());
-      });
+      ..playAnimationScript(script, onDone: () => transition(Level1Scene()));
 
     playMusic('height');
   }

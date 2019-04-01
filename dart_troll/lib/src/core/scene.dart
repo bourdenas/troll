@@ -41,11 +41,9 @@ abstract class Scene {
     troll.execute(action.writeToBuffer());
 
     handler = InputHandler();
-    _input_handler_id =
-        troll.registerInputHandler((Uint8List inputEventBuffer) {
-      final event = InputEvent()..mergeFromBuffer(inputEventBuffer);
-      handler.handleInput(event);
-    });
+    _input_handler_id = troll.registerInputHandler(
+        (Uint8List inputEventBuffer) => handler
+            .handleInput(InputEvent()..mergeFromBuffer(inputEventBuffer)));
 
     setup();
   }
