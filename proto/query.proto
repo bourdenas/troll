@@ -1,0 +1,33 @@
+syntax = "proto2";
+
+import "primitives.proto";
+import "scene-node.proto";
+
+package troll;
+
+message Query {
+  oneof Query {
+    SceneNodeQuery scene_node = 1;
+    SceneNodePairQuery scene_node_overlap = 2;
+  }
+}
+
+message Response {
+  oneof Response {
+    SceneNodeList scene_nodes = 1;
+    Box overlap = 2;
+  }
+}
+
+message SceneNodeQuery {
+  optional SceneNode pattern = 1;
+}
+
+message SceneNodePairQuery {
+  optional string first_node_id = 1;
+  optional string second_node_id = 2;
+}
+
+message SceneNodeList {
+  repeated SceneNode scene_node = 1;
+}

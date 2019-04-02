@@ -8,6 +8,7 @@ set(PROTOS
   "input-event.proto"
   "key-binding.proto"
   "primitives.proto"
+  "query.proto"
   "scene-node.proto"
   "scene.proto"
   "sprite.proto"
