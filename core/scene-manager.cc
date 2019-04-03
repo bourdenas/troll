@@ -211,6 +211,12 @@ bool SceneManager::NodePatternMatching(const SceneNode& pattern,
       node.frame_index() != pattern.frame_index()) {
     return false;
   }
+  if (pattern.has_position() &&
+      (node.position().x() != pattern.position().x() ||
+       node.position().y() != pattern.position().y() ||
+       node.position().z() != pattern.position().z())) {
+    return false;
+  }
   if (pattern.has_visible() && node.visible() != pattern.visible()) {
     return false;
   }

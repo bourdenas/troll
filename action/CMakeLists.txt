@@ -2,7 +2,9 @@ project(action)
 
 set(SOURCES
   "action-manager.cc"
+  "evaluator.cc"
   "executor.cc"
+  "query-manager.cc"
 )
 
 add_library(troll_action ${SOURCES})
