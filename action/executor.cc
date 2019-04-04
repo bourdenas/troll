@@ -7,7 +7,7 @@
 #include "core/collision-checker.h"
 #include "core/core.h"
 #include "core/resource-manager.h"
-#include "core/scene-node-query.h"
+#include "core/scene-node-pattern.h"
 #include "sound/audio-mixer.h"
 
 namespace troll {
@@ -48,12 +48,12 @@ std::vector<std::string> ResolveSceneNodes(const std::string& node_expression,
                                            Core* core) {
   std::vector<std::string> node_ids;
   if (!node_expression.empty() && node_expression[0] == '$') {
-    SceneNodeQuery query;
+    SceneNodePattern query;
     if (!query.Parse(node_expression)) return node_ids;
 
-    if (query.mode == SceneNodeQuery::RetrievalMode::GLOBAL) {
+    if (query.mode == SceneNodePattern::RetrievalMode::GLOBAL) {
       node_ids = core->scene_manager()->GetSceneNodesByPattern(query.pattern);
-    } else if (query.mode == SceneNodeQuery::RetrievalMode::LOCAL) {
+    } else if (query.mode == SceneNodePattern::RetrievalMode::LOCAL) {
       auto&& context_nodes = core->collision_checker()->collision_context();
       node_ids = core->scene_manager()->GetSceneNodesByPattern(query.pattern,
                                                                context_nodes);

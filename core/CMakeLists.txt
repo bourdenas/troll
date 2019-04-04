@@ -7,7 +7,7 @@ set(SOURCES
   "geometry.cc"
   "resource-manager.cc"
   "scene-manager.cc"
-  "scene-node-query.cc"
+  "scene-node-pattern.cc"
   "troll-core.cc"
 )
 

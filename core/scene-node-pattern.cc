@@ -1,4 +1,4 @@
-#include "core/scene-node-query.h"
+#include "core/scene-node-pattern.h"
 
 #include <regex>
 
@@ -7,9 +7,8 @@
 
 namespace troll {
 
-bool SceneNodeQuery::Parse(const std::string& pattern_str) {
-  static const std::regex re(
-      R"(\$(this)?\.\{(.*)\})", std::regex::optimize);
+bool SceneNodePattern::Parse(const std::string& pattern_str) {
+  static const std::regex re(R"(\$(this)?\.\{(.*)\})", std::regex::optimize);
 
   std::smatch match;
   if (!std::regex_match(pattern_str, match, re)) {
@@ -17,8 +16,8 @@ bool SceneNodeQuery::Parse(const std::string& pattern_str) {
     return false;
   }
 
-  LOG_IF(ERROR, match.size() != 3) << "Invalid node search pattern: '"
-                                   << pattern_str << "'";
+  LOG_IF(ERROR, match.size() != 3)
+      << "Invalid node search pattern: '" << pattern_str << "'";
 
   if (match[1].length() == 0) {
     mode = RetrievalMode::GLOBAL;
