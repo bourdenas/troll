@@ -4,8 +4,6 @@ import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
-import 'package:dart_troll/src/proto/input-event.pb.dart';
-import 'package:dart_troll/src/proto/key-binding.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 
@@ -33,11 +31,8 @@ class IntroScene extends Scene {
 
     final platforms = platformSpecs
         .asMap()
-        .map((index, spec) {
-          final platform = Platform(index, spec.size);
-          platform.create(spec.position);
-          return MapEntry(index, platform);
-        })
+        .map((index, spec) =>
+            MapEntry(index, Platform(index, spec.size)..create(spec.position)))
         .values
         .toList();
 
@@ -63,9 +58,9 @@ class IntroScene extends Scene {
       [338, 410, -1],
     ];
 
-    final ladders = ladderPositions.reversed.map<Ladder>((position) {
-      return Ladder()..create(position);
-    }).toList();
+    final ladders = ladderPositions.reversed
+        .map<Ladder>((position) => Ladder()..create(position))
+        .toList();
 
     final ladderFadingScript = AnimationScript()
       ..animation.add(Animation()..flash = (FlashAnimation()..repeat = 1));
@@ -111,22 +106,12 @@ class IntroScene extends Scene {
     });
 
     int count = 2;
-    dk.onScriptRewind('dk_jump', () {
-      platforms[count++].collapse();
-    });
-    dk.onScriptDone('dk_jump', () {
-      platforms[count++].collapse();
-    });
+    dk.onScriptRewind('dk_jump', () => platforms[count++].collapse());
+    dk.onScriptDone('dk_jump', () => platforms[count++].collapse());
 
     playMusic('intro');
-  }
 
-  @override
-  void handleInput(InputEvent event) {
-    if (event.keyEvent.key == 'SPACE' &&
-        event.keyEvent.keyState == Trigger_KeyState.PRESSED) {
-      transition(HeightScene());
-    }
+    registerKey('SPACE', onPressed: () => transition(HeightScene()));
   }
 }
 

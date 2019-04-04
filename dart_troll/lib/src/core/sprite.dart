@@ -1,6 +1,7 @@
 import 'package:dart_troll/dart_troll.dart' as troll;
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/action.pb.dart';
+import 'package:dart_troll/src/proto/query.pb.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/scene-node.pb.dart';
 
@@ -15,9 +16,7 @@ class Sprite {
   static int _sprite_unique_id = 0;
 
   Sprite(this.id, this.spriteId) {
-    if (id == null) {
-      id = spriteId + '_' + (_sprite_unique_id++).toString();
-    }
+    id ??= spriteId + '_' + (_sprite_unique_id++).toString();
   }
 
   /// Create a sprite on specified [position] with given [frameIndex].
@@ -40,13 +39,25 @@ class Sprite {
     troll.execute(action.writeToBuffer());
   }
 
-  /// Position the sprite at specific coordinates.
-  void position(List<int> at) {
+  void set position(List<int> at) {
     final action = Action()
       ..positionSceneNode = (SceneNodeVectorAction()
         ..sceneNodeId = id
         ..vec = makeVector(at));
     troll.execute(action.writeToBuffer());
+  }
+
+  List<int> get position {
+    final query = Query()
+      ..sceneNode = (SceneNodeQuery()..pattern = (SceneNode()..id = id));
+    final responseBuffer = troll.eval(query.writeToBuffer());
+    final response = Response()..mergeFromBuffer(responseBuffer);
+    final node = response.sceneNodes.sceneNode[0];
+    return [
+      node.position.x.toInt(),
+      node.position.y.toInt(),
+      node.position.z.toInt()
+    ];
   }
 
   /// Move the sprite to direction specified by [vec].

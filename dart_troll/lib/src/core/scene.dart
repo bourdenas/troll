@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:dart_troll/dart_troll.dart' as troll;
+import 'package:dart_troll/src/core/input_handler.dart';
 import 'package:dart_troll/src/proto/action.pb.dart';
 import 'package:dart_troll/src/proto/input-event.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
@@ -19,21 +20,10 @@ abstract class Scene {
   /// Called just before moving away from the scene. Override to perform any
   /// clean-up operation.
   void halt() {}
-  void handleInput(InputEvent event);
 
-  /// Starts the initialisation of the scene.
-  void start() {
-    final action = Action()
-      ..changeScene = (ChangeSceneAction()..scene = sceneDefinition());
-    troll.execute(action.writeToBuffer());
-
-    setup();
-
-    _input_handler_id =
-        troll.registerInputHandler((Uint8List inputEventBuffer) {
-      final event = InputEvent()..mergeFromBuffer(inputEventBuffer);
-      handleInput(event);
-    });
+  /// Registers key handling functions for the scene.
+  void registerKey(String key, {Function onPressed, Function onReleased}) {
+    handler.registerKey(key, onPressed: onPressed, onReleased: onReleased);
   }
 
   /// Transition to a new scene from this one.
@@ -44,5 +34,20 @@ abstract class Scene {
     newScene.start();
   }
 
+  /// Starts the initialisation of the scene.
+  void start() {
+    final action = Action()
+      ..changeScene = (ChangeSceneAction()..scene = sceneDefinition());
+    troll.execute(action.writeToBuffer());
+
+    handler = InputHandler();
+    _input_handler_id = troll.registerInputHandler(
+        (Uint8List inputEventBuffer) => handler
+            .handleInput(InputEvent()..mergeFromBuffer(inputEventBuffer)));
+
+    setup();
+  }
+
   int _input_handler_id;
+  InputHandler handler;
 }
