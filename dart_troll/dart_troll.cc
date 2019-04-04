@@ -7,6 +7,9 @@
 #include "core/troll-core.h"
 #include "dart_troll/dart_utils.h"
 #include "input/input-manager.h"
+#include "proto/action.pb.h"
+#include "proto/input-event.pb.h"
+#include "proto/query.pb.h"
 
 namespace troll {
 Dart_NativeFunction ResolveName(Dart_Handle name, int argc,
@@ -41,12 +44,22 @@ void NativeInit(Dart_NativeArguments arguments) {
 // Start game engine execution.
 void NativeRun(Dart_NativeArguments arguments) { core->Run(); }
 
-// Execute an action through troll's executors system.
+// Executes an action through troll's executors system.
 void NativeExecute(Dart_NativeArguments arguments) {
   const Dart_Handle action_buffer =
       HandleError(Dart_GetNativeArgument(arguments, 0));
   const auto action = DownloadProtoValue<Action>(action_buffer);
   core->action_manager()->Execute(action);
+}
+
+// Evaluates an engine query and return the result.
+void NativeEval(Dart_NativeArguments arguments) {
+  const Dart_Handle query_buffer =
+      HandleError(Dart_GetNativeArgument(arguments, 0));
+  const auto query = DownloadProtoValue<Query>(query_buffer);
+  const auto response = core->query_manager()->Eval(query);
+
+  Dart_SetReturnValue(arguments, HandleError(UploadProtoValue(response)));
 }
 
 // Wrapper of Dart callbacks. The wrapper manages the lifetime of Dart closures
@@ -165,6 +178,9 @@ Dart_NativeFunction ResolveName(Dart_Handle name, int argc,
   }
   if (func_name == "NativeExecute") {
     return NativeExecute;
+  }
+  if (func_name == "NativeEval") {
+    return NativeEval;
   }
   if (func_name == "NativeRegisterEventHandler") {
     return NativeRegisterEventHandler;
