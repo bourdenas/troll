@@ -17,6 +17,7 @@ class TestCore : public Core {
   EventDispatcher* event_dispatcher() override { return event_dispatcher_; }
   InputBackend* input_backend() override { return input_backend_; }
   InputManager* input_manager() override { return input_manager_; }
+  QueryManager* query_manager() override { return query_manager_; }
   Renderer* renderer() override { return renderer_; }
   ResourceManager* resource_manager() override { return resource_manager_; }
   SceneManager* scene_manager() override { return scene_manager_; }
@@ -42,6 +43,9 @@ class TestCore : public Core {
   void set_input_manager(InputManager* input_manager) {
     input_manager_ = input_manager;
   }
+  void set_query_manager(QueryManager* query_manager) {
+    query_manager_ = query_manager;
+  }
   void set_renderer(Renderer* renderer) { renderer_ = renderer; }
   void set_resource_manager(ResourceManager* resource_manager) {
     resource_manager_ = resource_manager;
@@ -64,6 +68,7 @@ class TestCore : public Core {
   EventDispatcher* event_dispatcher_ = nullptr;
   InputBackend* input_backend_ = nullptr;
   InputManager* input_manager_ = nullptr;
+  QueryManager* query_manager_ = nullptr;
   Renderer* renderer_ = nullptr;
   ResourceManager* resource_manager_ = nullptr;
   SceneManager* scene_manager_ = nullptr;

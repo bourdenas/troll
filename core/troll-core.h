@@ -5,6 +5,7 @@
 #include <string>
 
 #include "action/action-manager.h"
+#include "action/query-manager.h"
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
 #include "core/core.h"
@@ -43,6 +44,7 @@ class TrollCore : public Core {
   }
   InputBackend* input_backend() override { return input_backend_.get(); }
   InputManager* input_manager() override { return input_manager_.get(); }
+  QueryManager* query_manager() override { return query_manager_.get(); }
   Renderer* renderer() override { return renderer_.get(); }
   ResourceManager* resource_manager() override {
     return resource_manager_.get();
@@ -66,6 +68,7 @@ class TrollCore : public Core {
   std::unique_ptr<EventDispatcher> event_dispatcher_;
   std::unique_ptr<InputBackend> input_backend_;
   std::unique_ptr<InputManager> input_manager_;
+  std::unique_ptr<QueryManager> query_manager_;
   std::unique_ptr<Renderer> renderer_;
   std::unique_ptr<ResourceManager> resource_manager_;
   std::unique_ptr<SceneManager> scene_manager_;

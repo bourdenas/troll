@@ -12,6 +12,7 @@ class CollisionChecker;
 class EventDispatcher;
 class InputBackend;
 class InputManager;
+class QueryManager;
 class Renderer;
 class ResourceManager;
 class SceneManager;
@@ -33,6 +34,7 @@ class Core {
   virtual EventDispatcher* event_dispatcher() = 0;
   virtual InputBackend* input_backend() = 0;
   virtual InputManager* input_manager() = 0;
+  virtual QueryManager* query_manager() = 0;
   virtual Renderer* renderer() = 0;
   virtual ResourceManager* resource_manager() = 0;
   virtual SceneManager* scene_manager() = 0;

@@ -31,6 +31,7 @@ void TrollCore::Init(const std::string& name,
   scripting_engine_ = absl::WrapUnique(engine);
 
   action_manager_ = std::make_unique<ActionManager>(this);
+  query_manager_ = std::make_unique<QueryManager>(this);
   input_manager_ = std::make_unique<InputManager>(
       resource_manager_->GetKeyBindings(), action_manager_.get());
 }
