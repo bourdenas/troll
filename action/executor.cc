@@ -6,6 +6,7 @@
 #include "animation/animator-manager.h"
 #include "core/collision-checker.h"
 #include "core/core.h"
+#include "core/event-dispatcher.h"
 #include "core/resource-manager.h"
 #include "core/scene-node-pattern.h"
 #include "sound/audio-mixer.h"
@@ -23,7 +24,7 @@ void NoopExecutor::Execute(const Action& action) const {}
 void QuitExecutor::Execute(const Action& action) const { core_->Halt(); }
 
 void EmitExecutor::Execute(const Action& action) const {
-  // TODO(bourdenas): Implement event handling system.
+  core_->event_dispatcher()->Emit(action.emit().event().id());
 }
 
 void ChangeSceneExecutor::Execute(const Action& action) const {

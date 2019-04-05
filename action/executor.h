@@ -35,7 +35,13 @@ class QuitExecutor : public Executor {
 };
 
 class EmitExecutor : public Executor {
+ public:
+  EmitExecutor(Core* core) : core_(core) {}
+
   void Execute(const Action& action) const override;
+
+ private:
+  Core* core_;
 };
 
 class ChangeSceneExecutor : public Executor {

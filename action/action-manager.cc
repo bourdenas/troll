@@ -7,7 +7,7 @@ namespace troll {
 ActionManager::ActionManager(Core* core) {
   executors_.emplace(Action::kNoop, std::make_unique<NoopExecutor>());
   executors_.emplace(Action::kQuit, std::make_unique<QuitExecutor>(core));
-  executors_.emplace(Action::kEmit, std::make_unique<EmitExecutor>());
+  executors_.emplace(Action::kEmit, std::make_unique<EmitExecutor>(core));
 
   executors_.emplace(Action::kChangeScene,
                      std::make_unique<ChangeSceneExecutor>(core));
