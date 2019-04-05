@@ -1,8 +1,9 @@
 import 'package:dart_troll/dart_troll.dart' as troll;
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/action.pb.dart';
-import 'package:dart_troll/src/proto/query.pb.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
+import 'package:dart_troll/src/proto/event.pb.dart';
+import 'package:dart_troll/src/proto/query.pb.dart';
 import 'package:dart_troll/src/proto/scene-node.pb.dart';
 
 /// Sprite representation in Troll engine.
@@ -14,6 +15,7 @@ class Sprite {
   String spriteId;
 
   static int _sprite_unique_id = 0;
+  int _sprite_event_id = 0;
 
   Sprite(this.id, this.spriteId) {
     id ??= spriteId + '_' + (_sprite_unique_id++).toString();
@@ -70,26 +72,59 @@ class Sprite {
   }
 
   /// Defines consequences, i.e. actions triggered, of the sprite colliding
-  /// with other sprite instances or types.
+  /// with other sprites.
   void onCollision(
-      List<String> nodeIds, List<String> spriteIds, List<Action> consequences) {
+      {String nodeId,
+      String spriteId,
+      Function callback,
+      List<Action> actions}) {
     final action = Action()
-      ..onCollision = (CollisionAction()
-        ..sceneNodeId.addAll(nodeIds)
-        ..spriteId.addAll(spriteIds)
-        ..action.addAll(consequences));
+      ..onCollision = (CollisionAction()..sceneNodeId.add(id));
+
+    if (nodeId != null) {
+      action.onCollision.sceneNodeId.add(nodeId);
+    }
+    if (spriteId != null) {
+      action.onCollision.spriteId.add(spriteId);
+    }
+    if (callback != null) {
+      final eventId = id + '_' + (_sprite_event_id++).toString();
+      action.onCollision.action.add(
+          Action()..emit = (EmitAction()..event = (Event()..id = eventId)));
+      troll.registerEventHandler(eventId, callback, permanent: true);
+    }
+    if (actions != null) {
+      action.onCollision.action.addAll(actions);
+    }
+
     troll.execute(action.writeToBuffer());
   }
 
   /// Defines consequences, i.e. actions triggered, of the sprite detaching
-  /// with other sprite instances or types.
+  /// with other sprites.
   void onDetaching(
-      List<String> nodeIds, List<String> spriteIds, List<Action> consequences) {
-    final action = Action()
-      ..onDetaching = (CollisionAction()
-        ..sceneNodeId.addAll(nodeIds)
-        ..spriteId.addAll(spriteIds)
-        ..action.addAll(consequences));
+      {String nodeId,
+      String spriteId,
+      Function callback,
+      List<Action> actions}) {
+    final action = Action()..onDetaching = CollisionAction();
+
+    if (nodeId != null) {
+      action.onDetaching.sceneNodeId.add(nodeId);
+    }
+    if (spriteId != null) {
+      action.onDetaching.spriteId.add(spriteId);
+    }
+    if (callback != null) {
+      final eventId = id + '_' + (_sprite_event_id++).toString();
+      action.onDetaching.action.add(
+          Action()..emit = (EmitAction()..event = (Event()..id = eventId)));
+      troll.registerEventHandler(eventId, callback, permanent: true);
+    }
+    if (actions != null) {
+      action.onDetaching.action.addAll(actions);
+    }
+
     troll.execute(action.writeToBuffer());
   }
 
