@@ -8,6 +8,7 @@
 namespace troll {
 
 bool SceneNodePattern::Parse(const std::string& pattern_str) {
+  // Valid expressions are "$.{node pattern}" or "$this.{node pattern}".
   static const std::regex re(R"(\$(this)?\.\{(.*)\})", std::regex::optimize);
 
   std::smatch match;

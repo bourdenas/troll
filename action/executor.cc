@@ -13,36 +13,6 @@
 
 namespace troll {
 
-Action Executor::Reverse(const Action& action) const {
-  Action noop;
-  noop.mutable_noop();
-  return noop;
-}
-
-void NoopExecutor::Execute(const Action& action) const {}
-
-void QuitExecutor::Execute(const Action& action) const { core_->Halt(); }
-
-void EmitExecutor::Execute(const Action& action) const {
-  core_->event_dispatcher()->Emit(action.emit().event().id());
-}
-
-void ChangeSceneExecutor::Execute(const Action& action) const {
-  core_->LoadScene(action.change_scene().scene());
-}
-
-void CreateSceneNodeExecutor::Execute(const Action& action) const {
-  if (action.create_scene_node().scene_node().id().empty()) {
-    static int i = 0;
-    auto node = action.create_scene_node().scene_node();
-    node.set_id(absl::StrCat("node_id#", i++));
-    core_->scene_manager()->AddSceneNode(node);
-  } else {
-    core_->scene_manager()->AddSceneNode(
-        action.create_scene_node().scene_node());
-  }
-}
-
 namespace {
 // Returns all scene node ids described by a node expression in an action.
 std::vector<std::string> ResolveSceneNodes(const std::string& node_expression,
@@ -66,6 +36,46 @@ std::vector<std::string> ResolveSceneNodes(const std::string& node_expression,
   return node_ids;
 }
 }  // namespace
+
+Action Executor::Reverse(const Action& action) const {
+  Action noop;
+  noop.mutable_noop();
+  return noop;
+}
+
+void NoopExecutor::Execute(const Action& action) const {}
+
+void QuitExecutor::Execute(const Action& action) const { core_->Halt(); }
+
+void EmitExecutor::Execute(const Action& action) const {
+  if (action.emit().has_scene_node_pattern()) {
+    auto&& node_ids =
+        ResolveSceneNodes(action.emit().scene_node_pattern(), core_);
+
+    Event event = action.emit().event();
+    for (const auto& id : node_ids) {
+      event.add_scene_node_id(id);
+    }
+  }
+
+  core_->event_dispatcher()->Emit(action.emit().event().event_id());
+}
+
+void ChangeSceneExecutor::Execute(const Action& action) const {
+  core_->LoadScene(action.change_scene().scene());
+}
+
+void CreateSceneNodeExecutor::Execute(const Action& action) const {
+  if (action.create_scene_node().scene_node().id().empty()) {
+    static int i = 0;
+    auto node = action.create_scene_node().scene_node();
+    node.set_id(absl::StrCat("node_id#", i++));
+    core_->scene_manager()->AddSceneNode(node);
+  } else {
+    core_->scene_manager()->AddSceneNode(
+        action.create_scene_node().scene_node());
+  }
+}
 
 void DestroySceneNodeExecutor::Execute(const Action& action) const {
   auto&& node_ids =
