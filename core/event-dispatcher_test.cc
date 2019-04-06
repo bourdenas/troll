@@ -14,10 +14,13 @@ SCENARIO("One-off event handler", "[EventDispatcher.OneOffHandler]") {
   GIVEN("an one-off event handler") {
     EventDispatcher dispatcher;
     int call_count = 0;
-    dispatcher.Register(kSampleEvent, [&call_count]() { ++call_count; });
+    dispatcher.Register(kSampleEvent,
+                        [&call_count](const Event&) { ++call_count; });
 
     WHEN("the event is emitted and processed") {
-      dispatcher.Emit(kSampleEvent);
+      Event event;
+      event.set_event_id(kSampleEvent);
+      dispatcher.Emit(event);
       dispatcher.ProcessTriggeredEvents();
       THEN("the event handler is executed") { REQUIRE(call_count == 1); }
 
@@ -27,7 +30,7 @@ SCENARIO("One-off event handler", "[EventDispatcher.OneOffHandler]") {
           REQUIRE(call_count == 1);
         }
         WHEN("the event is emitted a second time") {
-          dispatcher.Emit(kSampleEvent);
+          dispatcher.Emit(event);
           THEN("has no effect on the event handler") {
             REQUIRE(call_count == 1);
           }
@@ -48,11 +51,13 @@ SCENARIO("One-off event handler cancelation before processing",
   GIVEN("an one-off event handler") {
     EventDispatcher dispatcher;
     int call_count = 0;
-    const auto handler_id =
-        dispatcher.Register(kSampleEvent, [&call_count]() { ++call_count; });
+    const auto handler_id = dispatcher.Register(
+        kSampleEvent, [&call_count](const Event&) { ++call_count; });
 
     WHEN("the event is emitted") {
-      dispatcher.Emit(kSampleEvent);
+      Event event;
+      event.set_event_id(kSampleEvent);
+      dispatcher.Emit(event);
 
       WHEN("handler is canceled before the event gets batch processed") {
         dispatcher.Unregister(kSampleEvent, handler_id);
@@ -74,11 +79,13 @@ SCENARIO("One-off event handler cancelation after processing",
   GIVEN("an one-off event handler") {
     EventDispatcher dispatcher;
     int call_count = 0;
-    const auto handler_id =
-        dispatcher.Register(kSampleEvent, [&call_count]() { ++call_count; });
+    const auto handler_id = dispatcher.Register(
+        kSampleEvent, [&call_count](const Event&) { ++call_count; });
 
     WHEN("the event is emitted and processed") {
-      dispatcher.Emit(kSampleEvent);
+      Event event;
+      event.set_event_id(kSampleEvent);
+      dispatcher.Emit(event);
       dispatcher.ProcessTriggeredEvents();
       THEN("the event handler is executed") { REQUIRE(call_count == 1); }
 
@@ -96,8 +103,8 @@ SCENARIO("Unregister non-existing events and handlers",
   GIVEN("an event registration") {
     EventDispatcher dispatcher;
     int call_count = 0;
-    const auto handler_id =
-        dispatcher.Register(kSampleEvent, [&call_count]() { ++call_count; });
+    const auto handler_id = dispatcher.Register(
+        kSampleEvent, [&call_count](const Event&) { ++call_count; });
 
     WHEN("a non-existing handler in unregistered") {
       const auto non_existing_handler_id = 42;
@@ -121,22 +128,24 @@ SCENARIO("Permanent event handler", "[EventDispatcher.PermanentHandler]") {
     EventDispatcher dispatcher;
     int call_count = 0;
     const auto handler_id = dispatcher.RegisterPermanent(
-        kSampleEvent, [&call_count]() { ++call_count; });
+        kSampleEvent, [&call_count](const Event&) { ++call_count; });
 
     WHEN("the event is emitted and processed") {
-      dispatcher.Emit(kSampleEvent);
+      Event event;
+      event.set_event_id(kSampleEvent);
+      dispatcher.Emit(event);
       dispatcher.ProcessTriggeredEvents();
 
       THEN("the event handler is executed") { REQUIRE(call_count == 1); }
 
       AND_WHEN("the event is emitted and processed again") {
-        dispatcher.Emit(kSampleEvent);
+        dispatcher.Emit(event);
         dispatcher.ProcessTriggeredEvents();
 
         THEN("the event handler is executed") { REQUIRE(call_count == 2); }
 
         AND_WHEN("the event is emitted and processed third time") {
-          dispatcher.Emit(kSampleEvent);
+          dispatcher.Emit(event);
           dispatcher.ProcessTriggeredEvents();
 
           THEN("the event handler is executed") { REQUIRE(call_count == 3); }
@@ -146,7 +155,7 @@ SCENARIO("Permanent event handler", "[EventDispatcher.PermanentHandler]") {
               "a "
               "fourth time") {
             dispatcher.Unregister(kSampleEvent, handler_id);
-            dispatcher.Emit(kSampleEvent);
+            dispatcher.Emit(event);
             dispatcher.ProcessTriggeredEvents();
 
             THEN("the event handler is not executed") {
@@ -164,17 +173,21 @@ SCENARIO("Register multiple handlers for an event",
   GIVEN("some event handler for an event") {
     EventDispatcher dispatcher;
     int count_a = 0;
-    dispatcher.RegisterPermanent(kSampleEvent, [&count_a]() { ++count_a; });
+    dispatcher.RegisterPermanent(kSampleEvent,
+                                 [&count_a](const Event&) { ++count_a; });
     int count_b = 0;
-    dispatcher.Register(kSampleEvent, [&count_b]() { ++count_b; });
+    dispatcher.Register(kSampleEvent, [&count_b](const Event&) { ++count_b; });
     int count_c = 0;
-    const auto handler_id =
-        dispatcher.RegisterPermanent(kSampleEvent, [&count_c]() { ++count_c; });
+    const auto handler_id = dispatcher.RegisterPermanent(
+        kSampleEvent, [&count_c](const Event&) { ++count_c; });
     int count_d = 0;
-    dispatcher.RegisterPermanent(kNoTriggerEvent, [&count_d]() { ++count_d; });
+    dispatcher.RegisterPermanent(kNoTriggerEvent,
+                                 [&count_d](const Event&) { ++count_d; });
 
     WHEN("the event is emitted and processed") {
-      dispatcher.Emit(kSampleEvent);
+      Event event;
+      event.set_event_id(kSampleEvent);
+      dispatcher.Emit(event);
       dispatcher.ProcessTriggeredEvents();
       THEN("all attached handlers are executed") {
         REQUIRE(count_a == 1);
@@ -183,7 +196,7 @@ SCENARIO("Register multiple handlers for an event",
         REQUIRE(count_d == 0);
 
         AND_WHEN("the event is emitted and processed second time") {
-          dispatcher.Emit(kSampleEvent);
+          dispatcher.Emit(event);
           dispatcher.ProcessTriggeredEvents();
           THEN("all attached permanent handlers are executed") {
             REQUIRE(count_a == 2);
@@ -194,7 +207,7 @@ SCENARIO("Register multiple handlers for an event",
             AND_WHEN("one of the permanent handlers is canceled") {
               dispatcher.Unregister(kSampleEvent, handler_id);
               WHEN("the event is emitted and processed third time") {
-                dispatcher.Emit(kSampleEvent);
+                dispatcher.Emit(event);
                 dispatcher.ProcessTriggeredEvents();
                 THEN("only the non-terminated handler is executed") {
                   REQUIRE(count_a == 3);

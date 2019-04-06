@@ -6,9 +6,11 @@
 #include <unordered_map>
 #include <vector>
 
+#include "proto/event.pb.h"
+
 namespace troll {
 
-using EventHandler = std::function<void()>;
+using EventHandler = std::function<void(const Event&)>;
 
 // Module that handles events in the system. When an event is emitted the
 // associated handlers are activated.
@@ -39,7 +41,7 @@ class EventDispatcher {
   // Triggers event handlers of input event. Event handlers are not called
   // immediately but all handlers whose events fired are batch executed when
   // ProcessTriggeredEvents() is called.
-  void Emit(const std::string& event_id);
+  void Emit(const Event& event_id);
 
   // Activates all fired events.
   void ProcessTriggeredEvents();
@@ -49,13 +51,13 @@ class EventDispatcher {
 
  private:
   struct HandlerInfo {
-    int id;
+    int handler_id;
     bool permanent;
     EventHandler handler;
   };
 
   std::unordered_map<std::string, std::vector<HandlerInfo>> event_registry_;
-  std::vector<std::string> triggered_events_;
+  std::vector<Event> triggered_events_;
 };
 
 }  // namespace troll

@@ -6,6 +6,7 @@
 #include "core/geometry.h"
 #include "core/resource-manager.h"
 #include "core/scene-manager.h"
+#include "proto/event.pb.h"
 #include "sound/audio-mixer.h"
 
 namespace troll {
@@ -129,8 +130,9 @@ void RunScriptPerformer::Start(SceneNode* scene_node) {
       scene_node->id());
   core_->event_dispatcher()->Register(
       Events::OnAnimationScriptTermination(scene_node->id(),
-                                           animation_.script_id()),
-      [this]() { finished_ = true; });
+                                           animation_.script_id())
+          .event_id(),
+      [this](const Event&) { finished_ = true; });
 }
 
 void RunScriptPerformer::Stop(const SceneNode& scene_node) {

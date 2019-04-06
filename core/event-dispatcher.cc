@@ -32,9 +32,10 @@ void EventDispatcher::Unregister(const std::string& event_id, int handler_id) {
   if (it == event_registry_.end()) return;
 
   auto& event_handlers = it->second;
-  const auto vec_it = std::find_if(
-      event_handlers.begin(), event_handlers.end(),
-      [handler_id](const HandlerInfo& info) { return info.id == handler_id; });
+  const auto vec_it = std::find_if(event_handlers.begin(), event_handlers.end(),
+                                   [handler_id](const HandlerInfo& info) {
+                                     return info.handler_id == handler_id;
+                                   });
   if (vec_it == event_handlers.end()) return;
 
   event_handlers.erase(vec_it);
@@ -43,20 +44,21 @@ void EventDispatcher::Unregister(const std::string& event_id, int handler_id) {
   }
 }
 
-void EventDispatcher::Emit(const std::string& event_id) {
-  triggered_events_.push_back(event_id);
+void EventDispatcher::Emit(const Event& event) {
+  triggered_events_.push_back(event);
 }
 
 void EventDispatcher::ProcessTriggeredEvents() {
-  std::vector<EventHandler> handlers;
-  for (const auto& event_id : triggered_events_) {
-    auto it = event_registry_.find(event_id);
+  std::vector<std::tuple<EventHandler, Event>> handlers;
+  for (const auto& event : triggered_events_) {
+    auto it = event_registry_.find(event.event_id());
     if (it == event_registry_.end()) continue;
 
     // Collect activated event handlers.
     handlers |= ranges::push_back(
-        it->second |
-        ranges::view::transform([](const auto& info) { return info.handler; }));
+        it->second | ranges::view::transform([&event](const auto& info) {
+          return std::make_tuple(info.handler, event);
+        }));
 
     // Remove non-permanent event handlers.
     const auto erase_it =
@@ -71,8 +73,10 @@ void EventDispatcher::ProcessTriggeredEvents() {
 
   // Delayed call of handlers because they cause side-effects that might
   // register new events.
-  for (const auto& handler : handlers) {
-    handler();
+  for (const auto& t : handlers) {
+    auto&& handler = std::get<0>(t);
+    auto&& event = std::get<1>(t);
+    handler(event);
   }
 }
 

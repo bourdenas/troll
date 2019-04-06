@@ -58,7 +58,7 @@ void EmitExecutor::Execute(const Action& action) const {
     }
   }
 
-  core_->event_dispatcher()->Emit(action.emit().event().event_id());
+  core_->event_dispatcher()->Emit(action.emit().event());
 }
 
 void ChangeSceneExecutor::Execute(const Action& action) const {
