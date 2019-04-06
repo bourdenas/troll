@@ -1,6 +1,7 @@
 import 'package:dart_dk/sprites.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
+import 'package:dart_troll/src/proto/event.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 
@@ -77,7 +78,7 @@ class Level1Scene extends Scene {
     DonkeyKong()
       ..create([126, 90])
       ..playAnimationScriptById('dk_barrel_throw', onPartDone: {
-        'place_barrel': () {
+        'place_barrel': (Event) {
           Barrel()
             ..create([215, 134], frameIndex: 1)
             ..Roll();

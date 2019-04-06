@@ -11,13 +11,13 @@ void execute(Uint8List action) native "NativeExecute";
 
 Uint8List eval(Uint8List query) native "NativeEval";
 
-int registerEventHandler(String event_id, Function handler,
+int registerEventHandler(String eventId, void Function(Uint8List) handler,
     {bool permanent = false}) native "NativeRegisterEventHandler";
 
-int unregisterEventHandler(String event_id, int handler_id)
+int unregisterEventHandler(String eventId, int handlerId)
     native "NativeUnregisterEventHandler";
 
-int registerInputHandler(Function handler) native "NativeRegisterInputHandler";
+int registerInputHandler(void Function(Uint8List) handler)
+    native "NativeRegisterInputHandler";
 
-int unregisterInputHandler(int handler_id)
-    native "NativeUnregisterInputHandler";
+int unregisterInputHandler(int handlerId) native "NativeUnregisterInputHandler";

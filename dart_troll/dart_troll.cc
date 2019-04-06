@@ -8,6 +8,7 @@
 #include "dart_troll/dart_utils.h"
 #include "input/input-manager.h"
 #include "proto/action.pb.h"
+#include "proto/event.pb.h"
 #include "proto/input-event.pb.h"
 #include "proto/query.pb.h"
 
@@ -71,8 +72,11 @@ struct DartCallbackWrapper {
   DartCallbackWrapper(Dart_Handle handler)
       : handler_(std::make_shared<PersistentHandle>(handler)) {}
 
-  void operator()() const {
-    HandleError(Dart_InvokeClosure(handler_->handle(), 0, nullptr));
+  void operator()(const Event& event) const {
+    Dart_Handle arguments[] = {
+        HandleError(UploadProtoValue(event)),
+    };
+    HandleError(Dart_InvokeClosure(handler_->handle(), 1, arguments));
   }
 
   void operator()(const InputEvent& input_event) const {
