@@ -92,11 +92,10 @@ class IntroScene extends Scene {
 
     final dk = DonkeyKong()
       ..create([300, 382, 0], frameIndex: 4)
-      ..playAnimationScript(introScript, onDone: () {
-        transition(HeightScene());
-      });
+      ..playAnimationScript(introScript,
+          onDone: (Event) => transition(HeightScene()));
 
-    dk.onScriptDone('dk_landing', () {
+    dk.onScriptDone('dk_landing', (Event) {
       Princess().create([270, 50, -1], frameIndex: 1);
       platforms[1].collapse();
       for (int i = 4; i < 7; ++i) {
@@ -106,8 +105,10 @@ class IntroScene extends Scene {
     });
 
     int count = 2;
-    dk.onScriptRewind('dk_jump', () => platforms[count++].collapse());
-    dk.onScriptDone('dk_jump', () => platforms[count++].collapse());
+    dk.onScriptRewind('dk_jump', (Event) {
+      platforms[count++].collapse();
+    });
+    dk.onScriptDone('dk_jump', (Event) => platforms[count++].collapse());
 
     playMusic('intro');
 

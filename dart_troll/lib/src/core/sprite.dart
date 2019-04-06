@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dart_troll/dart_troll.dart' as troll;
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/action.pb.dart';
@@ -5,6 +7,8 @@ import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/event.pb.dart';
 import 'package:dart_troll/src/proto/query.pb.dart';
 import 'package:dart_troll/src/proto/scene-node.pb.dart';
+
+typedef EventHandler = void Function(Event);
 
 /// Sprite representation in Troll engine.
 ///
@@ -76,7 +80,7 @@ class Sprite {
   void onCollision(
       {String nodeId,
       String spriteId,
-      Function callback,
+      EventHandler eventHandler,
       List<Action> actions}) {
     final action = Action()
       ..onCollision = (CollisionAction()..sceneNodeId.add(id));
@@ -87,11 +91,15 @@ class Sprite {
     if (spriteId != null) {
       action.onCollision.spriteId.add(spriteId);
     }
-    if (callback != null) {
+    if (eventHandler != null) {
       final eventId = id + '_' + (_sprite_event_id++).toString();
-      action.onCollision.action.add(
-          Action()..emit = (EmitAction()..event = (Event()..id = eventId)));
-      troll.registerEventHandler(eventId, callback, permanent: true);
+      action.onCollision.action.add(Action()
+        ..emit = (EmitAction()..event = (Event()..eventId = eventId)));
+      troll.registerEventHandler(
+          eventId,
+          (Uint8List eventBuffer) =>
+              eventHandler(Event()..mergeFromBuffer(eventBuffer)),
+          permanent: true);
     }
     if (actions != null) {
       action.onCollision.action.addAll(actions);
@@ -105,7 +113,7 @@ class Sprite {
   void onDetaching(
       {String nodeId,
       String spriteId,
-      Function callback,
+      EventHandler eventHandler,
       List<Action> actions}) {
     final action = Action()..onDetaching = CollisionAction();
 
@@ -115,11 +123,15 @@ class Sprite {
     if (spriteId != null) {
       action.onDetaching.spriteId.add(spriteId);
     }
-    if (callback != null) {
+    if (eventHandler != null) {
       final eventId = id + '_' + (_sprite_event_id++).toString();
-      action.onDetaching.action.add(
-          Action()..emit = (EmitAction()..event = (Event()..id = eventId)));
-      troll.registerEventHandler(eventId, callback, permanent: true);
+      action.onDetaching.action.add(Action()
+        ..emit = (EmitAction()..event = (Event()..eventId = eventId)));
+      troll.registerEventHandler(
+          eventId,
+          (Uint8List eventBuffer) =>
+              eventHandler(Event()..mergeFromBuffer(eventBuffer)),
+          permanent: true);
     }
     if (actions != null) {
       action.onDetaching.action.addAll(actions);
@@ -133,7 +145,9 @@ class Sprite {
   ///  If [onDone] is provided it will be invoked when the script finishes
   ///  execution.
   void playAnimationScript(AnimationScript script,
-      {Function onDone, Function onRewind, Map<String, Function> onPartDone}) {
+      {EventHandler onDone,
+      EventHandler onRewind,
+      Map<String, EventHandler> onPartDone}) {
     final action = Action()
       ..playAnimationScript = (AnimationScriptAction()
         ..script = script
@@ -156,7 +170,9 @@ class Sprite {
   /// If  [onDone] is provided it will be invoked when the script finishes
   /// execution.
   void playAnimationScriptById(String scriptId,
-      {Function onDone, Function onRewind, Map<String, Function> onPartDone}) {
+      {EventHandler onDone,
+      EventHandler onRewind,
+      Map<String, EventHandler> onPartDone}) {
     final action = Action()
       ..playAnimationScript = (AnimationScriptAction()
         ..scriptId = scriptId
@@ -197,22 +213,30 @@ class Sprite {
   }
 
   /// Invokes [callback] when [scriptId] on sprite finishes.
-  void onScriptDone(String scriptId, Function callback) {
-    troll.registerEventHandler(id + '.' + scriptId + '.done', callback);
+  void onScriptDone(String scriptId, EventHandler callback) {
+    troll.registerEventHandler(
+        id + '.' + scriptId + '.done',
+        (Uint8List eventBuffer) =>
+            callback(Event()..mergeFromBuffer(eventBuffer)));
   }
 
   /// Invokes [callback] when [scriptId] on sprite rewinds (finishes and
   /// starts again).
-  void onScriptRewind(String scriptId, Function callback) {
-    troll.registerEventHandler(id + '.' + scriptId + '.rewind', callback,
+  void onScriptRewind(String scriptId, EventHandler callback) {
+    troll.registerEventHandler(
+        id + '.' + scriptId + '.rewind',
+        (Uint8List eventBuffer) =>
+            callback(Event()..mergeFromBuffer(eventBuffer)),
         permanent: true);
   }
 
   /// Invokes associatied callbacks when parts of [scriptId] on sprite finish.
-  void onScriptPartDone(String scriptId, Map<String, Function> callbacks) {
+  void onScriptPartDone(String scriptId, Map<String, EventHandler> callbacks) {
     callbacks.forEach((part, callback) {
       troll.registerEventHandler(
-          id + '.' + scriptId + '.' + part + '.done', callback,
+          id + '.' + scriptId + '.' + part + '.done',
+          (Uint8List eventBuffer) =>
+              callback(Event()..mergeFromBuffer(eventBuffer)),
           permanent: true);
     });
   }
