@@ -21,4 +21,4 @@ class HeightScene(pytroll.scene.PyTrollScene):
         script.id = 'height'
         script.animation.add().timer.delay = 3500
         donkey_kong.PlayAnimationScript(
-            script, lambda: self.Transition(dk.level1.Level1Scene()))
+            script, lambda e: self.Transition(dk.level1.Level1Scene()))

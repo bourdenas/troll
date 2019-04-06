@@ -61,7 +61,7 @@ class Level1Scene(pytroll.scene.PyTrollScene):
         pytroll.events.OnEvent(
             pytroll.events.AnimationScriptPartDone(
                 donkey_kong.id, 'dk_barrel_throw', 'place_barrel'),
-            lambda: dk.sprites.Barrel().Create(
+            lambda e: dk.sprites.Barrel().Create(
                 (215, 134, 0), frame_index=1).Roll(),
             permanent=True)
 

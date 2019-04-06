@@ -19,18 +19,24 @@ namespace {
 // embedded python module.
 Core* core_instance;
 
-// Wraps python callbacks with a try/catch block for displaying run-time errors
-// that happen during python execution.
-void PythonCallbackWrapper(const std::function<void()>& python_handler) {
-  try {
-    python_handler();
-  } catch (pybind11::error_already_set& e) {
-    LOG(ERROR) << "Python run-time error:\n" << e.what();
-  }
+// Returns an EventHandler that wraps a python handler for events. The wrapper
+// handles marshaling of events that are passed to python encoded as strings.
+EventHandler PythonEventHandlerWrapper(
+    const std::function<void(const pybind11::bytes&)>& python_handler) {
+  return [python_handler](const Event& event) {
+    std::string encoded_event;
+    event.SerializeToString(&encoded_event);
+
+    try {
+      python_handler(pybind11::bytes(encoded_event));
+    } catch (pybind11::error_already_set& e) {
+      LOG(ERROR) << "Python run-time error:\n" << e.what();
+    }
+  };
 }
 
 // Returns an InputHandler that wraps a python handler for input events. The
-// wrappers handles marshaling of input events that are passed to python encoded
+// wrapper handles marshaling of input events that are passed to python encoded
 // as strings.
 InputManager::InputHandler PythonInputHandlerWrapper(
     const std::function<void(const pybind11::bytes&)>& python_handler) {
@@ -60,14 +66,15 @@ PYBIND11_EMBEDDED_MODULE(troll, m) {
   });
 
   m.def("register_event_handler",
-        [](const std::string& event_id, const std::function<void()>& handler,
+        [](const std::string& event_id,
+           const std::function<void(const pybind11::bytes&)>& handler,
            bool permanent) {
           if (permanent) {
             return core_instance->event_dispatcher()->RegisterPermanent(
-                event_id, [handler]() { PythonCallbackWrapper(handler); });
+                event_id, PythonEventHandlerWrapper(handler));
           } else {
             return core_instance->event_dispatcher()->Register(
-                event_id, [handler]() { PythonCallbackWrapper(handler); });
+                event_id, PythonEventHandlerWrapper(handler));
           }
         });
 
