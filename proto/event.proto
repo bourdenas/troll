@@ -3,5 +3,6 @@ syntax = "proto2";
 package troll;
 
 message Event {
-  optional string id = 1;
+  optional string event_id = 1;
+  repeated string scene_node_id = 2;
 }

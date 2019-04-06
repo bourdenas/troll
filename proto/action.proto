@@ -44,6 +44,7 @@ message QuitAction {}
 
 message EmitAction {
   optional Event event = 1;
+  optional string scene_node_pattern = 2;
 }
 
 message ChangeSceneAction {
