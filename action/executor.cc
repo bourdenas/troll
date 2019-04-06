@@ -48,17 +48,19 @@ void NoopExecutor::Execute(const Action& action) const {}
 void QuitExecutor::Execute(const Action& action) const { core_->Halt(); }
 
 void EmitExecutor::Execute(const Action& action) const {
-  if (action.emit().has_scene_node_pattern()) {
-    auto&& node_ids =
-        ResolveSceneNodes(action.emit().scene_node_pattern(), core_);
-
-    Event event = action.emit().event();
-    for (const auto& id : node_ids) {
-      event.add_scene_node_id(id);
-    }
+  if (!action.emit().has_scene_node_pattern()) {
+    core_->event_dispatcher()->Emit(action.emit().event());
+    return;
   }
 
-  core_->event_dispatcher()->Emit(action.emit().event());
+  auto&& node_ids =
+      ResolveSceneNodes(action.emit().scene_node_pattern(), core_);
+
+  Event event = action.emit().event();
+  for (const auto& id : node_ids) {
+    event.add_scene_node_id(id);
+  }
+  core_->event_dispatcher()->Emit(event);
 }
 
 void ChangeSceneExecutor::Execute(const Action& action) const {
