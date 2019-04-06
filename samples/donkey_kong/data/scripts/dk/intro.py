@@ -65,7 +65,7 @@ class IntroScene(pytroll.scene.PyTrollScene):
         script.animation.add().run_script.script_id = 'dk_taunt'
         script.animation.add().timer.delay = 1000
         donkey_kong.PlayAnimationScript(
-            script, lambda: self.Transition(dk.height.HeightScene()))
+            script, lambda e: self.Transition(dk.height.HeightScene()))
         pytroll.audio.PlayMusic('intro')
 
         def LandingHandler():
@@ -76,16 +76,16 @@ class IntroScene(pytroll.scene.PyTrollScene):
                 ladders[-(i * 2 + 2)].Destroy()
         pytroll.events.OnEvent(
             pytroll.events.AnimationScriptDone(donkey_kong.id, 'dk_landing'),
-            lambda: LandingHandler())
+            lambda e: LandingHandler())
 
         def DestroyPlatform(index):
             platforms[index].Collapse()
             if index < 6:
                 donkey_kong.PlayAnimationById(
-                    'dk_jump', lambda: DestroyPlatform(index + 1))
+                    'dk_jump', lambda e: DestroyPlatform(index + 1))
         pytroll.events.OnEvent(
             pytroll.events.AnimationScriptDone(donkey_kong.id, 'dk_jump'),
-            lambda: DestroyPlatform(2))
+            lambda e: DestroyPlatform(2))
 
         script = proto.animation_pb2.AnimationScript()
         script.animation.add().flash.repeat = 1
