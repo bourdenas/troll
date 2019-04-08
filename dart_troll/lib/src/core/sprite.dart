@@ -5,6 +5,7 @@ import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/action.pb.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/event.pb.dart';
+import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/query.pb.dart';
 import 'package:dart_troll/src/proto/scene-node.pb.dart';
 
@@ -137,6 +138,16 @@ class Sprite {
     if (actions != null) {
       collision.action.addAll(actions);
     }
+  }
+
+  Box getOverlap(String sceneNodeId) {
+    final query = Query()
+      ..sceneNodeOverlap = (SceneNodePairQuery()
+        ..firstNodeId = id
+        ..secondNodeId = sceneNodeId);
+    final responseBuffer = troll.eval(query.writeToBuffer());
+    final response = Response()..mergeFromBuffer(responseBuffer);
+    return response.overlap;
   }
 
   /// Play an animation script on the sprite.
