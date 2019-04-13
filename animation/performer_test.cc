@@ -421,8 +421,7 @@ SCENARIO_METHOD(PerformerFixture, "Goto animation", "[performers]") {
     }
 
     WHEN("the node is already there") {
-      *scene_node_.mutable_position() =
-          ParseProto<Vector>("x : 10 y : 5 z : 0");
+      *scene_node_.mutable_position() = ParseProto<Vector>("x: 10  y: 5  z: 0");
       performer.Start(&scene_node_);
 
       REQUIRE(performer.Progress(1, &scene_node_));
@@ -431,9 +430,37 @@ SCENARIO_METHOD(PerformerFixture, "Goto animation", "[performers]") {
                                     "position { x: 10 y: 5 z: 0 }")));
     }
 
-    WHEN("node is moved by other source during goto") {
-      THEN("goto has cached and applies a wrong direction") {
-        // TODO(bourdenas): fix this bug.
+    WHEN("time passes") {
+      performer.Start(&scene_node_);
+
+      THEN("node moves toward the right direction") {
+        REQUIRE_FALSE(performer.Progress(1, &scene_node_));
+        REQUIRE(scene_node_.position().x() == Approx(1.79).margin(0.01));
+        REQUIRE(scene_node_.position().y() == Approx(0.89).margin(0.01));
+        REQUIRE(scene_node_.position().z() == 0);
+
+        AND_WHEN("node is moved by other source during goto") {
+          *scene_node_.mutable_position() =
+              ParseProto<Vector>("x: 15  y: 0  z: 0");
+
+          THEN("goto adapts and moves toward the right direction") {
+            REQUIRE_FALSE(performer.Progress(1, &scene_node_));
+            REQUIRE(scene_node_.position().x() == Approx(13.58).margin(0.01));
+            REQUIRE(scene_node_.position().y() == Approx(1.41).margin(0.01));
+            REQUIRE(scene_node_.position().z() == 0);
+
+            AND_WHEN("enough time passes") {
+              REQUIRE(performer.Progress(100, &scene_node_));
+
+              THEN("node arrives to destination") {
+                REQUIRE_THAT(scene_node_,
+                             EqualsProto(ParseProto<SceneNode>(
+                                 "id: 'node_a' sprite_id: 'sprite_a' "
+                                 "position { x: 10 y: 5 z: 0 }")));
+              }
+            }
+          }
+        }
       }
     }
   }

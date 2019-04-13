@@ -104,17 +104,15 @@ bool FlashPerformer::Execute(SceneNode* scene_node) {
   return true;
 }
 
-void GotoPerformer::Start(SceneNode* scene_node) {
-  direction_ = animation_.destination() - scene_node->position();
-  distance_ = geo::VectorLength(direction_);
-  geo::VectorNormalise(&direction_);
-}
-
 bool GotoPerformer::Execute(SceneNode* scene_node) {
-  if (distance_ > animation_.step()) {
+  Vector direction = animation_.destination() - scene_node->position();
+  double distance = geo::VectorLength(direction);
+  geo::VectorNormalise(&direction);
+
+  if (distance > animation_.step()) {
     auto& pos = *scene_node->mutable_position();
-    pos = pos + direction_ * animation_.step();
-    distance_ -= animation_.step();
+    pos = pos + direction * animation_.step();
+    distance -= animation_.step();
     return false;
   }
 

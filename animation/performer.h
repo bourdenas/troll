@@ -190,8 +190,6 @@ class GotoPerformer : public OneOffPerformerBase<GotoAnimation> {
   GotoPerformer(const GotoAnimation& animation)
       : OneOffPerformerBase<GotoAnimation>(animation) {}
 
-  void Start(SceneNode* scene_node) override;
-
  protected:
   bool Execute(SceneNode* scene_node) override;
 
