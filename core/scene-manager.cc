@@ -16,15 +16,7 @@ namespace troll {
 
 void SceneManager::SetupScene(const Scene& scene) {
   scene_ = scene;
-  renderer_->ClearScreen();
-  renderer_->FillColour(scene_.bitmap_config().background_colour(),
-                        scene_.viewport());
-
-  if (scene_.bitmap_config().has_bitmap()) {
-    renderer_->BlitTexture(
-        resource_manager_->GetTexture(scene_.bitmap_config().bitmap()), Box(),
-        Box());
-  }
+  RenderAll();
 }
 
 void SceneManager::AddSceneNode(const SceneNode& node) {
@@ -149,12 +141,45 @@ void SceneManager::Render() {
 
   // Render dirty nodes.
   std::vector<const SceneNode*> z_ordered_nodes =
-      dirty_nodes | ranges::view::filter([this](const SceneNode* node) {
+      dirty_nodes | ranges::view::filter([](const SceneNode* node) {
         return node->visible();
       }) |
       ranges::view::filter([this](const SceneNode* node) {
         return dead_scene_nodes_.find(node->id()) == dead_scene_nodes_.end();
       });
+  z_ordered_nodes |=
+      ranges::action::sort([](const SceneNode* lhs, const SceneNode* rhs) {
+        return lhs->position().z() < rhs->position().z();
+      });
+  for (const auto* node : z_ordered_nodes) {
+    BlitSceneNode(*node);
+  }
+
+  renderer_->Flip();
+
+  CleanUpDeletedSceneNodes();
+}
+
+void SceneManager::RenderAll() {
+  renderer_->ClearScreen();
+  renderer_->FillColour(scene_.bitmap_config().background_colour(),
+                        scene_.viewport());
+
+  if (scene_.bitmap_config().has_bitmap()) {
+    renderer_->BlitTexture(
+        resource_manager_->GetTexture(scene_.bitmap_config().bitmap()), Box(),
+        Box());
+  }
+
+  // Render all nodes based on their z-ordering.
+  std::vector<const SceneNode*> z_ordered_nodes =
+      scene_nodes_ | ranges::view::values |
+      ranges::view::filter(
+          [](const SceneNode& node) { return node.visible(); }) |
+      ranges::view::filter([this](const SceneNode& node) {
+        return dead_scene_nodes_.find(node.id()) == dead_scene_nodes_.end();
+      }) |
+      ranges::view::transform([](const SceneNode& node) { return &node; });
   z_ordered_nodes |=
       ranges::action::sort([](const SceneNode* lhs, const SceneNode* rhs) {
         return lhs->position().z() < rhs->position().z();

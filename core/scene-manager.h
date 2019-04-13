@@ -64,6 +64,7 @@ class SceneManager {
   void ScrollViewport(const Vector& by);
 
   void Render();
+  void RenderAll();
 
   const Scene& scene() const { return scene_; }
   const Box& viewport() const { return viewport_; }
