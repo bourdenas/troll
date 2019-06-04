@@ -2,7 +2,7 @@ name:
   dart_troll
 
 environment:
-  sdk: ^2.0.0
+  sdk: ^2.3.0
 
 dependencies:
   protobuf:
