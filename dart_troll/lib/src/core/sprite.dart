@@ -177,7 +177,7 @@ class Sprite {
 
   /// Look up an animation script from resources and play it on the sprite.
   ///
-  /// If  [onDone] is provided it will be invoked when the script finishes
+  /// If [onDone] is provided it will be invoked when the script finishes
   /// execution.
   void playAnimationScriptById(String scriptId,
       {EventHandler onDone,

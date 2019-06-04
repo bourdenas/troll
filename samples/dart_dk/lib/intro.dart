@@ -58,9 +58,9 @@ class IntroScene extends Scene {
       [338, 410, -1],
     ];
 
-    final ladders = ladderPositions.reversed
-        .map<Ladder>((position) => Ladder()..create(position))
-        .toList();
+    final ladders = [
+      for (var pos in ladderPositions.reversed) Ladder()..create(pos)
+    ];
 
     final ladderFadingScript = AnimationScript()
       ..animation.add(Animation()..flash = (FlashAnimation()..repeat = 1));

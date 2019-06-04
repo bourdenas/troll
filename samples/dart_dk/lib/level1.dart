@@ -48,9 +48,9 @@ class Level1Scene extends Scene {
       [274, 198, -5],
       [274, 170, -5],
     ];
-    brokenLadderPositions
-        .map<Ladder>((position) => Ladder()..create(position, frameIndex: 1))
-        .toList();
+    for (final pos in brokenLadderPositions) {
+      Ladder()..create(pos, frameIndex: 1);
+    }
 
     final ladderPositions = [
       [210, 72, -5],
@@ -67,9 +67,9 @@ class Level1Scene extends Scene {
       [226, 235, -5],
       [444, 172, -5],
     ];
-    ladderPositions
-        .map<Ladder>((position) => Ladder()..create(position))
-        .toList();
+    for (final pos in ladderPositions) {
+      Ladder()..create(pos);
+    }
 
     Princess().create([270, 50, -1], frameIndex: 1);
     Barrel().create([80, 88], frameIndex: 5);
