@@ -1,7 +1,6 @@
 import 'package:dart_dk/sprites.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
-import 'package:dart_troll/src/proto/event.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 
@@ -30,7 +29,7 @@ class Level1Scene extends Scene {
     final platforms = platformSpecs
         .asMap()
         .map((index, spec) =>
-            MapEntry(index, Platform(index, spec.size)..create(spec.position)))
+            MapEntry(index, Platform(index, spec.size, spec.position)))
         .values
         .toList();
 
@@ -49,7 +48,7 @@ class Level1Scene extends Scene {
       [274, 170, -5],
     ];
     for (final pos in brokenLadderPositions) {
-      Ladder()..create(pos, frameIndex: 1);
+      Ladder(pos, frameIndex: 1);
     }
 
     final ladderPositions = [
@@ -68,24 +67,21 @@ class Level1Scene extends Scene {
       [444, 172, -5],
     ];
     for (final pos in ladderPositions) {
-      Ladder()..create(pos);
+      Ladder(pos);
     }
 
-    Princess().create([270, 50, -1], frameIndex: 1);
-    Barrel().create([80, 88], frameIndex: 5);
-    Barrel().create([100, 428], frameIndex: 6);
+    Princess([270, 50, -1], frameIndex: 1);
+    Barrel([80, 88], frameIndex: 5);
+    Barrel([100, 428], frameIndex: 6);
 
-    DonkeyKong()
-      ..create([126, 90])
+    DonkeyKong([126, 90])
       ..playAnimationScriptById('dk_barrel_throw', onPartDone: {
         'place_barrel': (Event) {
-          Barrel()
-            ..create([215, 134], frameIndex: 1)
-            ..Roll();
+          Barrel([215, 134], frameIndex: 1)..Roll();
         },
       });
 
-    mario = Mario()..create([140, 428], frameIndex: 15);
+    mario = Mario([140, 428], frameIndex: 15);
 
     playMusic('main_loop', repeat: 0);
 

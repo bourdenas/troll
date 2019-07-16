@@ -24,8 +24,7 @@ class HeightScene extends Scene {
         Animation()..timer = (TimerAnimation()..delay = 3500),
       ]);
 
-    DonkeyKong()
-      ..create([300, 282], frameIndex: 10)
+    DonkeyKong([300, 282], frameIndex: 10)
       ..playAnimationScript(script,
           onDone: (Event) => transition(Level1Scene()));
 
