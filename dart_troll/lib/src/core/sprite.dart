@@ -5,6 +5,7 @@ import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/action.pb.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/event.pb.dart';
+import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/query.pb.dart';
 import 'package:dart_troll/src/proto/scene-node.pb.dart';
 
@@ -75,8 +76,11 @@ class Sprite {
     troll.execute(action.writeToBuffer());
   }
 
-  /// Defines consequences, i.e. actions triggered, of the sprite colliding
+  /// Registers consequences, i.e. actions triggered, of the sprite colliding
   /// with other sprites.
+  ///
+  /// At least one of {[nodeId], [spriteId]} and one of
+  /// {[eventHandler], [actions]} needs to be provideds.
   void onCollision(
       {String nodeId,
       String spriteId,
@@ -84,49 +88,47 @@ class Sprite {
       List<Action> actions}) {
     final action = Action()
       ..onCollision = (CollisionAction()..sceneNodeId.add(id));
-
-    if (nodeId != null) {
-      action.onCollision.sceneNodeId.add(nodeId);
-    }
-    if (spriteId != null) {
-      action.onCollision.spriteId.add(spriteId);
-    }
-    if (eventHandler != null) {
-      final eventId = id + '_' + (_sprite_event_id++).toString();
-      action.onCollision.action.add(Action()
-        ..emit = (EmitAction()..event = (Event()..eventId = eventId)));
-      troll.registerEventHandler(
-          eventId,
-          (Uint8List eventBuffer) =>
-              eventHandler(Event()..mergeFromBuffer(eventBuffer)),
-          permanent: true);
-    }
-    if (actions != null) {
-      action.onCollision.action.addAll(actions);
-    }
-
+    _buildCollisionAction(
+        action.onCollision, nodeId, spriteId, eventHandler, actions);
     troll.execute(action.writeToBuffer());
   }
 
-  /// Defines consequences, i.e. actions triggered, of the sprite detaching
+  /// Registers consequences, i.e. actions triggered, of the sprite detaching
   /// with other sprites.
+  ///
+  /// At least one of {[nodeId], [spriteId]} and one of
+  /// {[eventHandler], [actions]} needs to be provideds.
   void onDetaching(
       {String nodeId,
       String spriteId,
       EventHandler eventHandler,
       List<Action> actions}) {
-    final action = Action()..onDetaching = CollisionAction();
+    final action = Action()
+      ..onDetaching = (CollisionAction()..sceneNodeId.add(id));
+    _buildCollisionAction(
+        action.onDetaching, nodeId, spriteId, eventHandler, actions);
+    troll.execute(action.writeToBuffer());
+  }
 
+  /// Builds a collision action in order to support EventHandlers mechanism.
+  void _buildCollisionAction(CollisionAction collision, String nodeId,
+      String spriteId, EventHandler eventHandler, List<Action> actions) {
     if (nodeId != null) {
-      action.onDetaching.sceneNodeId.add(nodeId);
+      collision.sceneNodeId.add(nodeId);
     }
     if (spriteId != null) {
-      action.onDetaching.spriteId.add(spriteId);
+      collision.spriteId.add(spriteId);
     }
+
     if (eventHandler != null) {
       final eventId = id + '_' + (_sprite_event_id++).toString();
-      action.onDetaching.action.add(Action()
-        ..emit = (EmitAction()..event = (Event()..eventId = eventId)));
+      var nodePattern = '';
+      if (nodeId != null) nodePattern += 'node_id: "$nodeId" ';
+      if (spriteId != null) nodePattern += 'sprite_id: "$spriteId" ';
+      collision.action.add(Action()
+        ..emit = (EmitAction()
+          ..event = (Event()..eventId = eventId)
+          ..sceneNodePattern = '\$this.{$nodePattern}'));
       troll.registerEventHandler(
           eventId,
           (Uint8List eventBuffer) =>
@@ -134,10 +136,18 @@ class Sprite {
           permanent: true);
     }
     if (actions != null) {
-      action.onDetaching.action.addAll(actions);
+      collision.action.addAll(actions);
     }
+  }
 
-    troll.execute(action.writeToBuffer());
+  Box getOverlap(String sceneNodeId) {
+    final query = Query()
+      ..sceneNodeOverlap = (SceneNodePairQuery()
+        ..firstNodeId = id
+        ..secondNodeId = sceneNodeId);
+    final responseBuffer = troll.eval(query.writeToBuffer());
+    final response = Response()..mergeFromBuffer(responseBuffer);
+    return response.overlap;
   }
 
   /// Play an animation script on the sprite.
@@ -167,7 +177,7 @@ class Sprite {
 
   /// Look up an animation script from resources and play it on the sprite.
   ///
-  /// If  [onDone] is provided it will be invoked when the script finishes
+  /// If [onDone] is provided it will be invoked when the script finishes
   /// execution.
   void playAnimationScriptById(String scriptId,
       {EventHandler onDone,

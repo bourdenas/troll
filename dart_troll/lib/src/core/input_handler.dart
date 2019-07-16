@@ -11,10 +11,10 @@ class InputHandler {
   }
 
   void handleInput(InputEvent event) {
-    if (!event.hasKeyEvent()) return;
+    if (!event.hasKeyEvent() ||
+        event.keyEvent.keyState == Trigger_KeyState.NONE) return;
 
     print(event);
-    if (event.keyEvent.keyState == Trigger_KeyState.NONE) return;
     final trigger = keyMapping[event.keyEvent.key];
     if (trigger == null) return;
 
