@@ -22,7 +22,7 @@ class Sprite {
   static int _sprite_unique_id = 0;
   int _sprite_event_id = 0;
 
-  Sprite(this.id, this.spriteId) {
+  Sprite(this.spriteId, [this.id]) {
     id ??= spriteId + '_' + (_sprite_unique_id++).toString();
   }
 

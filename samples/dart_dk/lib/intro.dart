@@ -32,7 +32,7 @@ class IntroScene extends Scene {
     final platforms = platformSpecs
         .asMap()
         .map((index, spec) =>
-            MapEntry(index, Platform(index, spec.size)..create(spec.position)))
+            MapEntry(index, Platform(index, spec.size, spec.position)))
         .values
         .toList();
 
@@ -58,9 +58,7 @@ class IntroScene extends Scene {
       [338, 410, -1],
     ];
 
-    final ladders = [
-      for (var pos in ladderPositions.reversed) Ladder()..create(pos)
-    ];
+    final ladders = [for (var pos in ladderPositions.reversed) Ladder(pos)];
 
     final ladderFadingScript = AnimationScript()
       ..animation.add(Animation()..flash = (FlashAnimation()..repeat = 1));
@@ -90,13 +88,12 @@ class IntroScene extends Scene {
         Animation()..timer = (TimerAnimation()..delay = 1000),
       ]);
 
-    final dk = DonkeyKong()
-      ..create([300, 382, 0], frameIndex: 4)
+    final dk = DonkeyKong([300, 382, 0], frameIndex: 4)
       ..playAnimationScript(introScript,
           onDone: (Event) => transition(HeightScene()));
 
     dk.onScriptDone('dk_landing', (Event) {
-      Princess().create([270, 50, -1], frameIndex: 1);
+      Princess([270, 50, -1], frameIndex: 1);
       platforms[1].collapse();
       for (int i = 4; i < 7; ++i) {
         ladders[i * 2].destroy();
