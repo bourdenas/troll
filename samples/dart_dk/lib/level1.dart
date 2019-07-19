@@ -77,7 +77,9 @@ class Level1Scene extends Scene {
     DonkeyKong([126, 90])
       ..playAnimationScriptById('dk_barrel_throw', onPartDone: {
         'place_barrel': (Event) {
-          Barrel([215, 134], frameIndex: 1)..Roll();
+          Barrel([215, 134], frameIndex: 1)
+            ..Roll()
+            ..gravity = [0, 1];
         },
       });
 

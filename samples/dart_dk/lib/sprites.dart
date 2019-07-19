@@ -1,10 +1,12 @@
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/core/sprite.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
+import 'package:dart_troll/src/proto/event.pb.dart';
 
-class Mario extends Sprite {
+class Mario extends GavitySprite {
   Mario(List<int> position, {int frameIndex = 0}) : super('mario') {
     create(position, frameIndex: frameIndex);
+    gravity = [0, 1];
   }
 }
 
@@ -68,14 +70,14 @@ class Ladder extends Sprite {
   }
 }
 
-class Barrel extends Sprite {
+class Barrel extends GavitySprite {
   Barrel(List<int> position, {int frameIndex = 0}) : super('barrel') {
     create(position, frameIndex: frameIndex);
   }
 
   void Roll() {
     final script = AnimationScript()
-      ..id = 'barrel_roll'
+      ..id = '${id}_barrel_roll'
       ..animation.addAll([
         Animation()
           ..translation = (VectorAnimation()
@@ -87,5 +89,28 @@ class Barrel extends Sprite {
             ..delay = 200),
       ]);
     playAnimationScript(script);
+  }
+}
+
+class GavitySprite extends Sprite {
+  GavitySprite(String spriteId, [String id]) : super(spriteId, id);
+
+  void set gravity(List<int> force) {
+    playAnimationScript(AnimationScript()
+      ..id = '${id}_gravity'
+      ..animation.addAll([
+        Animation()
+          ..translation = (VectorAnimation()
+            ..vec = makeVector(force)
+            ..delay = 100),
+      ]));
+
+    onCollision(
+        spriteId: 'platform',
+        eventHandler: (Event e) {
+          final overlap = getOverlap(e.sceneNodeId[0]);
+          print(overlap);
+          move([0, -overlap.height]);
+        });
   }
 }
