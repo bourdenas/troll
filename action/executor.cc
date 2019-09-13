@@ -192,8 +192,12 @@ void StopAnimationScriptExecutor::Execute(const Action& action) const {
       return;
     }
 
-    core_->animator_manager()->Stop(action.stop_animation_script().script_id(),
-                                    id);
+    if (action.stop_animation_script().has_script_id()) {
+      core_->animator_manager()->Stop(
+          action.stop_animation_script().script_id(), id);
+    } else {
+      core_->animator_manager()->StopNodeAnimations(id);
+    }
   }
 }
 
