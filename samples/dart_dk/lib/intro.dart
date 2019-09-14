@@ -26,7 +26,7 @@ class IntroScene extends Scene {
       _PlatformSpec(13, [80, 275, -3]),
       _PlatformSpec(13, [112, 335, -3]),
       _PlatformSpec(13, [80, 395, -3]),
-      _PlatformSpec(14, [80, 455, -3]),
+      _PlatformSpec(14, [70, 455, -3]),
     ];
 
     final platforms = platformSpecs
@@ -64,8 +64,8 @@ class IntroScene extends Scene {
       ..animation.add(Animation()..flash = (FlashAnimation()..repeat = 1));
     for (var i = 0; i < 4; ++i) {
       ladderFadingScript.animation[0].flash.delay = 700 * (i + 1);
-      ladders[i * 2].playAnimationScript(ladderFadingScript);
-      ladders[i * 2 + 1].playAnimationScript(ladderFadingScript);
+      ladders[i * 2].playAnimation(script: ladderFadingScript);
+      ladders[i * 2 + 1].playAnimation(script: ladderFadingScript);
     }
 
     final introScript = AnimationScript()
@@ -89,10 +89,10 @@ class IntroScene extends Scene {
       ]);
 
     final dk = DonkeyKong([300, 382, 0], frameIndex: 4)
-      ..playAnimationScript(introScript,
-          onDone: (Event) => transition(HeightScene()));
+      ..playAnimation(
+          script: introScript, onDone: (e) => transition(HeightScene()));
 
-    dk.onScriptDone('dk_landing', (Event) {
+    dk.onScriptDone('dk_landing', (e) {
       Princess([270, 50, -1], frameIndex: 1);
       platforms[1].collapse();
       for (int i = 4; i < 7; ++i) {
@@ -102,10 +102,10 @@ class IntroScene extends Scene {
     });
 
     int count = 2;
-    dk.onScriptRewind('dk_jump', (Event) {
+    dk.onScriptRewind('dk_jump', (e) {
       platforms[count++].collapse();
     });
-    dk.onScriptDone('dk_jump', (Event) => platforms[count++].collapse());
+    dk.onScriptDone('dk_jump', (e) => platforms[count++].collapse());
 
     playMusic('intro');
 

@@ -76,68 +76,65 @@ class Sprite {
     troll.execute(action.writeToBuffer());
   }
 
-  /// Registers consequences, i.e. actions triggered, of the sprite colliding
+  /// Registers an [eventHandler] that is triggered when this sprite collide
   /// with other sprites.
   ///
-  /// At least one of {[nodeId], [spriteId]} and one of
-  /// {[eventHandler], [actions]} needs to be provideds.
+  /// At least one of [nodeId] and [spriteId] needs to be provideds.
   void onCollision(
-      {String nodeId,
-      String spriteId,
-      EventHandler eventHandler,
-      List<Action> actions}) {
-    final action = Action()
-      ..onCollision = (CollisionAction()..sceneNodeId.add(id));
-    _buildCollisionAction(
-        action.onCollision, nodeId, spriteId, eventHandler, actions);
+      {String nodeId, String spriteId, EventHandler eventHandler}) {
+    final action = Action()..onCollision = CollisionAction();
+    _buildCollisionAction(action.onCollision, nodeId, spriteId, eventHandler);
     troll.execute(action.writeToBuffer());
   }
 
-  /// Registers consequences, i.e. actions triggered, of the sprite detaching
+  /// Registers an [eventHandler] that is triggered when this sprite overlaps
   /// with other sprites.
   ///
-  /// At least one of {[nodeId], [spriteId]} and one of
-  /// {[eventHandler], [actions]} needs to be provideds.
+  /// At least one of [nodeId] and [spriteId] needs to be provideds.
+  /// In contrast to [onCollision] that triggers only when sprites collide this
+  /// event is triggered constantly as long as the sprites overlap.
+  void onOverlap({String nodeId, String spriteId, EventHandler eventHandler}) {
+    final action = Action()..onOverlap = CollisionAction();
+    _buildCollisionAction(action.onOverlap, nodeId, spriteId, eventHandler);
+    troll.execute(action.writeToBuffer());
+  }
+
+  /// Registers an [eventHandler] that is triggered when this sprite detaches
+  /// from other sprites.
+  ///
+  /// At least one of [nodeId] and [spriteId] needs to be provideds.
   void onDetaching(
-      {String nodeId,
-      String spriteId,
-      EventHandler eventHandler,
-      List<Action> actions}) {
-    final action = Action()
-      ..onDetaching = (CollisionAction()..sceneNodeId.add(id));
-    _buildCollisionAction(
-        action.onDetaching, nodeId, spriteId, eventHandler, actions);
+      {String nodeId, String spriteId, EventHandler eventHandler}) {
+    final action = Action()..onDetaching = CollisionAction();
+    _buildCollisionAction(action.onDetaching, nodeId, spriteId, eventHandler);
     troll.execute(action.writeToBuffer());
   }
 
   /// Builds a collision action in order to support EventHandlers mechanism.
-  void _buildCollisionAction(CollisionAction collision, String nodeId,
-      String spriteId, EventHandler eventHandler, List<Action> actions) {
-    if (nodeId != null) {
-      collision.sceneNodeId.add(nodeId);
-    }
-    if (spriteId != null) {
-      collision.spriteId.add(spriteId);
-    }
+  ///
+  /// An EmitAction is used in the CollisionAction to generate unique events
+  /// that trigger the [eventHandler].
+  void _buildCollisionAction(CollisionAction collisionAction, String nodeId,
+      String spriteId, EventHandler eventHandler) {
+    collisionAction.sceneNodeId.addAll([this.id, if (nodeId != null) nodeId]);
+    if (spriteId != null) collisionAction.spriteId.add(spriteId);
 
-    if (eventHandler != null) {
-      final eventId = id + '_' + (_sprite_event_id++).toString();
-      var nodePattern = '';
-      if (nodeId != null) nodePattern += 'node_id: "$nodeId" ';
-      if (spriteId != null) nodePattern += 'sprite_id: "$spriteId" ';
-      collision.action.add(Action()
-        ..emit = (EmitAction()
-          ..event = (Event()..eventId = eventId)
-          ..sceneNodePattern = '\$this.{$nodePattern}'));
-      troll.registerEventHandler(
-          eventId,
-          (Uint8List eventBuffer) =>
-              eventHandler(Event()..mergeFromBuffer(eventBuffer)),
-          permanent: true);
-    }
-    if (actions != null) {
-      collision.action.addAll(actions);
-    }
+    final eventId = id + '_' + (_sprite_event_id++).toString();
+    final nodePattern = [
+      if (nodeId != null) 'node_id: "$nodeId"',
+      if (spriteId != null) 'sprite_id: "$spriteId"',
+    ].join(' ');
+
+    collisionAction.action.add(Action()
+      ..emit = (EmitAction()
+        ..event = (Event()..eventId = eventId)
+        ..sceneNodePattern = '\$this.{$nodePattern}'));
+
+    troll.registerEventHandler(
+        eventId,
+        (Uint8List eventBuffer) =>
+            eventHandler(Event()..mergeFromBuffer(eventBuffer)),
+        permanent: true);
   }
 
   Box getOverlap(String sceneNodeId) {
@@ -150,75 +147,67 @@ class Sprite {
     return response.overlap;
   }
 
-  /// Play an animation script on the sprite.
-  ///
-  ///  If [onDone] is provided it will be invoked when the script finishes
-  ///  execution.
-  void playAnimationScript(AnimationScript script,
-      {EventHandler onDone,
-      EventHandler onRewind,
-      Map<String, EventHandler> onPartDone}) {
-    final action = Action()
-      ..playAnimationScript = (AnimationScriptAction()
-        ..script = script
-        ..sceneNodeId = id);
-    troll.execute(action.writeToBuffer());
-
-    if (onDone != null) {
-      onScriptDone(script.id, onDone);
-    }
-    if (onRewind != null) {
-      onScriptRewind(script.id, onRewind);
-    }
-    if (onPartDone != null) {
-      onScriptPartDone(script.id, onPartDone);
-    }
-  }
-
-  /// Look up an animation script from resources and play it on the sprite.
+  /// Play an animation on the sprite. The animation can be the provided
+  /// [script] or an animation from resources based on [scriptId].
   ///
   /// If [onDone] is provided it will be invoked when the script finishes
   /// execution.
-  void playAnimationScriptById(String scriptId,
-      {EventHandler onDone,
-      EventHandler onRewind,
-      Map<String, EventHandler> onPartDone}) {
-    final action = Action()
-      ..playAnimationScript = (AnimationScriptAction()
-        ..scriptId = scriptId
-        ..sceneNodeId = id);
+  /// If [onRewind] is provided it will be invoked when the script restarts
+  /// execution.
+  /// The [onPartDone] is a map from animation script part name to handlers. If
+  /// provided a handler will be invoked when the corresponding script part
+  /// finishes execution.
+  void playAnimation({
+    AnimationScript script,
+    String scriptId,
+    EventHandler onDone,
+    EventHandler onRewind,
+    Map<String, EventHandler> onPartDone,
+  }) {
+    if (script != null && scriptId != null) {
+      throw ArgumentError(
+          'Sprite.playAnimation can be provided either a [script] or a '
+          '[scriptId].');
+    }
+
+    final animationScript = AnimationScriptAction()..sceneNodeId = id;
+    if (script != null) animationScript..script = script;
+    if (scriptId != null) animationScript..scriptId = scriptId;
+
+    final action = Action()..playAnimationScript = animationScript;
     troll.execute(action.writeToBuffer());
 
+    final validId = script != null ? script.id : scriptId;
     if (onDone != null) {
-      onScriptDone(scriptId, onDone);
+      onScriptDone(validId, onDone);
     }
     if (onRewind != null) {
-      onScriptRewind(scriptId, onRewind);
+      onScriptRewind(validId, onRewind);
     }
     if (onPartDone != null) {
-      onScriptPartDone(scriptId, onPartDone);
+      onScriptPartDone(validId, onPartDone);
     }
   }
 
   /// Stop an active animation script on the sprite.
   ///
   /// If [onDone] was provided during [playAnimationSript], it will be invoked.
-  void stopAnimationScript(String scriptId) {
-    final action = Action()
-      ..stopAnimationScript = (AnimationScriptAction()
-        ..scriptId = scriptId
-        ..sceneNodeId = id);
+  void stopAnimation({String scriptId}) {
+    final animationScript = AnimationScriptAction()..sceneNodeId = id;
+    if (scriptId != null) animationScript..scriptId = scriptId;
+
+    final action = Action()..stopAnimationScript = animationScript;
     troll.execute(action.writeToBuffer());
   }
 
   /// Puase an active animation script on the sprite.
   ///
   /// TODO(bourdenas): Allow resume with [playAnimationScriptById].
-  void pauseAnimationScript(String scriptId) {
-    final action = Action()
-      ..stopAnimationScript = (AnimationScriptAction()
-        ..scriptId = scriptId
-        ..sceneNodeId = id);
+  void pauseAnimation({String scriptId}) {
+    final animationScript = AnimationScriptAction()..sceneNodeId = id;
+    if (scriptId != null) animationScript..scriptId = scriptId;
+
+    final action = Action()..pauseAnimationScript = animationScript;
     troll.execute(action.writeToBuffer());
   }
 

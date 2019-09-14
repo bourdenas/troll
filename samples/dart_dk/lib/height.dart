@@ -18,14 +18,13 @@ class HeightScene extends Scene {
 
   @override
   void setup() {
-    final script = AnimationScript()
-      ..id = 'height'
-      ..animation.addAll([
-        Animation()..timer = (TimerAnimation()..delay = 3500),
-      ]);
-
     DonkeyKong([300, 282], frameIndex: 10)
-      ..playAnimationScript(script,
+      ..playAnimation(
+          script: (AnimationScript()
+            ..id = 'height'
+            ..animation.addAll([
+              Animation()..timer = (TimerAnimation()..delay = 3500),
+            ])),
           onDone: (Event) => transition(Level1Scene()));
 
     playMusic('height');

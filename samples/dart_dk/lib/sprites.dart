@@ -3,16 +3,87 @@ import 'package:dart_troll/src/core/sprite.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/event.pb.dart';
 
+enum _MarioState {
+  none,
+  walk_left,
+  walk_right,
+  climb_up,
+  climb_down,
+  jump,
+}
+
 class Mario extends GavitySprite {
+  _MarioState _state = _MarioState.none;
+  final _animationMap = <_MarioState, String>{
+    _MarioState.walk_left: 'mario_move_left',
+    _MarioState.walk_right: 'mario_move_right',
+    _MarioState.climb_up: 'mario_climb_up',
+    _MarioState.climb_down: 'mario_climb_down',
+  };
+
   Mario(List<int> position, {int frameIndex = 0}) : super('mario') {
     create(position, frameIndex: frameIndex);
-    gravity = [0, 1];
+    gravity = 8;
+
+    onOverlap(
+        spriteId: 'ladder',
+        eventHandler: (event) {
+          final overlap = this.getOverlap(event.sceneNodeId[0]);
+          // print('overlap with ladder=${overlap.width}');
+        });
+  }
+
+  void walkLeft() {
+    if (_state != _MarioState.none) return;
+    _state = _MarioState.walk_left;
+    playAnimation(scriptId: _animationMap[_state]);
+  }
+
+  void walkRight() {
+    if (_state != _MarioState.none) return;
+    _state = _MarioState.walk_right;
+    playAnimation(scriptId: _animationMap[_state]);
+  }
+
+  void climbUp() {
+    if (_state != _MarioState.none) return;
+    _state = _MarioState.climb_up;
+    playAnimation(scriptId: _animationMap[_state]);
+  }
+
+  void climbDown() {
+    if (_state != _MarioState.none) return;
+    _state = _MarioState.climb_down;
+    playAnimation(scriptId: _animationMap[_state]);
+  }
+
+  void halt() {
+    final scriptId = _animationMap[_state];
+    if (scriptId == null) return;
+
+    stopAnimation(scriptId: scriptId);
+    _state = _MarioState.none;
+  }
+
+  void jump() {
+    playAnimation(scriptId: 'mario_jump', onDone: (e) => this.gravity = 8);
+    gravity = 0;
   }
 }
 
 class DonkeyKong extends Sprite {
   DonkeyKong(List<int> position, {int frameIndex = 0}) : super('dk') {
     create(position, frameIndex: frameIndex);
+  }
+
+  void throwBarrels() {
+    playAnimation(scriptId: 'dk_barrel_throw', onPartDone: {
+      'place_barrel': (Event) {
+        Barrel([215, 134], frameIndex: 1)
+          ..Roll()
+          ..gravity = 16;
+      },
+    });
   }
 }
 
@@ -81,36 +152,45 @@ class Barrel extends GavitySprite {
       ..animation.addAll([
         Animation()
           ..translation = (VectorAnimation()
-            ..vec = makeVector([2, 0])
+            ..vec = makeVector([4, 0])
             ..delay = 30)
           ..frameRange = (FrameRangeAnimation()
             ..startFrame = 1
             ..endFrame = 5
             ..delay = 200),
       ]);
-    playAnimationScript(script);
+    playAnimation(script: script);
   }
 }
 
 class GavitySprite extends Sprite {
-  GavitySprite(String spriteId, [String id]) : super(spriteId, id);
+  int _intensity = 0;
 
-  void set gravity(List<int> force) {
-    playAnimationScript(AnimationScript()
-      ..id = '${id}_gravity'
-      ..animation.addAll([
-        Animation()
-          ..translation = (VectorAnimation()
-            ..vec = makeVector(force)
-            ..delay = 100),
-      ]));
-
-    onCollision(
+  GavitySprite(String spriteId, [String id]) : super(spriteId, id) {
+    onOverlap(
         spriteId: 'platform',
-        eventHandler: (Event e) {
-          final overlap = getOverlap(e.sceneNodeId[0]);
-          print(overlap);
+        eventHandler: (event) {
+          if (_intensity == 0) return;
+          final overlap = getOverlap(event.sceneNodeId[0]);
           move([0, -overlap.height]);
         });
+  }
+
+  void set gravity(int intensity) {
+    _intensity = intensity;
+
+    stopAnimation(scriptId: '${id}_gravity');
+
+    if (_intensity != 0) {
+      playAnimation(
+          script: AnimationScript()
+            ..id = '${id}_gravity'
+            ..animation.addAll([
+              Animation()
+                ..translation = (VectorAnimation()
+                  ..vec = makeVector([0, _intensity])
+                  ..delay = 50),
+            ]));
+    }
   }
 }
