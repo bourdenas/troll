@@ -164,12 +164,6 @@ class Sprite {
     EventHandler onRewind,
     Map<String, EventHandler> onPartDone,
   }) {
-    if (script != null && scriptId != null) {
-      throw ArgumentError(
-          'Sprite.playAnimation can be provided either a [script] or a '
-          '[scriptId].');
-    }
-
     final animationScript = AnimationScriptAction()..sceneNodeId = id;
     if (script != null) animationScript..script = script;
     if (scriptId != null) animationScript..scriptId = scriptId;
