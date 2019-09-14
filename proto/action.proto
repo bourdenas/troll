@@ -23,18 +23,19 @@ message Action {
     SceneNodeVectorAction move_scene_node = 8;
 
     CollisionAction on_collision = 9;
-    CollisionAction on_detaching = 10;
+    CollisionAction on_overlap = 10;
+    CollisionAction on_detaching = 11;
 
-    AnimationScriptAction play_animation_script = 11;
-    AnimationScriptAction stop_animation_script = 12;
-    AnimationScriptAction pause_animation_script = 13;
+    AnimationScriptAction play_animation_script = 12;
+    AnimationScriptAction stop_animation_script = 13;
+    AnimationScriptAction pause_animation_script = 14;
 
-    SfxAction play_audio = 14;
-    SfxAction stop_audio = 15;
-    SfxAction pause_audio = 16;
-    SfxAction resume_audio = 17;
+    SfxAction play_audio = 15;
+    SfxAction stop_audio = 16;
+    SfxAction pause_audio = 17;
+    SfxAction resume_audio = 18;
 
-    DisplayTextAction display_text = 18;
+    DisplayTextAction display_text = 19;
   }
 }
 
