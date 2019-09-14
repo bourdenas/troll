@@ -148,6 +148,10 @@ void OnCollisionExecutor::Execute(const Action& action) const {
   core_->collision_checker()->RegisterCollision(action.on_collision());
 }
 
+void OnOverlapExecutor::Execute(const Action& action) const {
+  core_->collision_checker()->RegisterOverlap(action.on_overlap());
+}
+
 void OnDetachingExecutor::Execute(const Action& action) const {
   core_->collision_checker()->RegisterDetachment(action.on_detaching());
 }

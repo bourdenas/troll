@@ -24,6 +24,8 @@ ActionManager::ActionManager(Core* core) {
 
   executors_.emplace(Action::kOnCollision,
                      std::make_unique<OnCollisionExecutor>(core));
+  executors_.emplace(Action::kOnOverlap,
+                     std::make_unique<OnOverlapExecutor>(core));
   executors_.emplace(Action::kOnDetaching,
                      std::make_unique<OnDetachingExecutor>(core));
 

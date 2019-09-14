@@ -105,6 +105,16 @@ class OnCollisionExecutor : public Executor {
   Core* core_;
 };
 
+class OnOverlapExecutor : public Executor {
+ public:
+  OnOverlapExecutor(Core* core) : core_(core) {}
+
+  void Execute(const Action& action) const override;
+
+ private:
+  Core* core_;
+};
+
 class OnDetachingExecutor : public Executor {
  public:
   OnDetachingExecutor(Core* core) : core_(core) {}
