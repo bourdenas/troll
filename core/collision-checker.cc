@@ -1,5 +1,7 @@
 #include "core/collision-checker.h"
 
+#include <unordered_set>
+
 #include <range/v3/algorithm/any_of.hpp>
 
 #include "action/action-manager.h"
@@ -10,6 +12,10 @@ namespace troll {
 
 void CollisionChecker::RegisterCollision(const CollisionAction& collision) {
   collision_directory_.push_back(collision);
+}
+
+void CollisionChecker::RegisterOverlap(const CollisionAction& overlap) {
+  overlap_directory_.push_back(overlap);
 }
 
 void CollisionChecker::RegisterDetachment(const CollisionAction& detaching) {
@@ -28,8 +34,8 @@ void CollisionChecker::CheckCollisions() {
     const auto& lhs = *dirty_nodes_[i];
 
     // Skip if scene node already checked for collisions during this frame.
-    const auto result = checked_nodes.insert(&lhs);
-    if (!result.second) continue;
+    const auto [it, added] = checked_nodes.insert(&lhs);
+    if (!added) continue;
 
     const auto& lhs_aabb = scene_manager_->GetSceneNodeBoundingBox(lhs);
     for (const auto& rhs : scene_nodes) {
@@ -51,13 +57,16 @@ void CollisionChecker::CheckCollisions() {
       }
 
       if (NodesInCollisionCache(lhs, rhs)) {
-        if (!collision) {
+        if (collision) {
+          TriggerCollisionAction(lhs, rhs, overlap_directory_);
+        } else {
           RemoveFromCollisionCache(lhs, rhs);
           TriggerCollisionAction(lhs, rhs, detachment_directory_);
         }
       } else if (collision) {
         AddInCollisionCache(lhs, rhs);
         TriggerCollisionAction(lhs, rhs, collision_directory_);
+        TriggerCollisionAction(lhs, rhs, overlap_directory_);
       }
     }
   }

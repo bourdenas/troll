@@ -111,6 +111,14 @@ SCENARIO_METHOD(CollisionCheckerFixture, "Nodes colliding", "[collisions]") {
             action {
               create_scene_node { scene_node { sprite_id: 'sprite_c' } }
             })"));
+    collision_checker_.RegisterOverlap(ParseProto<CollisionAction>(R"(
+            scene_node_id: [ 'node_a', 'node_b' ]
+            action {
+              move_scene_node { 
+                scene_node_id: 'node_id#0'
+                vec { x: 1 }
+              }
+            })"));
 
     CreateNode("node_a", "sprite_a", {0, 0});
     CreateNode("node_b", "sprite_b", {20, 20});
@@ -130,12 +138,26 @@ SCENARIO_METHOD(CollisionCheckerFixture, "Nodes colliding", "[collisions]") {
       THEN("the collision action is triggered") {
         REQUIRE(CountNodesBySprite("sprite_c") == 1);
 
+        auto* node = scene_manager_.GetSceneNodeById("node_id#0");
+        REQUIRE(node != nullptr);
+        // TODO(bourdenas): Position should be x:1. Overlap action is triggered
+        // twice, once per each scene node. Need to fix that.
+        REQUIRE_THAT(*node, EqualsProto(ParseProto<SceneNode>(R"(
+            id: 'node_id#0' sprite_id: 'sprite_c'
+            position { x: 2 y: 0 z: 0 })")));
+
         AND_WHEN("nodes move again but remain colliding ") {
           MoveNode("node_a", {12, 12});
           collision_checker_.CheckCollisions();
 
           THEN("the collision action is not triggered again") {
             REQUIRE(CountNodesBySprite("sprite_c") == 1);
+
+            auto* node = scene_manager_.GetSceneNodeById("node_id#0");
+            REQUIRE(node != nullptr);
+            REQUIRE_THAT(*node, EqualsProto(ParseProto<SceneNode>(R"(
+                id: 'node_id#0' sprite_id: 'sprite_c'
+                position { x: 3 y: 0 z: 0 })")));
 
             AND_WHEN("nodes detach and collide again") {
               MoveNode("node_a", {8, 8});

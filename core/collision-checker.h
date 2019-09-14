@@ -23,6 +23,7 @@ class CollisionChecker {
   ~CollisionChecker() = default;
 
   void RegisterCollision(const CollisionAction& collision);
+  void RegisterOverlap(const CollisionAction& overlap);
   void RegisterDetachment(const CollisionAction& detaching);
 
   // Add this node in the checking for collisions during this frame.
@@ -75,6 +76,9 @@ class CollisionChecker {
 
   // Directory of registered collisions.
   std::vector<CollisionAction> collision_directory_;
+
+  // Directory of registered overlaps.
+  std::vector<CollisionAction> overlap_directory_;
 
   // Directory of registered detachments.
   std::vector<CollisionAction> detachment_directory_;
