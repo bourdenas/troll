@@ -23,7 +23,7 @@ class Level1Scene extends Scene {
       _PlatformSpec(13, [80, 275, -3]),
       _PlatformSpec(13, [112, 335, -3]),
       _PlatformSpec(13, [80, 395, -3]),
-      _PlatformSpec(14, [80, 455, -3]),
+      _PlatformSpec(14, [70, 455, -3]),
     ];
 
     final platforms = platformSpecs
@@ -70,40 +70,25 @@ class Level1Scene extends Scene {
       Ladder(pos);
     }
 
-    Princess([270, 50, -1], frameIndex: 1);
     Barrel([80, 88], frameIndex: 5);
     Barrel([100, 428], frameIndex: 6);
 
-    DonkeyKong([126, 90])
-      ..playAnimationScriptById('dk_barrel_throw', onPartDone: {
-        'place_barrel': (Event) {
-          Barrel([215, 134], frameIndex: 1)
-            ..Roll()
-            ..gravity = [0, 1];
-        },
-      });
-
-    mario = Mario([140, 428], frameIndex: 15);
+    Princess([270, 50, -1], frameIndex: 1);
+    DonkeyKong([126, 90]).throwBarrels();
+    final mario = Mario([140, 428], frameIndex: 15);
 
     playMusic('main_loop', repeat: 0);
 
     registerKey('LEFT',
-        onPressed: () => mario.playAnimationScriptById('mario_move_left'),
-        onReleased: () => mario.stopAnimationScript('mario_move_left'));
+        onPressed: () => mario.walkLeft(), onReleased: () => mario.halt());
     registerKey('RIGHT',
-        onPressed: () => mario.playAnimationScriptById('mario_move_right'),
-        onReleased: () => mario.stopAnimationScript('mario_move_right'));
+        onPressed: () => mario.walkRight(), onReleased: () => mario.halt());
     registerKey('UP',
-        onPressed: () => mario.playAnimationScriptById('mario_climb_up'),
-        onReleased: () => mario.stopAnimationScript('mario_climb_up'));
+        onPressed: () => mario.climbUp(), onReleased: () => mario.halt());
     registerKey('DOWN',
-        onPressed: () => mario.playAnimationScriptById('mario_climb_down'),
-        onReleased: () => mario.stopAnimationScript('mario_climb_down'));
-    registerKey('SPACE',
-        onPressed: () => mario.playAnimationScriptById('mario_jump'));
+        onPressed: () => mario.climbDown(), onReleased: () => mario.halt());
+    registerKey('SPACE', onPressed: () => mario.jump());
   }
-
-  Mario mario;
 }
 
 class _PlatformSpec {
