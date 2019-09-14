@@ -26,51 +26,75 @@ void CollisionChecker::Dirty(const SceneNode& node) {
   dirty_nodes_.push_back(&node);
 }
 
+namespace {
+std::pair<const SceneNode*, const SceneNode*> MakeOrderedPair(
+    const SceneNode* left, const SceneNode* right) {
+  return (left < right) ? std::make_pair(left, right)
+                        : std::make_pair(right, left);
+}
+}  // namespace
+
 void CollisionChecker::CheckCollisions() {
   const auto& scene_nodes = scene_manager_->GetSceneNodes();
+  std::set<std::pair<const SceneNode*, const SceneNode*>> collision_pairs;
+  std::set<std::pair<const SceneNode*, const SceneNode*>> detach_pairs;
 
   std::unordered_set<const SceneNode*> checked_nodes;
-  for (int i = 0; i < dirty_nodes_.size(); ++i) {
-    const auto& lhs = *dirty_nodes_[i];
+  for (const auto* lhs_ptr : dirty_nodes_) {
+    const auto& lhs = *lhs_ptr;
 
     // Skip if scene node already checked for collisions during this frame.
     const auto [it, added] = checked_nodes.insert(&lhs);
     if (!added) continue;
 
-    const auto& lhs_aabb = scene_manager_->GetSceneNodeBoundingBox(lhs);
+    const auto lhs_aabb = scene_manager_->GetSceneNodeBoundingBox(lhs);
     for (const auto& rhs : scene_nodes) {
       // Skip if collision checking with self.
       if (&lhs == &rhs) continue;
 
-      const auto& rhs_aabb = scene_manager_->GetSceneNodeBoundingBox(rhs);
-      bool collision = false;
-      if (geo::Collide(lhs_aabb, rhs_aabb)) {
-        const auto& lhs_mask =
-            core_->resource_manager()->GetSpriteCollisionMask(
-                lhs.sprite_id(), lhs.frame_index());
-        const auto& rhs_mask =
-            core_->resource_manager()->GetSpriteCollisionMask(
-                rhs.sprite_id(), rhs.frame_index());
+      const auto rhs_aabb = scene_manager_->GetSceneNodeBoundingBox(rhs);
 
-        collision = internal::SceneNodePixelsCollide(lhs_aabb, rhs_aabb,
-                                                     lhs_mask, rhs_mask);
+      if (!geo::Collide(lhs_aabb, rhs_aabb)) {
+        const auto pair = MakeOrderedPair(&lhs, &rhs);
+        if (collision_cache_.find(pair) != collision_cache_.end()) {
+          detach_pairs.insert(pair);
+        }
+        continue;
       }
 
-      if (NodesInCollisionCache(lhs, rhs)) {
-        if (collision) {
-          TriggerCollisionAction(lhs, rhs, overlap_directory_);
-        } else {
-          RemoveFromCollisionCache(lhs, rhs);
-          TriggerCollisionAction(lhs, rhs, detachment_directory_);
+      const auto& lhs_mask = core_->resource_manager()->GetSpriteCollisionMask(
+          lhs.sprite_id(), lhs.frame_index());
+      const auto& rhs_mask = core_->resource_manager()->GetSpriteCollisionMask(
+          rhs.sprite_id(), rhs.frame_index());
+      bool collision = internal::SceneNodePixelsCollide(lhs_aabb, rhs_aabb,
+                                                        lhs_mask, rhs_mask);
+
+      if (collision) {
+        collision_pairs.insert(MakeOrderedPair(&lhs, &rhs));
+      } else {
+        const auto pair = MakeOrderedPair(&lhs, &rhs);
+        if (collision_cache_.find(pair) != collision_cache_.end()) {
+          detach_pairs.insert(pair);
         }
-      } else if (collision) {
-        AddInCollisionCache(lhs, rhs);
-        TriggerCollisionAction(lhs, rhs, collision_directory_);
-        TriggerCollisionAction(lhs, rhs, overlap_directory_);
       }
     }
   }
   dirty_nodes_.clear();
+
+  for (const auto [lhs, rhs] : detach_pairs) {
+    collision_cache_.erase(MakeOrderedPair(lhs, rhs));
+    TriggerCollisionAction(*lhs, *rhs, detachment_directory_);
+  }
+
+  for (const auto [lhs, rhs] : collision_pairs) {
+    const auto pair = MakeOrderedPair(lhs, rhs);
+    if (collision_cache_.find(pair) == collision_cache_.end()) {
+      collision_cache_.insert(pair);
+      TriggerCollisionAction(*lhs, *rhs, collision_directory_);
+    }
+
+    TriggerCollisionAction(*lhs, *rhs, overlap_directory_);
+  }
 }
 
 std::vector<std::string> CollisionChecker::collision_context() const {
@@ -100,32 +124,6 @@ bool CollisionChecker::NodeInCollision(const SceneNode& node,
          ranges::any_of(collision.sprite_id(), [&node](const auto& sprite_id) {
            return node.sprite_id() == sprite_id;
          });
-}
-
-void CollisionChecker::AddInCollisionCache(const SceneNode& left,
-                                           const SceneNode& right) {
-  if (&left < &right) {
-    collision_cache_.emplace(&left, &right);
-  } else {
-    collision_cache_.emplace(&right, &left);
-  }
-}
-
-void CollisionChecker::RemoveFromCollisionCache(const SceneNode& left,
-                                                const SceneNode& right) {
-  const auto pair = &left < &right ? std::make_pair(&left, &right)
-                                   : std::make_pair(&right, &left);
-  const auto it = collision_cache_.find(pair);
-  if (it != collision_cache_.end()) {
-    collision_cache_.erase(it);
-  }
-}
-
-bool CollisionChecker::NodesInCollisionCache(const SceneNode& left,
-                                             const SceneNode& right) const {
-  const auto pair = &left < &right ? std::make_pair(&left, &right)
-                                   : std::make_pair(&right, &left);
-  return collision_cache_.find(pair) != collision_cache_.end();
 }
 
 namespace internal {

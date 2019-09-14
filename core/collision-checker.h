@@ -50,12 +50,6 @@ class CollisionChecker {
   bool NodeInCollision(const SceneNode& node,
                        const CollisionAction& collision) const;
 
-  // Collision cache interface.
-  void AddInCollisionCache(const SceneNode& left, const SceneNode& right);
-  void RemoveFromCollisionCache(const SceneNode& left, const SceneNode& right);
-  bool NodesInCollisionCache(const SceneNode& left,
-                             const SceneNode& right) const;
-
   const SceneManager* scene_manager_;
   const ActionManager* action_manager_;
   Core* core_;
