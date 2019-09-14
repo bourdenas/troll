@@ -1,5 +1,6 @@
 import 'package:dart_dk/height.dart';
-import 'package:dart_dk/sprites.dart';
+import 'package:dart_dk/src/sprites/donkey_kong.dart';
+import 'package:dart_dk/src/sprites/environment.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
