@@ -2,7 +2,10 @@
 
 #include <unordered_set>
 
+#include <range/v3/action/sort.hpp>
 #include <range/v3/algorithm/any_of.hpp>
+#include <range/v3/view/indirect.hpp>
+#include <range/v3/view/unique.hpp>
 
 #include "action/action-manager.h"
 #include "core/geometry.h"
@@ -39,15 +42,11 @@ void CollisionChecker::CheckCollisions() {
   std::set<std::pair<const SceneNode*, const SceneNode*>> collision_pairs;
   std::set<std::pair<const SceneNode*, const SceneNode*>> detach_pairs;
 
-  std::unordered_set<const SceneNode*> checked_nodes;
-  for (const auto* lhs_ptr : dirty_nodes_) {
-    const auto& lhs = *lhs_ptr;
-
-    // Skip if scene node already checked for collisions during this frame.
-    const auto [it, added] = checked_nodes.insert(&lhs);
-    if (!added) continue;
-
+  dirty_nodes_ |= ranges::action::sort;
+  for (const auto& lhs :
+       dirty_nodes_ | ranges::view::unique | ranges::view::indirect) {
     const auto lhs_aabb = scene_manager_->GetSceneNodeBoundingBox(lhs);
+
     for (const auto& rhs : scene_nodes) {
       // Skip if collision checking with self.
       if (&lhs == &rhs) continue;
@@ -69,14 +68,15 @@ void CollisionChecker::CheckCollisions() {
       bool collision = internal::SceneNodePixelsCollide(lhs_aabb, rhs_aabb,
                                                         lhs_mask, rhs_mask);
 
-      if (collision) {
-        collision_pairs.insert(MakeOrderedPair(&lhs, &rhs));
-      } else {
+      if (!collision) {
         const auto pair = MakeOrderedPair(&lhs, &rhs);
         if (collision_cache_.find(pair) != collision_cache_.end()) {
           detach_pairs.insert(pair);
         }
+        continue;
       }
+
+      collision_pairs.insert(MakeOrderedPair(&lhs, &rhs));
     }
   }
   dirty_nodes_.clear();
