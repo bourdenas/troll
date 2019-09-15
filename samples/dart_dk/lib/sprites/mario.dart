@@ -1,4 +1,4 @@
-import 'package:dart_dk/src/sprites/gravity_sprite.dart';
+import 'package:dart_dk/src/gravity_sprite.dart';
 
 enum _MarioState {
   none,

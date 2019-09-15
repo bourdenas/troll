@@ -1,5 +1,5 @@
-import 'package:dart_dk/src/sprites/environment.dart';
-import 'package:dart_dk/src/sprites/princess.dart';
+import 'package:dart_dk/sprites/environment.dart';
+import 'package:dart_dk/sprites/princess.dart';
 import 'package:dart_troll/src/core/sprite.dart';
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';

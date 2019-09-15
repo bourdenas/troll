@@ -1,7 +1,7 @@
-import 'package:dart_dk/src/sprites/donkey_kong.dart';
-import 'package:dart_dk/src/sprites/environment.dart';
-import 'package:dart_dk/src/sprites/mario.dart';
-import 'package:dart_dk/src/sprites/princess.dart';
+import 'package:dart_dk/sprites/donkey_kong.dart';
+import 'package:dart_dk/sprites/environment.dart';
+import 'package:dart_dk/sprites/mario.dart';
+import 'package:dart_dk/sprites/princess.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
