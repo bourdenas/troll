@@ -1,4 +1,4 @@
-import 'package:dart_dk/height.dart';
+import 'package:dart_dk/scenes/height.dart';
 import 'package:dart_dk/src/sprites/donkey_kong.dart';
 import 'package:dart_dk/src/sprites/environment.dart';
 import 'package:dart_troll/src/core/audio.dart';

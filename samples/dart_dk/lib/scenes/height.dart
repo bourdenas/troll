@@ -1,4 +1,4 @@
-import 'package:dart_dk/level1.dart';
+import 'package:dart_dk/scenes/level1.dart';
 import 'package:dart_dk/src/sprites/donkey_kong.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
