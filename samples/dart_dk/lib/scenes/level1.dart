@@ -1,11 +1,12 @@
-import 'package:dart_dk/sprites/donkey_kong.dart';
-import 'package:dart_dk/sprites/environment.dart';
-import 'package:dart_dk/sprites/mario.dart';
-import 'package:dart_dk/sprites/princess.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
+
+import 'package:dart_dk/sprites/donkey_kong.dart';
+import 'package:dart_dk/sprites/environment.dart';
+import 'package:dart_dk/sprites/mario.dart';
+import 'package:dart_dk/sprites/princess.dart';
 
 class Level1Scene extends Scene {
   @override
@@ -24,17 +25,7 @@ class Level1Scene extends Scene {
 
     Princess([270, 50, -1], frameIndex: 1);
     DonkeyKong([126, 90]).throwBarrels();
-
-    final mario = Mario([140, 428], frameIndex: 15);
-    registerKey('LEFT',
-        onPressed: () => mario.walkLeft(), onReleased: () => mario.halt());
-    registerKey('RIGHT',
-        onPressed: () => mario.walkRight(), onReleased: () => mario.halt());
-    registerKey('UP',
-        onPressed: () => mario.climbUp(), onReleased: () => mario.halt());
-    registerKey('DOWN',
-        onPressed: () => mario.climbDown(), onReleased: () => mario.halt());
-    registerKey('SPACE', onPressed: () => mario.jump());
+    Mario([140, 428], frameIndex: 15, inputHandler: inputHandler);
 
     playMusic('main_loop', repeat: 0);
   }

@@ -1,10 +1,11 @@
-import 'package:dart_dk/scenes/level1.dart';
-import 'package:dart_dk/sprites/donkey_kong.dart';
 import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/scene.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_troll/src/proto/primitives.pb.dart';
 import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
+
+import 'package:dart_dk/scenes/level1.dart';
+import 'package:dart_dk/sprites/donkey_kong.dart';
 
 class HeightScene extends Scene {
   @override
