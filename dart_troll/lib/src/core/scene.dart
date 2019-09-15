@@ -9,6 +9,9 @@ import 'package:dart_troll/src/proto/scene.pb.dart' as proto;
 /// Abstract class for all game scenes that handles basic setup and transition
 /// of scenes.
 abstract class Scene {
+  final inputHandler = InputHandler();
+  int _input_handler_id;
+
   /// Called before scene initialisation. Override this function to create
   /// Scene definition.
   proto.Scene sceneDefinition();
@@ -23,7 +26,7 @@ abstract class Scene {
 
   /// Registers key handling functions for the scene.
   void registerKey(String key, {Function onPressed, Function onReleased}) {
-    handler.registerKey(key, onPressed: onPressed, onReleased: onReleased);
+    inputHandler.registerKey(key, onPressed: onPressed, onReleased: onReleased);
   }
 
   /// Transition to a new scene from this one.
@@ -40,14 +43,10 @@ abstract class Scene {
       ..changeScene = (ChangeSceneAction()..scene = sceneDefinition());
     troll.execute(action.writeToBuffer());
 
-    handler = InputHandler();
     _input_handler_id = troll.registerInputHandler(
-        (Uint8List inputEventBuffer) => handler
+        (Uint8List inputEventBuffer) => inputHandler
             .handleInput(InputEvent()..mergeFromBuffer(inputEventBuffer)));
 
     setup();
   }
-
-  int _input_handler_id;
-  InputHandler handler;
 }
