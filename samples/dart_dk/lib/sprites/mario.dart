@@ -27,10 +27,10 @@ class Mario extends GavitySprite {
   void _setupControls(InputHandler inputHandler) {
     inputHandler.registerKey('LEFT',
         onPressed: () => _walkLeft(),
-        onReleased: () => _halt(_MarioAnimation.moveLeft));
+        onReleased: () => _halt(_MarioAnimation.moveLeft, haltFrameIndex: 0));
     inputHandler.registerKey('RIGHT',
         onPressed: () => _walkRight(),
-        onReleased: () => _halt(_MarioAnimation.moveRight));
+        onReleased: () => _halt(_MarioAnimation.moveRight, haltFrameIndex: 15));
     inputHandler.registerKey('UP',
         onPressed: () => _climbUp(),
         onReleased: () => _halt(_MarioAnimation.climbUp));
@@ -64,10 +64,12 @@ class Mario extends GavitySprite {
     playAnimation(scriptId: _state);
   }
 
-  void _halt(String animation) {
+  void _halt(String animation, {int haltFrameIndex}) {
     if (_state != animation) return;
 
     stopAnimation(scriptId: animation);
+    if (haltFrameIndex != null) frameIndex = haltFrameIndex;
+
     _state = _MarioAnimation.none;
   }
 
@@ -76,6 +78,7 @@ class Mario extends GavitySprite {
       stopAnimation(scriptId: _state);
     }
 
+    final direction = frameIndex < 3 ? -1 : 1;
     _state = _MarioAnimation.jump;
     playAnimation(
         script: AnimationScript()
@@ -83,12 +86,12 @@ class Mario extends GavitySprite {
           ..animation.addAll([
             Animation()
               ..translation = (VectorAnimation()
-                ..vec = makeVector([1, -1])
+                ..vec = makeVector([direction, -1])
                 ..delay = 10
                 ..repeat = 25),
             Animation()
               ..translation = (VectorAnimation()
-                ..vec = makeVector([1, 1])
+                ..vec = makeVector([direction, 1])
                 ..delay = 10
                 ..repeat = 25),
           ]),

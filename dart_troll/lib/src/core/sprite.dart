@@ -67,6 +67,30 @@ class Sprite {
     ];
   }
 
+  void set frameIndex(int index) {
+    final action = Action()
+      ..playAnimationScript = (AnimationScriptAction()
+        ..sceneNodeId = id
+        ..script = (AnimationScript()
+          ..id = 'set_frame_{$id}_{$index}'
+          ..animation.addAll([
+            Animation()
+              ..frameList = (FrameListAnimation()
+                ..frame.add(index)
+                ..repeat = 1),
+          ])));
+    troll.execute(action.writeToBuffer());
+  }
+
+  int get frameIndex {
+    final query = Query()
+      ..sceneNode = (SceneNodeQuery()..pattern = (SceneNode()..id = id));
+    final responseBuffer = troll.eval(query.writeToBuffer());
+    final response = Response()..mergeFromBuffer(responseBuffer);
+    final node = response.sceneNodes.sceneNode[0];
+    return node.frameIndex;
+  }
+
   /// Move the sprite to direction specified by [vec].
   void move(List<int> vec) {
     final action = Action()
