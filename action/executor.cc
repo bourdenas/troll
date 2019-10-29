@@ -229,6 +229,36 @@ void PauseAnimationScriptExecutor::Execute(const Action& action) const {
   }
 }
 
+Action PauseAnimationScriptExecutor::Reverse(const Action& action) const {
+  Action reverse;
+  *reverse.mutable_resume_animation_script() = action.pause_animation_script();
+  return reverse;
+}
+
+void ResumeAnimationScriptExecutor::Execute(const Action& action) const {
+  auto&& node_ids = ResolveSceneNodes(
+      action.resume_animation_script().scene_node_id(), core_);
+
+  for (const auto& id : node_ids) {
+    if (core_->scene_manager()->GetSceneNodeById(id) == nullptr) {
+      LOG(WARNING)
+          << "ResumeAnimationScriptExecutor: Cannot resume animation script '"
+          << action.resume_animation_script().script_id()
+          << "' on SceneNode with id='" << id << "' that does not exist.";
+      return;
+    }
+
+    core_->animator_manager()->Resume(
+        action.resume_animation_script().script_id(), id);
+  }
+}
+
+Action ResumeAnimationScriptExecutor::Reverse(const Action& action) const {
+  Action reverse;
+  *reverse.mutable_pause_animation_script() = action.resume_animation_script();
+  return reverse;
+}
+
 void PlayAudioExecutor::Execute(const Action& action) const {
   const auto& audio = action.play_audio();
   if (audio.has_track_id()) {

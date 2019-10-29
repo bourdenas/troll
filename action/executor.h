@@ -152,6 +152,18 @@ class PauseAnimationScriptExecutor : public Executor {
   PauseAnimationScriptExecutor(Core* core) : core_(core) {}
 
   void Execute(const Action& action) const override;
+  Action Reverse(const Action& action) const override;
+
+ private:
+  Core* core_;
+};
+
+class ResumeAnimationScriptExecutor : public Executor {
+ public:
+  ResumeAnimationScriptExecutor(Core* core) : core_(core) {}
+
+  void Execute(const Action& action) const override;
+  Action Reverse(const Action& action) const override;
 
  private:
   Core* core_;

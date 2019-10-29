@@ -35,6 +35,8 @@ ActionManager::ActionManager(Core* core) {
                      std::make_unique<StopAnimationScriptExecutor>(core));
   executors_.emplace(Action::kPauseAnimationScript,
                      std::make_unique<PauseAnimationScriptExecutor>(core));
+  executors_.emplace(Action::kResumeAnimationScript,
+                     std::make_unique<ResumeAnimationScriptExecutor>(core));
 
   executors_.emplace(Action::kPlayAudio,
                      std::make_unique<PlayAudioExecutor>(core));

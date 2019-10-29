@@ -29,13 +29,14 @@ message Action {
     AnimationScriptAction play_animation_script = 12;
     AnimationScriptAction stop_animation_script = 13;
     AnimationScriptAction pause_animation_script = 14;
+    AnimationScriptAction resume_animation_script = 15;
 
-    SfxAction play_audio = 15;
-    SfxAction stop_audio = 16;
-    SfxAction pause_audio = 17;
-    SfxAction resume_audio = 18;
+    SfxAction play_audio = 16;
+    SfxAction stop_audio = 17;
+    SfxAction pause_audio = 18;
+    SfxAction resume_audio = 19;
 
-    DisplayTextAction display_text = 19;
+    DisplayTextAction display_text = 20;
   }
 }
 
