@@ -137,6 +137,14 @@ void RunScriptPerformer::Stop(const SceneNode& scene_node) {
   core_->animator_manager()->Stop(animation_.script_id(), scene_node.id());
 }
 
+void RunScriptPerformer::Pause(const SceneNode& scene_node) {
+  core_->animator_manager()->Pause(animation_.script_id(), scene_node.id());
+}
+
+void RunScriptPerformer::Resume(const SceneNode& scene_node) {
+  core_->animator_manager()->Resume(animation_.script_id(), scene_node.id());
+}
+
 bool RunScriptPerformer::Execute(SceneNode* scene_node) { return finished_; }
 
 void SfxPerformer::Start(SceneNode* scene_node) {

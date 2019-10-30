@@ -22,6 +22,12 @@ class Performer {
   // Override if performer needs to clean-up.
   virtual void Stop(const SceneNode& scene_node) {}
 
+  // Override if performer needs to custom logic for pause.
+  virtual void Pause(const SceneNode& scene_node) {}
+
+  // Override if performer needs to custom logic for resume.
+  virtual void Resume(const SceneNode& scene_node) {}
+
   // Returns true if the Animation was executed to end.
   virtual bool Progress(int time_since_last_frame, SceneNode* scene_node) = 0;
 
@@ -217,6 +223,8 @@ class RunScriptPerformer : public InstantPerformerBase<RunScriptAnimation> {
 
   void Start(SceneNode* scene_node) override;
   void Stop(const SceneNode& scene_node) override;
+  void Pause(const SceneNode& scene_node) override;
+  void Resume(const SceneNode& scene_node) override;
 
  protected:
   bool Execute(SceneNode* scene_node) override;

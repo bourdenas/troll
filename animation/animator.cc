@@ -58,6 +58,18 @@ void Animator::Stop(const SceneNode& scene_node) {
   }
 }
 
+void Animator::Pause(const SceneNode& scene_node) {
+  for (auto& performer : performers_) {
+    performer->Pause(scene_node);
+  }
+}
+
+void Animator::Resume(const SceneNode& scene_node) {
+  for (auto& performer : performers_) {
+    performer->Resume(scene_node);
+  }
+}
+
 bool Animator::Progress(int time_since_last_frame, SceneNode* scene_node) {
   const bool finished = wait_for_all_
                             ? ProgressAll(time_since_last_frame, scene_node)

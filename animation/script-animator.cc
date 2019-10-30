@@ -31,9 +31,31 @@ void ScriptAnimator::Stop() {
   state_ = State::FINISHED;
 }
 
-void ScriptAnimator::Pause() { state_ = State::PAUSED; }
+void ScriptAnimator::Pause() {
+  const auto* scene_node =
+      core_->scene_manager()->GetSceneNodeById(scene_node_id_);
+  if (scene_node == nullptr) {
+    state_ = State::FINISHED;
+    return;
+  }
 
-void ScriptAnimator::Resume() { state_ = State::RUNNING; }
+  current_animator_->Pause(*scene_node);
+  core_->scene_manager()->Dirty(*scene_node);
+  state_ = State::PAUSED;
+}
+
+void ScriptAnimator::Resume() {
+  const auto* scene_node =
+      core_->scene_manager()->GetSceneNodeById(scene_node_id_);
+  if (scene_node == nullptr) {
+    state_ = State::FINISHED;
+    return;
+  }
+
+  current_animator_->Resume(*scene_node);
+  core_->scene_manager()->Dirty(*scene_node);
+  state_ = State::RUNNING;
+}
 
 void ScriptAnimator::Progress(int time_since_last_frame) {
   if (!is_running()) return;
