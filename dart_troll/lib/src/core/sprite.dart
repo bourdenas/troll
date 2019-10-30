@@ -171,7 +171,7 @@ class Sprite {
     return response.overlap;
   }
 
-  /// Play an animation on the sprite. The animation can be the provided
+  /// Plays an animation on the sprite. The animation can be the provided
   /// [script] or an animation from resources based on [scriptId].
   ///
   /// If [onDone] is provided it will be invoked when the script finishes
@@ -207,7 +207,7 @@ class Sprite {
     }
   }
 
-  /// Stop an active animation script on the sprite.
+  /// Stops an active animation script on the sprite.
   ///
   /// If [onDone] was provided during [playAnimationSript], it will be invoked.
   void stopAnimation({String scriptId}) {
@@ -218,14 +218,21 @@ class Sprite {
     troll.execute(action.writeToBuffer());
   }
 
-  /// Puase an active animation script on the sprite.
-  ///
-  /// TODO(bourdenas): Allow resume with [playAnimationScriptById].
+  /// Pauses an active animation script on the sprite.
   void pauseAnimation({String scriptId}) {
     final animationScript = AnimationScriptAction()..sceneNodeId = id;
     if (scriptId != null) animationScript..scriptId = scriptId;
 
     final action = Action()..pauseAnimationScript = animationScript;
+    troll.execute(action.writeToBuffer());
+  }
+
+  /// Resumes an animation script on the sprite that was paused before.
+  void resumeAnimation({String scriptId}) {
+    final animationScript = AnimationScriptAction()..sceneNodeId = id;
+    if (scriptId != null) animationScript..scriptId = scriptId;
+
+    final action = Action()..playAnimationScript = animationScript;
     troll.execute(action.writeToBuffer());
   }
 
