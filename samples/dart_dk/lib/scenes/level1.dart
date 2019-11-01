@@ -20,9 +20,7 @@ class Level1Scene extends Scene {
 
   @override
   void setup() {
-    final scaffold = Scaffold();
-    scaffold.buildStage();
-
+    Scaffold()..buildStage();
     Princess([270, 50, -1], frameIndex: 1);
     DonkeyKong([126, 90]).throwBarrels();
     Mario([140, 428], frameIndex: 15, inputHandler: inputHandler);

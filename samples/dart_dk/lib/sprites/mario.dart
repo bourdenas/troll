@@ -1,3 +1,4 @@
+import 'package:dart_troll/src/core/audio.dart';
 import 'package:dart_troll/src/core/input_handler.dart';
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
@@ -5,7 +6,7 @@ import 'package:dart_troll/src/proto/animation.pb.dart';
 import 'package:dart_dk/src/gravity_sprite.dart';
 
 class Mario extends GavitySprite {
-  var _state = _MarioAnimation.none;
+  var _runningAnimations = <String>{};
 
   Mario(List<int> position, {int frameIndex = 0, InputHandler inputHandler})
       : super('mario') {
@@ -41,45 +42,56 @@ class Mario extends GavitySprite {
   }
 
   void _walkLeft() {
-    if (_state != _MarioAnimation.none) return;
-    _state = _MarioAnimation.moveLeft;
-    playAnimation(scriptId: _state);
+    if (_runningAnimations.isNotEmpty) return;
+    _runningAnimations.add(_MarioAnimation.moveLeft);
+    playAnimation(scriptId: _MarioAnimation.moveLeft);
   }
 
   void _walkRight() {
-    if (_state != _MarioAnimation.none) return;
-    _state = _MarioAnimation.moveRight;
-    playAnimation(scriptId: _state);
+    if (_runningAnimations.isNotEmpty) return;
+    _runningAnimations.add(_MarioAnimation.moveRight);
+    playAnimation(scriptId: _MarioAnimation.moveRight);
   }
 
   void _climbUp() {
-    if (_state != _MarioAnimation.none) return;
-    _state = _MarioAnimation.climbUp;
-    playAnimation(scriptId: _state);
+    if (_runningAnimations.isNotEmpty) return;
+    _runningAnimations.add(_MarioAnimation.climbUp);
+    playAnimation(scriptId: _MarioAnimation.climbUp);
   }
 
   void _climbDown() {
-    if (_state != _MarioAnimation.none) return;
-    _state = _MarioAnimation.climbDown;
-    playAnimation(scriptId: _state);
+    if (_runningAnimations.isNotEmpty) return;
+    _runningAnimations.add(_MarioAnimation.climbDown);
+    playAnimation(scriptId: _MarioAnimation.climbDown);
   }
 
   void _halt(String animation, {int haltFrameIndex}) {
-    if (_state != animation) return;
-
+    _runningAnimations.remove(animation);
     stopAnimation(scriptId: animation);
-    if (haltFrameIndex != null) frameIndex = haltFrameIndex;
 
-    _state = _MarioAnimation.none;
+    if (_runningAnimations.isEmpty && haltFrameIndex != null) {
+      frameIndex = haltFrameIndex;
+    }
   }
 
   void _jump() {
-    if (_state != _MarioAnimation.none) {
-      stopAnimation(scriptId: _state);
+    if (_runningAnimations.intersection({
+      _MarioAnimation.climbUp,
+      _MarioAnimation.climbDown,
+      _MarioAnimation.jump,
+    }).isNotEmpty) {
+      return;
+    }
+
+    for (final animation in _runningAnimations) {
+      pauseAnimation(scriptId: animation);
     }
 
     final direction = frameIndex < 3 ? -1 : 1;
-    _state = _MarioAnimation.jump;
+    frameIndex = direction == 1 ? 16 : 1;
+    gravity = 0;
+
+    _runningAnimations.add(_MarioAnimation.jump);
     playAnimation(
         script: AnimationScript()
           ..id = 'mario_jump'
@@ -95,15 +107,21 @@ class Mario extends GavitySprite {
                 ..delay = 10
                 ..repeat = 25),
           ]),
-        onDone: (e) => this
-          ..gravity = 8
-          .._state = _MarioAnimation.none);
-    gravity = 0;
+        onDone: (e) {
+          this
+            ..gravity = 8
+            ..frameIndex = frameIndex - 1
+            .._runningAnimations.remove(_MarioAnimation.jump);
+
+          for (final animation in _runningAnimations) {
+            resumeAnimation(scriptId: animation);
+          }
+        });
+    playSfx('jump');
   }
 }
 
 class _MarioAnimation {
-  static const none = '';
   static const moveLeft = 'mario_move_left';
   static const moveRight = 'mario_move_right';
   static const climbUp = 'mario_climb_up';
