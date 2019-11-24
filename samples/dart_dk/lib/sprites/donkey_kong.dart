@@ -6,7 +6,9 @@ import 'package:dart_dk/sprites/environment.dart';
 import 'package:dart_dk/sprites/princess.dart';
 
 class DonkeyKong extends Sprite {
-  DonkeyKong(List<int> position, {int frameIndex = 0}) : super('dk') {
+  static final id = 'dk';
+
+  DonkeyKong(List<int> position, {int frameIndex = 0}) : super(id) {
     create(position, frameIndex: frameIndex);
   }
 

@@ -3,18 +3,21 @@ import 'package:dart_troll/src/core/input_handler.dart';
 import 'package:dart_troll/src/core/util.dart';
 import 'package:dart_troll/src/proto/animation.pb.dart';
 
+import 'package:dart_dk/sprites/environment.dart';
 import 'package:dart_dk/src/gravity_sprite.dart';
 
 class Mario extends GavitySprite {
+  static final id = 'mario';
+
   var _runningAnimations = <String>{};
 
   Mario(List<int> position, {int frameIndex = 0, InputHandler inputHandler})
-      : super('mario') {
+      : super(id) {
     create(position, frameIndex: frameIndex);
     gravity = 8;
 
     onOverlap(
-        spriteId: 'ladder',
+        spriteId: Ladder.id,
         eventHandler: (event) {
           final overlap = this.getOverlap(event.sceneNodeId[0]);
           // print('overlap with ladder=${overlap.width}');

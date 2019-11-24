@@ -4,13 +4,9 @@ import 'package:dart_troll/src/proto/animation.pb.dart';
 
 import 'package:dart_dk/src/gravity_sprite.dart';
 
-class _PlatformPiece extends Sprite {
-  _PlatformPiece(List<int> position) : super('platform') {
-    create(position);
-  }
-}
-
 class Platform {
+  static final id = 'platform';
+
   int _index;
   int _size;
   List<_PlatformPiece> _pieces;
@@ -43,6 +39,12 @@ class Platform {
         piece.move([0, i]);
       });
     }
+  }
+}
+
+class _PlatformPiece extends Sprite {
+  _PlatformPiece(List<int> position) : super(Platform.id) {
+    create(position);
   }
 }
 
@@ -129,7 +131,9 @@ class Scaffold {
 }
 
 class Ladder extends Sprite {
-  Ladder(List<int> position, {int frameIndex = 0}) : super('ladder') {
+  static final id = 'ladder';
+
+  Ladder(List<int> position, {int frameIndex = 0}) : super(id) {
     create(position, frameIndex: frameIndex);
   }
 }
@@ -175,7 +179,9 @@ class RollingLadder {
 }
 
 class Barrel extends GavitySprite {
-  Barrel(List<int> position, {int frameIndex = 0}) : super('barrel') {
+  static final id = 'barrel';
+
+  Barrel(List<int> position, {int frameIndex = 0}) : super(id) {
     create(position, frameIndex: frameIndex);
   }
 
