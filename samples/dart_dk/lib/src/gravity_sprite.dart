@@ -22,12 +22,12 @@ class GavitySprite extends Sprite {
   void set gravity(int intensity) {
     _intensity = intensity;
 
-    stopAnimation(scriptId: '${id}_gravity');
+    stopAnimation(scriptId: '${nodeId}_gravity');
 
     if (_intensity != 0) {
       playAnimation(
           script: AnimationScript()
-            ..id = '${id}_gravity'
+            ..id = '${nodeId}_gravity'
             ..animation.addAll([
               Animation()
                 ..translation = (VectorAnimation()

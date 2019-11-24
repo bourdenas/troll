@@ -181,7 +181,7 @@ class Barrel extends GavitySprite {
 
   void Roll() {
     final script = AnimationScript()
-      ..id = '${id}_barrel_roll'
+      ..id = '${nodeId}_barrel_roll'
       ..animation.addAll([
         Animation()
           ..translation = (VectorAnimation()

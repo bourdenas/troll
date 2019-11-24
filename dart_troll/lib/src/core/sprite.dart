@@ -16,14 +16,14 @@ typedef EventHandler = void Function(Event);
 /// It defines convenience methods for all operations that can be done on a
 /// sprite.
 class Sprite {
-  String id;
+  String nodeId;
   String spriteId;
 
   static int _sprite_unique_id = 0;
   int _sprite_event_id = 0;
 
-  Sprite(this.spriteId, [this.id]) {
-    id ??= spriteId + '_' + (_sprite_unique_id++).toString();
+  Sprite(this.spriteId, [this.nodeId]) {
+    nodeId ??= spriteId + '_' + (_sprite_unique_id++).toString();
   }
 
   /// Create a sprite on specified [position] with given [frameIndex].
@@ -31,7 +31,7 @@ class Sprite {
     final action = Action()
       ..createSceneNode = (SceneNodeAction()
         ..sceneNode = (SceneNode()
-          ..id = id
+          ..id = nodeId
           ..spriteId = spriteId
           ..frameIndex = frameIndex
           ..position = makeVector(position)));
@@ -42,21 +42,21 @@ class Sprite {
   void destroy() {
     final action = Action()
       ..destroySceneNode =
-          (SceneNodeAction()..sceneNode = (SceneNode()..id = id));
+          (SceneNodeAction()..sceneNode = (SceneNode()..id = nodeId));
     troll.execute(action.writeToBuffer());
   }
 
   void set position(List<int> at) {
     final action = Action()
       ..positionSceneNode = (SceneNodeVectorAction()
-        ..sceneNodeId = id
+        ..sceneNodeId = nodeId
         ..vec = makeVector(at));
     troll.execute(action.writeToBuffer());
   }
 
   List<int> get position {
     final query = Query()
-      ..sceneNode = (SceneNodeQuery()..pattern = (SceneNode()..id = id));
+      ..sceneNode = (SceneNodeQuery()..pattern = (SceneNode()..id = nodeId));
     final responseBuffer = troll.eval(query.writeToBuffer());
     final response = Response()..mergeFromBuffer(responseBuffer);
     final node = response.sceneNodes.sceneNode[0];
@@ -70,9 +70,9 @@ class Sprite {
   void set frameIndex(int index) {
     final action = Action()
       ..playAnimationScript = (AnimationScriptAction()
-        ..sceneNodeId = id
+        ..sceneNodeId = nodeId
         ..script = (AnimationScript()
-          ..id = 'set_frame_{$id}_{$index}'
+          ..id = 'set_frame_{$nodeId}_{$index}'
           ..animation.addAll([
             Animation()
               ..frameList = (FrameListAnimation()
@@ -84,7 +84,7 @@ class Sprite {
 
   int get frameIndex {
     final query = Query()
-      ..sceneNode = (SceneNodeQuery()..pattern = (SceneNode()..id = id));
+      ..sceneNode = (SceneNodeQuery()..pattern = (SceneNode()..id = nodeId));
     final responseBuffer = troll.eval(query.writeToBuffer());
     final response = Response()..mergeFromBuffer(responseBuffer);
     final node = response.sceneNodes.sceneNode[0];
@@ -95,7 +95,7 @@ class Sprite {
   void move(List<int> vec) {
     final action = Action()
       ..moveSceneNode = (SceneNodeVectorAction()
-        ..sceneNodeId = id
+        ..sceneNodeId = nodeId
         ..vec = makeVector(vec));
     troll.execute(action.writeToBuffer());
   }
@@ -140,10 +140,11 @@ class Sprite {
   /// that trigger the [eventHandler].
   void _buildCollisionAction(CollisionAction collisionAction, String nodeId,
       String spriteId, EventHandler eventHandler) {
-    collisionAction.sceneNodeId.addAll([this.id, if (nodeId != null) nodeId]);
+    collisionAction.sceneNodeId
+        .addAll([this.nodeId, if (nodeId != null) nodeId]);
     if (spriteId != null) collisionAction.spriteId.add(spriteId);
 
-    final eventId = id + '_' + (_sprite_event_id++).toString();
+    final eventId = this.nodeId + '_' + (_sprite_event_id++).toString();
     final nodePattern = [
       if (nodeId != null) 'node_id: "$nodeId"',
       if (spriteId != null) 'sprite_id: "$spriteId"',
@@ -164,7 +165,7 @@ class Sprite {
   Box getOverlap(String sceneNodeId) {
     final query = Query()
       ..sceneNodeOverlap = (SceneNodePairQuery()
-        ..firstNodeId = id
+        ..firstNodeId = nodeId
         ..secondNodeId = sceneNodeId);
     final responseBuffer = troll.eval(query.writeToBuffer());
     final response = Response()..mergeFromBuffer(responseBuffer);
@@ -188,7 +189,7 @@ class Sprite {
     EventHandler onRewind,
     Map<String, EventHandler> onPartDone,
   }) {
-    final animationScript = AnimationScriptAction()..sceneNodeId = id;
+    final animationScript = AnimationScriptAction()..sceneNodeId = nodeId;
     if (script != null) animationScript..script = script;
     if (scriptId != null) animationScript..scriptId = scriptId;
 
@@ -211,7 +212,7 @@ class Sprite {
   ///
   /// If [onDone] was provided during [playAnimationSript], it will be invoked.
   void stopAnimation({String scriptId}) {
-    final animationScript = AnimationScriptAction()..sceneNodeId = id;
+    final animationScript = AnimationScriptAction()..sceneNodeId = nodeId;
     if (scriptId != null) animationScript..scriptId = scriptId;
 
     final action = Action()..stopAnimationScript = animationScript;
@@ -220,7 +221,7 @@ class Sprite {
 
   /// Pauses an active animation script on the sprite.
   void pauseAnimation({String scriptId}) {
-    final animationScript = AnimationScriptAction()..sceneNodeId = id;
+    final animationScript = AnimationScriptAction()..sceneNodeId = nodeId;
     if (scriptId != null) animationScript..scriptId = scriptId;
 
     final action = Action()..pauseAnimationScript = animationScript;
@@ -229,7 +230,7 @@ class Sprite {
 
   /// Resumes an animation script on the sprite that was paused before.
   void resumeAnimation({String scriptId}) {
-    final animationScript = AnimationScriptAction()..sceneNodeId = id;
+    final animationScript = AnimationScriptAction()..sceneNodeId = nodeId;
     if (scriptId != null) animationScript..scriptId = scriptId;
 
     final action = Action()..playAnimationScript = animationScript;
@@ -239,7 +240,7 @@ class Sprite {
   /// Invokes [callback] when [scriptId] on sprite finishes.
   void onScriptDone(String scriptId, EventHandler callback) {
     troll.registerEventHandler(
-        id + '.' + scriptId + '.done',
+        nodeId + '.' + scriptId + '.done',
         (Uint8List eventBuffer) =>
             callback(Event()..mergeFromBuffer(eventBuffer)));
   }
@@ -248,7 +249,7 @@ class Sprite {
   /// starts again).
   void onScriptRewind(String scriptId, EventHandler callback) {
     troll.registerEventHandler(
-        id + '.' + scriptId + '.rewind',
+        nodeId + '.' + scriptId + '.rewind',
         (Uint8List eventBuffer) =>
             callback(Event()..mergeFromBuffer(eventBuffer)),
         permanent: true);
@@ -258,7 +259,7 @@ class Sprite {
   void onScriptPartDone(String scriptId, Map<String, EventHandler> callbacks) {
     callbacks.forEach((part, callback) {
       troll.registerEventHandler(
-          id + '.' + scriptId + '.' + part + '.done',
+          nodeId + '.' + scriptId + '.' + part + '.done',
           (Uint8List eventBuffer) =>
               callback(Event()..mergeFromBuffer(eventBuffer)),
           permanent: true);
