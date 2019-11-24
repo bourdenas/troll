@@ -2,6 +2,7 @@
 #define TROLL_DART_TROLL_DART_UTILS_H_
 
 #include <string>
+#include <vector>
 
 #include <dart_api.h>
 
