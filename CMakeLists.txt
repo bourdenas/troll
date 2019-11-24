@@ -11,30 +11,22 @@ add_compile_options(/wd4996)
 include_directories(".")
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
-if(MSVC)
-  # vcpkg is unable to find SDL2-{image,ttf,mixer}, hard-link lib path.
-  if (PYTROLL)
-    link_directories("../vcpkg/installed/x86-windows/lib")
-  endif()
-  
-  if (DART_TROLL)
-    link_directories("../vcpkg/installed/x64-windows/lib")
-  endif()
-endif()
+find_package(SDL2 CONFIG REQUIRED)
+find_package(sdl2-image CONFIG REQUIRED)
+find_package(sdl2-ttf CONFIG REQUIRED)
+find_package(sdl2-mixer CONFIG REQUIRED)
 
-find_package(SDL2 REQUIRED)
-
-find_package(glog REQUIRED) 
+# find_package(absl CONFIG REQUIRED) 
+find_package(glog CONFIG REQUIRED) 
 
 find_package(Protobuf REQUIRED)
 include_directories(${PROTOBUF_INCLUDE_DIRS})
 
-
 find_package(Catch2 CONFIG REQUIRED)
+find_package(range-v3 CONFIG REQUIRED)
 
 # Use -DBUILD_TESTING=OFF to disable tests.
 add_subdirectory(deps/abseil-cpp)
-add_subdirectory(deps/range-v3)
 
 enable_testing()
 

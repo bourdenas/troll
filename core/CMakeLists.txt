@@ -17,6 +17,8 @@ target_link_libraries(troll_core
   ${PROTOBUF_LIBRARY}
   absl::strings
   glog::glog
+  # meta
+  # concepts
   range-v3
   # stdc++fs
   troll_action
