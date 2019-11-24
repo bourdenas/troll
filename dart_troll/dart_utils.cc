@@ -1,7 +1,5 @@
 #include "dart_troll/dart_utils.h"
 
-#include <absl/strings/str_cat.h>
-
 namespace troll {
 
 Dart_Handle HandleError(Dart_Handle handle) {
@@ -17,8 +15,8 @@ void DartInternalError(Dart_NativeArguments args, std::string_view error) {
 void DartArgsError(Dart_NativeArguments args, std::string_view func_name,
                    std::string_view arg_name) {
   DartInternalError(
-      args, absl::StrCat("Invalid argument '", arg_name,
-                         "' while calling function '", func_name, "'."));
+      args, ("Invalid argument '" + std::string(arg_name) +
+             "' while calling function '" + std::string(func_name) + "'."));
 }
 
 Dart_Handle UploadString(std::string_view str) {

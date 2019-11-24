@@ -13,7 +13,6 @@ set(SOURCES
 add_library(dart_troll SHARED ${SOURCES})
 
 target_link_libraries(dart_troll
-  absl::strings
   troll_core
   dart
 )
