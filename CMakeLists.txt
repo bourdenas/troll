@@ -16,7 +16,7 @@ find_package(sdl2-image CONFIG REQUIRED)
 find_package(sdl2-ttf CONFIG REQUIRED)
 find_package(sdl2-mixer CONFIG REQUIRED)
 
-# find_package(absl CONFIG REQUIRED) 
+find_package(absl CONFIG REQUIRED) 
 find_package(glog CONFIG REQUIRED) 
 
 find_package(Protobuf REQUIRED)
@@ -24,9 +24,6 @@ include_directories(${PROTOBUF_INCLUDE_DIRS})
 
 find_package(Catch2 CONFIG REQUIRED)
 find_package(range-v3 CONFIG REQUIRED)
-
-# Use -DBUILD_TESTING=OFF to disable tests.
-add_subdirectory(deps/abseil-cpp)
 
 enable_testing()
 
