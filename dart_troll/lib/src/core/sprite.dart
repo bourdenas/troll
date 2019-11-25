@@ -10,11 +10,12 @@ import 'package:dart_troll/src/proto/query.pb.dart';
 import 'package:dart_troll/src/proto/scene-node.pb.dart';
 
 typedef EventHandler = void Function(Event);
+typedef CollisionHandler = void Function(
+    String eventId, Iterable<Sprite> sprites);
 
 /// Sprite representation in Troll engine.
 ///
-/// It defines convenience methods for all operations that can be done on a
-/// sprite.
+/// It defines convenience methods for operations that can be done on a sprite.
 class Sprite {
   String nodeId;
   String spriteId;
@@ -25,6 +26,8 @@ class Sprite {
   Sprite(this.spriteId, [this.nodeId]) {
     nodeId ??= spriteId + '_' + (_sprite_unique_id++).toString();
   }
+
+  Sprite.wrap(this.nodeId);
 
   /// Create a sprite on specified [position] with given [frameIndex].
   void create(List<int> position, {int frameIndex = 0}) {
@@ -100,46 +103,44 @@ class Sprite {
     troll.execute(action.writeToBuffer());
   }
 
-  /// Registers an [eventHandler] that is triggered when this sprite collide
-  /// with other sprites.
+  /// Registers an [handler] that is triggered when this sprite collide with
+  /// other sprites.
   ///
   /// At least one of [nodeId] and [spriteId] needs to be provideds.
-  void onCollision(
-      {String nodeId, String spriteId, EventHandler eventHandler}) {
+  void onCollision({String nodeId, String spriteId, CollisionHandler handler}) {
     final action = Action()..onCollision = CollisionAction();
-    _buildCollisionAction(action.onCollision, nodeId, spriteId, eventHandler);
+    _buildCollisionAction(action.onCollision, nodeId, spriteId, handler);
     troll.execute(action.writeToBuffer());
   }
 
-  /// Registers an [eventHandler] that is triggered when this sprite overlaps
-  /// with other sprites.
+  /// Registers an [handler] that is triggered when this sprite overlaps with
+  /// other sprites.
   ///
   /// At least one of [nodeId] and [spriteId] needs to be provideds.
   /// In contrast to [onCollision] that triggers only when sprites collide this
   /// event is triggered constantly as long as the sprites overlap.
-  void onOverlap({String nodeId, String spriteId, EventHandler eventHandler}) {
+  void onOverlap({String nodeId, String spriteId, CollisionHandler handler}) {
     final action = Action()..onOverlap = CollisionAction();
-    _buildCollisionAction(action.onOverlap, nodeId, spriteId, eventHandler);
+    _buildCollisionAction(action.onOverlap, nodeId, spriteId, handler);
     troll.execute(action.writeToBuffer());
   }
 
-  /// Registers an [eventHandler] that is triggered when this sprite detaches
-  /// from other sprites.
+  /// Registers an [handler] that is triggered when this sprite detaches from
+  /// other sprites.
   ///
   /// At least one of [nodeId] and [spriteId] needs to be provideds.
-  void onDetaching(
-      {String nodeId, String spriteId, EventHandler eventHandler}) {
+  void onDetaching({String nodeId, String spriteId, CollisionHandler handler}) {
     final action = Action()..onDetaching = CollisionAction();
-    _buildCollisionAction(action.onDetaching, nodeId, spriteId, eventHandler);
+    _buildCollisionAction(action.onDetaching, nodeId, spriteId, handler);
     troll.execute(action.writeToBuffer());
   }
 
-  /// Builds a collision action in order to support EventHandlers mechanism.
+  /// Builds a collision action that will trigger the input [CollisionHandler].
   ///
   /// An EmitAction is used in the CollisionAction to generate unique events
-  /// that trigger the [eventHandler].
+  /// that trigger the [handler].
   void _buildCollisionAction(CollisionAction collisionAction, String nodeId,
-      String spriteId, EventHandler eventHandler) {
+      String spriteId, CollisionHandler handler) {
     collisionAction.sceneNodeId
         .addAll([this.nodeId, if (nodeId != null) nodeId]);
     if (spriteId != null) collisionAction.spriteId.add(spriteId);
@@ -158,10 +159,19 @@ class Sprite {
     troll.registerEventHandler(
         eventId,
         (Uint8List eventBuffer) =>
-            eventHandler(Event()..mergeFromBuffer(eventBuffer)),
+            _onCollisionEvent(Event()..mergeFromBuffer(eventBuffer), handler),
         permanent: true);
   }
 
+  /// Converts a collision event into arguments for a CollisionHandler to
+  /// provide a type-safe API for handling collision type events.
+  static void _onCollisionEvent(Event e, CollisionHandler handler) {
+    handler(
+        e.eventId, [for (final nodeId in e.sceneNodeId) Sprite.wrap(nodeId)]);
+  }
+
+  /// Returns a box that describes the overlap of this sprite with the one
+  /// described by [sceneNodeId].
   Box getOverlap(String sceneNodeId) {
     final query = Query()
       ..sceneNodeOverlap = (SceneNodePairQuery()

@@ -18,8 +18,9 @@ class Mario extends GavitySprite {
 
     onOverlap(
         spriteId: Ladder.id,
-        eventHandler: (event) {
-          final overlap = this.getOverlap(event.sceneNodeId[0]);
+        handler: (eventId, sprites) {
+          final sprite = sprites.first;
+          final overlap = getOverlap(sprite.nodeId);
           // print('overlap with ladder=${overlap.width}');
         });
 

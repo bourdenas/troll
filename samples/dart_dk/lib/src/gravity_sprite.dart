@@ -10,13 +10,13 @@ class GavitySprite extends Sprite {
   GavitySprite(String spriteId, [String id]) : super(spriteId, id) {
     onOverlap(
         spriteId: Platform.id,
-        eventHandler: (event) {
+        handler: (eventId, sprites) {
           if (_intensity == 0) return;
 
-          final sprite = Sprite(Platform.id, event.sceneNodeId[0]);
+          final sprite = sprites.first;
           if (position[1] > sprite.position[1]) return;
 
-          final overlap = getOverlap(event.sceneNodeId[0]);
+          final overlap = getOverlap(sprite.nodeId);
           move([0, -overlap.height]);
         });
   }
